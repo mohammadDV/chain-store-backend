@@ -187,6 +187,39 @@ The API will be available at `http://localhost:8000`
 
 ---
 
+## Laravel 12 Upgrade
+
+This project has been successfully upgraded to **Laravel 12.33.0** with minimal changes:
+
+### What Was Updated:
+
+-   **Laravel Framework**: Upgraded from v12.24.0 to v12.33.0
+-   **Composer Dependencies**: All packages updated to their latest compatible versions
+-   **Filament Admin**: Updated to v3.3.43
+-   **Code Improvements**:
+    -   Fixed PSR-4 class naming inconsistency (`ProductsByStatusChart`)
+    -   Added proper `DB` facade imports in `AuthController`
+    -   Cleaned up autoload configuration
+
+### Compatibility:
+
+-   ✅ PHP 8.3.20
+-   ✅ Laravel Sanctum 4.1
+-   ✅ Filament 3.3.43
+-   ✅ All routes and configurations working
+-   ✅ No breaking changes in codebase
+
+### Key Changes Made:
+
+1. Updated all dependencies via `composer update`
+2. Fixed class naming to comply with PSR-4 autoloading standards
+3. Cleared and regenerated all cache files
+4. Verified application functionality
+
+No database migrations or major code refactoring was required!
+
+---
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit pull requests for any improvements or bug fixes.

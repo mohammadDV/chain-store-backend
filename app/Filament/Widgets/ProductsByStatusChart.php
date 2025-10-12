@@ -5,7 +5,7 @@ namespace App\Filament\Widgets;
 use Domain\Product\Models\Product;
 use Filament\Widgets\ChartWidget;
 
-class ProductByStatusChart extends ChartWidget
+class ProductsByStatusChart extends ChartWidget
 {
     protected static ?int $sort = 2;
 

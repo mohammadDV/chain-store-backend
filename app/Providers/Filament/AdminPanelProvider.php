@@ -4,7 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\DashboardOverview;
 use App\Filament\Widgets\LatestTickets;
-use App\Filament\Widgets\ProductByStatusChart;
+use App\Filament\Widgets\ProductsByStatusChart;
 use App\Filament\Widgets\ReviewsByStatusChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 DashboardOverview::class,
-                ProductByStatusChart::class,
+                ProductsByStatusChart::class,
                 ReviewsByStatusChart::class,
                 LatestTickets::class,
             ])
