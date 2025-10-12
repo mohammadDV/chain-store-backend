@@ -14,6 +14,7 @@ use Domain\User\Services\TelegramNotificationService;
 use Google_Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Mail;
@@ -293,7 +294,7 @@ class AuthController extends Controller
         $token = Str::random(60);
 
         // Store the token in password_reset_tokens table
-        \DB::table('password_reset_tokens')->updateOrInsert(
+        DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
             [
                 'email' => $request->email,
@@ -324,7 +325,7 @@ class AuthController extends Controller
             'email' => 'required|email|exists:users,email'
         ]);
 
-        $resetRecord = \DB::table('password_reset_tokens')
+        $resetRecord = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
@@ -337,7 +338,7 @@ class AuthController extends Controller
 
         // Check if token is expired (60 minutes)
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
-            \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
             return response([
                 'message' => __('site.Reset token has expired.'),
                 'status' => 0
@@ -369,7 +370,7 @@ class AuthController extends Controller
      */
     public function resetPassword(ResetPasswordRequest $request): Response
     {
-        $resetRecord = \DB::table('password_reset_tokens')
+        $resetRecord = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
@@ -382,7 +383,7 @@ class AuthController extends Controller
 
         // Check if token is expired (60 minutes)
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
-            \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
             return response([
                 'message' => __('site.Reset token has expired.'),
                 'status' => 0
@@ -404,7 +405,7 @@ class AuthController extends Controller
         ]);
 
         // Delete the used token
-        \DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return response([
             'message' => __('site.Password has been reset successfully.'),
