@@ -121,7 +121,7 @@ src/
 
 ## Tech Stack
 
--   **Framework**: Laravel 11.x
+-   **Framework**: Laravel 12.x
 -   **Admin Panel**: Filament 3.x
 -   **Authentication**: Laravel Sanctum
 -   **Database**: SQLite (development), supports MySQL/PostgreSQL

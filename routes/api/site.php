@@ -13,13 +13,10 @@ use Application\Api\User\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Category
-// Route::get('/active-categories', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
-// Route::get('/all-categories', [CategoryController::class, 'allCategories'])->name('all-categories');
-// Route::get('/parent-categories', [CategoryController::class, 'getParentCategories'])->name('parent-categories');
-// Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('category.show');
-// Route::get('/categories/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
-// Route::get('/categories/{category}/filters', [CategoryController::class, 'getCategoryFilters'])->name('category.filters');
-// Route::get('/categories/{category}/services', [CategoryController::class, 'getCategoryServices'])->name('category.services');
+Route::get('/active-categories/{brand}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
+Route::get('/all-categories/{brand}', [CategoryController::class, 'allCategories'])->name('all-categories');
+Route::get('/brands/{brand}/categories/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
+Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('category.show');
 
 
 // Products

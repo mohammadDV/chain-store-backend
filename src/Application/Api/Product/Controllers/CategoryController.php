@@ -6,6 +6,7 @@ use Application\Api\Product\Requests\CategoryRequest;
 use Application\Api\Product\Resources\CategoryWithParentsResource;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
+use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Repositories\Contracts\ICategoryRepository;
 use Illuminate\Http\Response;
@@ -35,20 +36,22 @@ class CategoryController extends Controller
 
     /**
      * Get all of ProductCategories
+     * @param Brand $brand
      * @return JsonResponse
      */
-    public function activeProductCategories(TableRequest $request): JsonResponse
+    public function activeProductCategories(Brand $brand): JsonResponse
     {
-        return response()->json($this->repository->activeProductCategories($request), Response::HTTP_OK);
+        return response()->json($this->repository->activeProductCategories($brand), Response::HTTP_OK);
     }
 
     /**
      * Get all of ProductCategories
+     * @param Brand $brand
      * @return JsonResponse
      */
-    public function allCategories(): JsonResponse
+    public function allCategories(Brand $brand): JsonResponse
     {
-        return response()->json($this->repository->allCategories(), Response::HTTP_OK);
+        return response()->json($this->repository->allCategories($brand), Response::HTTP_OK);
     }
 
     /**
