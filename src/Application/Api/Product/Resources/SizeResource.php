@@ -2,12 +2,9 @@
 
 namespace Application\Api\Product\Resources;
 
-use Application\Api\Address\Resources\AreaResource;
-use Application\Api\Address\Resources\CityResource;
-use Application\Api\Address\Resources\CountryResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductBoxResource extends JsonResource
+class SizeResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,14 +14,10 @@ class ProductBoxResource extends JsonResource
      */
     public function toArray($request)
     {
-
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'amount' => intval($this->amount),
-            'discount' => intval($this->discount),
-            'image' => $this->image,
-            'rate' => $this->rate,
+            'stock' => intval($this->stock),
         ];
     }
 }

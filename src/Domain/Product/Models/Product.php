@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\File;
 use Domain\Review\Models\Review;
@@ -59,5 +60,15 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function sizes()
+    {
+        return $this->hasMany(Size::class);
     }
 }

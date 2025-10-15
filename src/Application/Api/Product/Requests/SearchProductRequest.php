@@ -23,11 +23,15 @@ class SearchProductRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'category' => ['nullable', 'exists:categories,id'],
+            'categories' => ['nullable', 'array'],
+            'categories.*' => ['nullable', 'integer', 'exists:categories,id'],
+            'brands' => ['nullable', 'array'],
+            'brands.*' => ['nullable', 'integer', 'exists:brands,id'],
+            'colors' => ['nullable', 'array'],
+            'colors.*' => ['nullable', 'integer', 'exists:colors,id'],
+            'start_amount' => ['nullable', 'numeric'],
+            'end_amount' => ['nullable', 'numeric'],
             'query' => ['nullable', 'string', 'min:1', 'max:50'],
-            'now' => ['nullable', 'boolean'],
-            'brand_id' => ['nullable', 'exists:brands,id'],
-            'color_id' => ['nullable', 'exists:colors,id'],
             'column' => ['nullable', 'string', 'min:2', 'max:50'],
             'sort' => ['nullable', 'string', 'in:desc,asc'],
             'page' => ['nullable','integer'],

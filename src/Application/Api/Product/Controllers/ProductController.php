@@ -2,14 +2,12 @@
 
 namespace Application\Api\Product\Controllers;
 
-use Application\Api\Product\Requests\ProductRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IProductRepository;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Application\Api\Product\Requests\SearchProductRequest;
 
 
@@ -25,16 +23,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Get all of products with pagination
-     * @param TableRequest $request
-     * @return JsonResponse
-     */
-    public function index(TableRequest $request): JsonResponse
-    {
-        return response()->json($this->repository->index($request), Response::HTTP_OK);
-    }
-
-    /**
      * Get the product.
      * @param Product $product
      * @return JsonResponse
@@ -42,16 +30,6 @@ class ProductController extends Controller
     public function show(Product $product) :JsonResponse
     {
         return response()->json($this->repository->show($product), Response::HTTP_OK);
-    }
-
-    /**
-     * Edit the product.
-     * @param Product $product
-     * @return JsonResponse
-     */
-    public function edit(Product $product) :JsonResponse
-    {
-        return response()->json($this->repository->edit($product), Response::HTTP_OK);
     }
 
     /**
@@ -86,27 +64,14 @@ class ProductController extends Controller
 
     /**
      * Get featured products by type.
-     * @param Request $request
+     * @param TableRequest $request
      * @return JsonResponse
      */
-    public function featured(): JsonResponse
+    public function getFeaturedProducts(TableRequest $request): JsonResponse
     {
         return response()->json([
             'status' => 1,
-            'data' => $this->repository->getFeaturedProducts()
-        ], Response::HTTP_OK);
-    }
-
-    /**
-     * Get weekends.
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function getWeekends(): JsonResponse
-    {
-        return response()->json([
-            'status' => 1,
-            'data' => $this->repository->getWeekends()
+            'data' => $this->repository->getFeaturedProducts($request)
         ], Response::HTTP_OK);
     }
 
