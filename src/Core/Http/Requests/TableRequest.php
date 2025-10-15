@@ -30,6 +30,7 @@ class TableRequest extends BaseRequest
             'status' => ['nullable','string','max:100'],
             'categories' => ['nullable','array'],
             'categories.*' => ['nullable','integer','exists:categories,id'],
+            'brand' => ['nullable','integer','exists:brands,id'],
         ];
     }
 }

@@ -6,7 +6,6 @@ use Application\Api\Product\Resources\CategoryResource;
 use Application\Api\Product\Resources\FileResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Application\Api\User\Resources\UserResource;
-use DateTimeZone;
 
 class ProductResource extends JsonResource
 {
@@ -31,9 +30,10 @@ class ProductResource extends JsonResource
             'image' => $this->image,
             'rate' => $this->rate,
             'reviews_count' => $this->reviews()->count(),
-            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
+            'category' => new CategoryResource($this->whenLoaded('category')),
             'files' => FileResource::collection($this->whenLoaded('files')),
             'user' => new UserResource($this->whenLoaded('user')),
+            'sizes' => SizeResource::collection($this->whenLoaded('sizes')),
         ];
     }
 }

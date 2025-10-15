@@ -20,14 +20,14 @@ Route::get('/categories/{category}', [CategoryController::class, 'show'])->name(
 
 
 // Products
-// Route::prefix('products')->group(function () {
-//     Route::get('featured', [ProductController::class, 'featured']);
-//     Route::get('search', [ProductController::class, 'search']);
-//     Route::get('search-suggestions', [ProductController::class, 'searchSuggestions']);
-//     Route::get('{product}', [ProductController::class, 'show']);
-//     Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
-//     Route::get('{product}/similar', [ProductController::class, 'similarProducts'])->name('product.similar');
-// });
+Route::prefix('products')->group(function () {
+    Route::post('search', [ProductController::class, 'search']);
+    Route::post('search-suggestions', [ProductController::class, 'searchSuggestions']);
+    Route::get('{product}/similar', [ProductController::class, 'similarProducts'])->name('product.similar');
+    Route::post('featured', [ProductController::class, 'getFeaturedProducts'])->name('product.featured');
+    Route::get('{product}', [ProductController::class, 'show']);
+    // Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
+});
 
 
 // user info
@@ -49,12 +49,9 @@ Route::get('/post/{post}', [PostController::class, 'getPostInfo'])->name('site.p
 Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')->name('profile.')->group(function() {
 
     // product
+    Route::get('products/{product}/favorite', [ProductController::class, 'favorite'])->name('products.favorite');
+    Route::get('products/favorite', [ProductController::class, 'getFavoriteProducts'])->name('products.favorite.index');
     // Route::get('my-products', [ProductController::class, 'index'])->name('products.index');
-    // Route::post('products', [ProductController::class, 'store'])->name('products.store');
-    // Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    // Route::patch('products/{product}', [ProductController::class, 'update'])->name('products.update');
-    // Route::get('products/{product}/favorite', [ProductController::class, 'favorite'])->name('products.favorite');
-    // Route::get('products/favorite', [ProductController::class, 'getFavoriteProducts'])->name('products.favorite.index');
 
     // review
     // Route::get('my-reviews', [ReviewController::class, 'myReviews'])->name('reviews.index');
