@@ -37,7 +37,6 @@ class ReviewRepository implements IReviewRepository
         return Review::query()
             ->with('user:id,nickname,profile_photo_path,rate')
             ->withCount('likes')
-            ->withCount('dislikes')
             ->when(!empty($search), function ($query) use ($search) {
                 return $query->where('comment', 'like', '%' . $search . '%');
             })
@@ -72,7 +71,6 @@ class ReviewRepository implements IReviewRepository
         $reviews = Review::query()
             ->with('user:id,nickname,profile_photo_path,rate', 'services', 'files')
             ->withCount('likes')
-            ->withCount('dislikes')
             ->where('product_id', $product->id)
             ->where('status', Review::APPROVED)
             ->where('active', 1)
@@ -129,25 +127,10 @@ class ReviewRepository implements IReviewRepository
                 'status' => Review::PENDING,
             ]);
 
-            // Create files if provided
-            if ($request->has('files')) {
-                foreach ($request->input('files') as $fileData) {
-                    $review->files()->create($fileData);
-                }
-            }
-
-            if ($request->has('services')) {
-                foreach ($request->input('services') as $service) {
-                    ServiceVote::create([
-                        'review_id' => $review->id,
-                        'service_id' => $service,
-                        'product_id' => $product->id,
-                    ]);
-                }
-            }
-
             // Calculate average rate from all reviews for this product
             $averageRate = Review::where('product_id', $product->id)
+                ->where('status', Review::APPROVED)
+                ->where('active', 1)
                 ->avg('rate');
 
             // Update product with average rate (rounded to nearest integer)
@@ -155,12 +138,12 @@ class ReviewRepository implements IReviewRepository
                 'rate' => round($averageRate)
             ]);
 
-            NotificationService::create([
-                'title' => __('site.new_review_title'),
-                'content' => __('site.new_review_content', ['user_nickname' => Auth::user()->nickname]),
-                'id' => $product->id,
-                'type' => NotificationService::PRODUCT,
-            ], $product->user);
+            // NotificationService::create([
+            //     'title' => __('site.new_review_title'),
+            //     'content' => __('site.new_review_content', ['user_nickname' => Auth::user()->nickname]),
+            //     'id' => $product->id,
+            //     'type' => NotificationService::PRODUCT,
+            // ], $product->user);
 
             DB::commit();
 
@@ -191,18 +174,12 @@ class ReviewRepository implements IReviewRepository
             'status' => $request->input('status') ?? Review::PENDING,
         ]);
 
-        if ($request->has('files')) {
-            $this->updateReviewFiles($review, $request->input('files'));
-        }
-
         // Update product rates after review update
         $product = $review->product;
         $averageRate = Review::where('product_id', $product->id)
+            ->where('status', Review::APPROVED)
+            ->where('active', 1)
             ->avg('rate');
-
-        if ($request->input('services')) {
-            $this->updateReviewServices($review, $request->input('services'));
-        }
 
         $product->update([
             'rate' => round($averageRate)
@@ -238,60 +215,5 @@ class ReviewRepository implements IReviewRepository
             'status' => 1,
             'message' => __('site.The operation has been successfully')
         ], Response::HTTP_OK);
-    }
-
-    /**
-     * Update review services.
-     * @param Review $review
-     * @param array $services
-     */
-    private function updateReviewServices(Review $review, array $services): void
-    {
-        // Delete existing service votes for this review
-        ServiceVote::where('review_id', $review->id)->delete();
-
-        // Create new service votes
-        foreach ($services as $service) {
-            ServiceVote::create([
-                'review_id' => $review->id,
-                'service_id' => $service,
-                'product_id' => $review->product_id,
-            ]);
-        }
-    }
-
-    /**
-     * Update review files intelligently
-     * @param Review $review
-     * @param array $filesData
-     */
-    private function updateReviewFiles(Review $review, array $filesData): void
-    {
-        // Get existing files
-        $existingFiles = $review->files()->pluck('id', 'path')->toArray();
-
-        // Process new files
-        foreach ($filesData as $fileData) {
-            $path = $fileData['path'];
-
-            if (isset($existingFiles[$path])) {
-                // File exists, update it if needed
-                $fileId = $existingFiles[$path];
-                $review->files()->where('id', $fileId)->update([
-                    'type' => $fileData['type'] ?? 'image',
-                    'status' => $fileData['status'] ?? 1
-                ]);
-                // Remove from existing files so we don't delete it
-                unset($existingFiles[$path]);
-            } else {
-                // Create new file
-                $review->files()->create($fileData);
-            }
-        }
-
-        // Delete files that are no longer in the request
-        if (!empty($existingFiles)) {
-            $review->files()->whereIn('id', array_values($existingFiles))->delete();
-        }
     }
 }
