@@ -26,7 +26,7 @@ Route::prefix('products')->group(function () {
     Route::get('{product}/similar', [ProductController::class, 'similarProducts'])->name('product.similar');
     Route::post('featured', [ProductController::class, 'getFeaturedProducts'])->name('product.featured');
     Route::get('{product}', [ProductController::class, 'show']);
-    // Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
+    Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
 });
 
 
@@ -54,10 +54,10 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     // Route::get('my-products', [ProductController::class, 'index'])->name('products.index');
 
     // review
-    // Route::get('my-reviews', [ReviewController::class, 'myReviews'])->name('reviews.index');
-    // Route::post('reviews/{product}', [ReviewController::class, 'store'])->name('reviews.store');
-    // Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
-    // Route::get('reviews/{review}/change-status', [ReviewController::class, 'changeStatus'])->name('reviews.change-status');
+    Route::get('my-reviews', [ReviewController::class, 'myReviews'])->name('reviews.index');
+    Route::post('reviews/{product}', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
+    Route::get('reviews/{review}/change-status', [ReviewController::class, 'changeStatus'])->name('reviews.change-status');
 
 
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');
