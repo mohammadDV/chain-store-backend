@@ -20,8 +20,6 @@ class BrandResource extends JsonResource
             'title' => $this->title,
             'logo' => $this->logo,
             'description' => $this->description,
-            'status' => $this->status,
-            'priority' => $this->priority,
             'banners' => BannerResource::collection($this->whenLoaded('banners')),
             'colors' => ColorResource::collection($this->whenLoaded('colors')),
         ];

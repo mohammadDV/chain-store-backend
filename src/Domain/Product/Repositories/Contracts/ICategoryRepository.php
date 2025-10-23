@@ -47,7 +47,7 @@ interface ICategoryRepository
     /**
      * Get the Category.
      * @param Category $category
-     * @return Category
+     * @return CategoryResource
      */
     public function show(Category $category);
 

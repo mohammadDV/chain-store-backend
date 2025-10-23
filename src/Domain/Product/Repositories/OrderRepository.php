@@ -43,6 +43,7 @@ class OrderRepository implements IOrderRepository
         $orders = Order::query()
             ->with(['products', 'user', 'discount'])
             ->where('user_id', Auth::user()->id)
+            ->where('active', 1)
             ->when(!empty($search), function ($query) use ($search) {
                 return $query->where('id', 'like', '%' . $search . '%');
             })
@@ -67,6 +68,7 @@ class OrderRepository implements IOrderRepository
         $order = Order::query()
             ->with(['products', 'discount'])
             ->where('id', $order->id)
+            ->where('active', 1)
             ->first();
 
         return new OrderResource($order->load('products.color'));

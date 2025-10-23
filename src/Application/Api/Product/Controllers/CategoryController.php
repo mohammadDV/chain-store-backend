@@ -65,43 +65,12 @@ class CategoryController extends Controller
     }
 
     /**
-     * Get all parent categories.
-     * @return JsonResponse
-     */
-    public function getParentCategories() :JsonResponse
-    {
-        return response()->json($this->repository->getParentCategories(), Response::HTTP_OK);
-    }
-
-    /**
      * Get the Category.
      * @param Category $category
      * @return JsonResponse
      */
     public function show(Category $category) :JsonResponse
     {
-        return response()->json(new CategoryWithParentsResource($this->repository->show($category)), Response::HTTP_OK);
-    }
-
-    /**
-     * Get the filters associated with a specific category.
-     * @param TableRequest $request
-     * @param Category $category
-     * @return JsonResponse
-     */
-    public function getCategoryFilters(TableRequest $request, Category $category): JsonResponse
-    {
-        return response()->json($this->repository->getCategoryFilters($request, $category), Response::HTTP_OK);
-    }
-
-    /**
-     * Get the services associated with a specific category.
-     * @param TableRequest $request
-     * @param Category $category
-     * @return JsonResponse
-     */
-    public function getCategoryServices(TableRequest $request, Category $category): JsonResponse
-    {
-        return response()->json($this->repository->getCategoryServices($request, $category), Response::HTTP_OK);
+        return response()->json($this->repository->show($category), Response::HTTP_OK);
     }
 }
