@@ -3,6 +3,7 @@
 use Application\Api\Brand\Controllers\BrandController;
 use Application\Api\File\Controllers\FileController;
 use Application\Api\Notification\Controllers\NotificationController;
+use Application\Api\Product\Controllers\OrderController;
 use Application\Api\Post\Controllers\PostController;
 use Application\Api\Product\Controllers\CategoryController;
 use Application\Api\Product\Controllers\ProductController;
@@ -58,6 +59,12 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::post('reviews/{product}', [ReviewController::class, 'store'])->name('reviews.store');
     Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::get('reviews/{review}/change-status', [ReviewController::class, 'changeStatus'])->name('reviews.change-status');
+
+    // order
+    Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::patch('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
 
 
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');
