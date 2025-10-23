@@ -32,6 +32,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id')->withPivot('count', 'amount', 'status', 'color_id', 'size_id');
+    }
+
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable', 'likeable_type', 'likeable_id');

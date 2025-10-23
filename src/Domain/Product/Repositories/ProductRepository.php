@@ -14,15 +14,12 @@ use Illuminate\Http\Response;
 use Application\Api\Product\Requests\SearchProductRequest;
 use Application\Api\Product\Resources\CategoryResource;
 use Application\Api\Product\Resources\ProductBoxResource;
-use DateTimeZone;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Favorite;
 use Domain\Review\Models\Review;
 use Domain\User\Services\TelegramNotificationService;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-
-use function Psy\sh;
 
 /**
  * Class ProductRepository.
