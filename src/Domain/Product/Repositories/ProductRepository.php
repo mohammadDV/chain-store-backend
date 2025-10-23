@@ -51,8 +51,6 @@ class ProductRepository implements IProductRepository
                 ->where('id', $product->id)
                 ->first();
 
-
-
         $reviews = $this->getReviewsByRate($product->id);
 
         return [

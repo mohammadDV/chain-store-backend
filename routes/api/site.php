@@ -50,9 +50,8 @@ Route::get('/post/{post}', [PostController::class, 'getPostInfo'])->name('site.p
 Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')->name('profile.')->group(function() {
 
     // product
-    Route::get('products/{product}/favorite', [ProductController::class, 'favorite'])->name('products.favorite');
+    Route::post('products/{product}/favorite', [ProductController::class, 'favorite'])->name('products.favorite');
     Route::get('products/favorite', [ProductController::class, 'getFavoriteProducts'])->name('products.favorite.index');
-    // Route::get('my-products', [ProductController::class, 'index'])->name('products.index');
 
     // review
     Route::get('my-reviews', [ReviewController::class, 'myReviews'])->name('reviews.index');
