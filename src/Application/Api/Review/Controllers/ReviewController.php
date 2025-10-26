@@ -86,4 +86,14 @@ class ReviewController extends Controller
     {
         return $this->repository->changeStatus($review);
     }
+
+    /**
+     * Like the review.
+     * @param Review $review
+     * @return JsonResponse
+     */
+    public function likeReview(Review $review) :JsonResponse
+    {
+        return response()->json($this->repository->likeReview($review), Response::HTTP_OK);
+    }
 }

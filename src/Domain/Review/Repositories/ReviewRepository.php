@@ -216,4 +216,34 @@ class ReviewRepository implements IReviewRepository
             'message' => __('site.The operation has been successfully')
         ], Response::HTTP_OK);
     }
+
+    /**
+     * Like the review.
+     * @param Review $review
+     * @return array
+     */
+    public function likeReview(Review $review) :array
+    {
+        $active = 0;
+        $like = $review->likes()
+            ->where('user_id', Auth::id())
+            ->where('is_like', true)
+            ->first();
+
+        if ($like) {
+            $like->delete();
+        } else {
+            $active = 1;
+            $review->likes()->create([
+                'user_id' => Auth::id(),
+                'is_like' => true,
+            ]);
+        }
+
+        return [
+            'active' => $active,
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+        ];
+    }
 }

@@ -58,6 +58,7 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::post('reviews/{product}', [ReviewController::class, 'store'])->name('reviews.store');
     Route::patch('reviews/{review}', [ReviewController::class, 'update'])->name('reviews.update');
     Route::get('reviews/{review}/change-status', [ReviewController::class, 'changeStatus'])->name('reviews.change-status');
+    Route::get('reviews/{review}/like', [ReviewController::class, 'likeReview'])->name('reviews.like');
 
     // order
     Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
