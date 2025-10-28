@@ -12,6 +12,7 @@ class NotificationService
     const CHAT = 'chat';
     const TICKET = 'ticket';
     const PRODUCT = 'product';
+    const ORDER = 'order';
     const REVIEW = 'review';
 
     /**

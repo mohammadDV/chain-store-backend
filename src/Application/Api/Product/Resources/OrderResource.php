@@ -17,11 +17,13 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'code' => $this->code,
             'user_id' => $this->user_id,
             'product_count' => $this->product_count,
             'total_amount' => $this->total_amount,
             'delivery_amount' => $this->delivery_amount,
             'discount_amount' => $this->discount_amount,
+            'amount' => $this->amount,
             'status' => $this->status,
             'vip' => $this->vip,
             'products' => $this->whenLoaded('products', function () {

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->integer('count');
             $table->decimal('amount', 15, 2);
-            $table->enum('status', ['pending', 'completed', 'cancelled', 'shipped', 'delivered', 'returned', 'refunded', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'expired', 'completed', 'cancelled', 'shipped', 'delivered', 'returned', 'refunded', 'failed'])->default('pending');
             $table->foreignId('color_id')->nullable()->constrained('colors')->onDelete('set null');
             $table->foreignId('size_id')->nullable()->constrained('sizes')->onDelete('set null');
             $table->timestamps();

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->tinyInteger('discount')->default(0);
             $table->string('image', 2048)->nullable();
+            $table->string('code', 255)->nullable();
             $table->tinyInteger('active')->default(0);
             $table->integer('order_count')->default(0);
             $table->integer('view_count')->default(0);

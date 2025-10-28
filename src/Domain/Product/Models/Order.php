@@ -12,13 +12,14 @@ class Order extends Model
     use HasFactory;
 
     const PENDING = "pending";
-    const COMPLETED = "completed";
+    const PAID = "paid";
     const CANCELLED = "cancelled";
     const SHIPPED = "shipped";
     const DELIVERED = "delivered";
     const RETURNED = "returned";
     const REFUNDED = "refunded";
     const FAILED = "failed";
+    const EXPIRED = "expired";
 
     protected $guarded = [];
 
@@ -40,4 +41,17 @@ class Order extends Model
     {
         return $this->belongsTo(Discount::class);
     }
+
+    public static function generateCode(): string
+    {
+        do {
+            $code = random_int(1111111111111111, 9999999999999999);
+            $exists = self::query()
+                ->where('code', $code)
+                ->exists();
+        } while ($exists);
+
+        return (string)$code;
+    }
+
 }

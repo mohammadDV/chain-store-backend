@@ -1323,4 +1323,11 @@ return array(
     'reviews_by_status' => 'نظرات بر اساس وضعیت',
     'tickets' => 'تیکت‌ها',
     'active_users' => 'کاربران فعال',
+
+    // Order Management
+    'Order not found' => 'سفارش یافت نشد',
+    'Discount already used' => 'تخفیف قبلاً استفاده شده است',
+    'amount should grater than default amount' => 'مبلغ قابل پرداخت باید بیشتر از مبلغ :amount تومان باشد',
+    'Discount not found' => 'تخفیف یافت نشد',
+    'Address not found' => 'آدرس یافت نشد',
 );

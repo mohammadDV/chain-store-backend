@@ -11,6 +11,10 @@ use Application\Api\Review\Controllers\ReviewController;
 use Application\Api\Ticket\Controllers\TicketController;
 use Application\Api\Ticket\Controllers\TicketSubjectController;
 use Application\Api\User\Controllers\UserController;
+use Application\Api\Payment\Controllers\PaymentController;
+use Application\Api\Wallet\Controllers\WalletController;
+use Application\Api\Wallet\Controllers\WalletTransactionController;
+use Application\Api\Wallet\Controllers\WithdrawalTransactionController;
 use Illuminate\Support\Facades\Route;
 
 // Category
@@ -38,6 +42,12 @@ Route::get('/user-info/{user}', [UserController::class, 'getUserInfo'])->name('u
 Route::get('/active-subjects', [TicketSubjectController::class, 'activeSubjects'])->name('active-subjects');
 
 
+// payment
+Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('user.payment.callback');
+Route::get('/payment', [PaymentController::class, 'payment'])->name('user.payment');
+Route::get('/payment/result/{id}', [PaymentController::class, 'show'])->name('user.payment.result');
+
+
 // Brand
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{brand}', [BrandController::class, 'show'])->name('brands.show');
@@ -62,9 +72,12 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
 
     // order
     Route::post('orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::post('orders/check-status', [OrderController::class, 'checkOrderStatus'])->name('orders.check-order-status');
+    Route::post('orders/{order}/check-discount', [OrderController::class, 'checkDiscount'])->name('orders.check-discount');
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
+    Route::post('orders/{order}/pay', [OrderController::class, 'payOrder'])->name('orders.pay');
 
 
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');
@@ -86,6 +99,18 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
 
     // // activity count
     Route::get('/dashboard-info', [UserController::class, 'getDashboardInfo'])->name('profile.dashboard.info');
+
+    // payment
+    Route::get('/payment/redirect-to-gateway-for-identity', [PaymentController::class, 'redirectToGatewayForIdentity'])->name('user.payment.redirect-to-gateway-for-identity');
+    Route::post('/payment/manual-payment', [PaymentController::class, 'manualPayment'])->name('user.payment.manual-payment');
+    Route::get('/payment/transactions', [PaymentController::class, 'index'])->name('user.payment.transactions');
+
+    // wallet
+    Route::get('/wallets', [WalletController::class, 'index']);
+    Route::get('/wallet', [WalletController::class, 'show']);
+    Route::post('/wallet/top-up', [WalletController::class, 'topUp']);
+    Route::post('/wallet/transfer', [WalletController::class, 'transfer']);
+    Route::get('/wallet-transaction/{wallet}', [WalletTransactionController::class, 'index']);
 
 });
 
