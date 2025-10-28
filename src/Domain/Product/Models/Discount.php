@@ -50,7 +50,14 @@ class Discount extends Model
     public function calculateDiscount(float $amount): float
     {
         if ($this->type === self::TYPE_PERCENTAGE) {
-            return ($amount * $this->value) / 100;
+
+            $discountAmount = ($amount * $this->value) / 100;
+
+            if (!empty($this->max_value) && intval($this->max_value) > 0) {
+                $discountAmount = $discountAmount > $this->max_value ? $this->max_value : $discountAmount;
+            }
+
+            return $discountAmount;
         }
 
         return $this->value;

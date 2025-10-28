@@ -698,4 +698,11 @@ return array(
     'reviews_by_status' => 'Reviews by Status',
     'tickets' => 'Tickets',
     'active_users' => 'Active Users',
+
+    // Order Management
+    'Order not found' => 'Order not found',
+    'Discount already used' => 'Discount already used',
+    'amount should grater than default amount' => 'Amount should be greater than :amount',
+    'Discount not found' => 'Discount not found',
+    'Address not found' => 'Address not found',
 );

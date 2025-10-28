@@ -2,15 +2,23 @@
 
 namespace Domain\Product\Repositories;
 
+use Application\Api\Product\Requests\CheckOrderCodeRequest;
 use Application\Api\Product\Requests\OrderRequest;
+use Application\Api\Product\Requests\PaymentRequest;
 use Application\Api\Product\Resources\OrderResource;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
+use Domain\Notification\Services\NotificationService;
+use Domain\Payment\Models\Transaction;
+use Domain\Product\Models\Address;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Domain\User\Services\TelegramNotificationService;
+use Domain\Wallet\Models\Wallet;
+use Domain\Wallet\Models\WalletTransaction;
+use Domain\Wallet\Repositories\Contracts\IWalletRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -25,7 +33,7 @@ class OrderRepository implements IOrderRepository
 {
     use GlobalFunc;
 
-    public function __construct(protected TelegramNotificationService $service)
+    public function __construct(protected TelegramNotificationService $service, protected IWalletRepository $walletRepository)
     {
         //
     }
@@ -74,6 +82,106 @@ class OrderRepository implements IOrderRepository
         return new OrderResource($order->load('products.color'));
     }
 
+    /**
+     * Check the order status.
+     * @param CheckOrderCodeRequest $request
+     * @return array
+     */
+    public function checkOrderStatus(CheckOrderCodeRequest $request): array
+    {
+        $order = Order::query()
+            ->where('user_id', Auth::user()->id)
+            ->where('code', $request->input('code'))
+            ->where('active', 1)
+            ->first();
+
+        if (!$order) {
+            return [
+                'status' => 0,
+                'message' => __('site.Order not found')
+            ];
+        }
+
+        return [
+            'status' => 1,
+            'order' => new OrderResource($order->load('products.color')),
+            'message' => __('site.The operation has been successfully')
+        ];
+    }
+
+    /**
+     * Check the discount.
+     * @param Order $order
+     * @param ?string $discountCode
+     * @return array
+     */
+    public function checkDiscount(Order $order, ?string $discountCode): array
+    {
+
+        if ($order->user_id != Auth::user()->id || $order->status != Order::PENDING
+            || $order->active != 1) {
+            return [
+                'status' => 0,
+                'message' => __('site.Order not found')
+            ];
+        }
+
+        $discount = Discount::query()
+            ->where('code', $discountCode)
+            ->first();
+
+        if ($discount && $discount->isValid()) {
+
+            $orderExist = Order::query()
+                ->where('user_id', Auth::user()->id)
+                ->where('discount_id', $discount->id)
+                ->where('id', '!=', $order->id)
+                ->whereNotIn('status', [Order::CANCELLED, Order::REFUNDED, Order::FAILED, Order::EXPIRED])
+                ->where('active', 1)
+                ->exists();
+
+            if ($orderExist) {
+                return [
+                    'status' => 0,
+                    'message' => __('site.Discount already used')
+                ];
+            }
+
+            $discountAmount = $discount->calculateDiscount($order->amount);
+
+            $deliveryAmount = 0;
+
+            if ($order->amount < config('product.default_limit_delivery_amount')) {
+                $deliveryAmount = config('product.default_delivery_amount');
+            }
+
+            // Calculate final total
+            $totalAmount = $order->amount - $discountAmount + $deliveryAmount;
+
+            if ($totalAmount < config('product.default_limit_discount_amount')) {
+
+                return [
+                    'status' => 0,
+                    'message' => __('site.amount should grater than default amount', ['amount' => number_format(config('product.default_limit_discount_amount'))])
+                ];
+            }
+
+            return [
+                'status' => 1,
+                'amount' => $order->amount,
+                'total_amount' => $totalAmount,
+                'discount_amount' => $discountAmount,
+                'delivery_amount' => $deliveryAmount,
+                'discount_id' => $discount->id,
+                'message' => __('site.The operation has been successfully')
+            ];
+        }
+
+        return [
+            'status' => 0,
+            'message' => __('site.Discount not found')
+        ];
+    }
 
     /**
      * Store a new order.
@@ -83,20 +191,14 @@ class OrderRepository implements IOrderRepository
      */
     public function store(OrderRequest $request): JsonResponse
     {
-        // Delete pending orders and their related products
-        Order::query()
-            ->where('user_id', Auth::user()->id)
-            ->where('status', Order::PENDING)
-            ->delete();
 
         DB::beginTransaction();
 
         try {
             $products = $request->input('products');
-            $discountCode = $request->input('discount_code');
 
             // Calculate total amount
-            $totalAmount = 0;
+            $productsAmount = 0;
             $productCount = 0;
 
             foreach ($products as $productData) {
@@ -116,50 +218,36 @@ class OrderRepository implements IOrderRepository
                     $productAmount = $productAmount - ($productAmount * $product->discount / 100);
                 }
 
-                $totalAmount += $productAmount * $productData['count'];
+                $productsAmount += $productAmount * $productData['count'];
                 $productCount += $productData['count'];
-            }
-
-            // Apply discount code if provided
-            $discountAmount = 0;
-            $discountId = null;
-
-            if (!empty($discountCode)) {
-                $discount = Discount::where('code', $discountCode)->first();
-
-                if ($discount && $discount->isValid()) {
-                    $discountAmount = $discount->calculateDiscount($totalAmount);
-                    $discountId = $discount->id;
-                } else {
-                    return response()->json([
-                        'status' => 0,
-                        'message' => __('site.Invalid or expired discount code')
-                    ], Response::HTTP_BAD_REQUEST);
-                }
             }
 
             $deliveryAmount = 0;
 
-            if ($totalAmount < config('product.default_limit_delivery_amount')) {
+            if ($productsAmount < config('product.default_limit_delivery_amount')) {
                 $deliveryAmount = config('product.default_delivery_amount');
             }
 
             // Calculate final total
-            $finalTotal = $totalAmount - $discountAmount + $deliveryAmount;
+            $totalAmount = $productsAmount + $deliveryAmount;
 
             // Create order
-            $order = Order::create([
+            $order = Order::updateOrCreate([
                 'user_id' => Auth::user()->id,
-                'discount_id' => $discountId,
-                'product_count' => $productCount,
-                'total_amount' => $finalTotal,
-                'delivery_amount' => $deliveryAmount,
-                'discount_amount' => $discountAmount,
                 'status' => Order::PENDING,
+            ], [
+                'product_count' => $productCount,
+                'amount' => $productsAmount,
+                'total_amount' => $totalAmount,
+                'delivery_amount' => $deliveryAmount,
                 'active' => 1,
                 'vip' => 0,
+                'code' => Order::generateCode(),
                 'expire_date' => now()->addMinutes(30),
             ]);
+
+            // Detach old products
+            $order->products()->detach();
 
             // Attach products to order
             foreach ($products as $productData) {
@@ -206,6 +294,166 @@ class OrderRepository implements IOrderRepository
     }
 
     /**
+     * Paid an order.
+     * @param Order $order
+     * @param PaymentRequest $request
+     * @return JsonResponse
+     */
+    public function payOrder(Order $order, PaymentRequest $request): JsonResponse
+    {
+        $address = Address::query()
+            ->where('user_id', Auth::user()->id)
+            ->where('id', $request->input('address_id'))
+            ->first();
+
+        if (!$address) {
+            return response()->json([
+                'status' => 0,
+                'message' => __('site.Address not found')
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $this->checkLevelAccess(
+            Auth::user()->id == $order->user_id &&
+            $order->status == Order::PENDING
+        );
+
+        $amount = $order->amount;
+        $totalAmount = $order->total_amount;
+        $discountAmount = 0;
+        $deliveryAmount = $order->delivery_amount;
+        $discountId = null;
+
+        if (!empty($request->input('discount_code'))) {
+
+            $calclulatedAmount = $this->checkDiscount($order, $request->input('discount_code'));
+
+            if (empty($calclulatedAmount['status'])) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => $calclulatedAmount['message']
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $amount = $calclulatedAmount['amount'];
+            $totalAmount = $calclulatedAmount['total_amount'];
+            $discountAmount = $calclulatedAmount['discount_amount'];
+            $deliveryAmount = $calclulatedAmount['delivery_amount'];
+            $discountId = $calclulatedAmount['discount_id'];
+
+        }
+
+        $order->update([
+            'address_id' => $address->id,
+            'description' => $request->input('description'),
+            'amount' => $amount,
+            'total_amount' => $totalAmount,
+            'discount_amount' => $discountAmount,
+            'delivery_amount' => $deliveryAmount,
+            'discount_id' => $discountId,
+        ]);
+
+        if ($request->input('payment_method') === Transaction::WALLET) {
+            return $this->payWithWallet($order);
+        }
+
+        return $this->payWithBank($order);
+
+    }
+
+    /**
+     * Pay with wallet.
+     * @param Order $order
+     * @return JsonResponse
+     * @throws \Exception
+     */
+    private function payWithWallet(Order $order): JsonResponse
+    {
+        $wallet = $this->walletRepository->findByUserId(Auth::id());
+
+        $amount = $order->total_amount;
+
+        if ($wallet->balance < $amount) {
+            return response()->json([
+                'status' => 0,
+                'message' => __('site.Insufficient funds'),
+            ], Response::HTTP_PAYMENT_REQUIRED);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Get the wallet of the user that created this project
+            $wallet = Wallet::query()
+                ->where('currency', Wallet::IRR)
+                ->where('user_id', Auth::user()->id)
+                ->firstOrFail();
+
+            // Update claim status
+            $order->update(['status' => Order::PAID]);
+
+            WalletTransaction::createTransaction(
+                $wallet,
+                -$amount,
+                WalletTransaction::PURCHASE,
+                __('site.wallet_transaction_payment_order', ['order_id' => $order->code])
+            );
+
+            NotificationService::create([
+                'title' => __('site.claim_paid_title'),
+                'content' => __('site.claim_paid_content', ['order_code' => $order->code]),
+                'id' => $order->id,
+                'type' => NotificationService::ORDER,
+            ], $order->user);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 1,
+                'message' => __('site.The operation has been successfully'),
+                'order' => new OrderResource($order->load('products.color'))
+            ], Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * Pay with bank.
+     * @param Order $order
+     * @throws \Exception
+     */
+    private function payWithBank(Order $order)
+    {
+        $amount = $order->total_amount;
+
+        $transaction = Transaction::create([
+            'status' => Transaction::PENDING,
+            'model_id' => $order->id,
+            'model_type' => Transaction::ORDER,
+            'amount' => $amount,
+            'user_id' => Auth::user()->id,
+        ]);
+
+        $code = Transaction::generateHash($transaction->id);
+
+        if ($transaction) {
+            return response()->json([
+                'status' => 1,
+                'message' => __('site.The operation has been successfully'),
+                'url' => route('user.payment') . '?transaction=' . $transaction->id . '&sign=' . $code
+            ], Response::HTTP_OK);
+        }
+
+        return response()->json([
+            'status' => 0,
+            'message' => __('site.Top-up failed. Please try again.'),
+        ], 500);
+    }
+
+
+    /**
      * Update the order.
      * @param OrderRequest $request
      * @param Order $order
@@ -214,6 +462,11 @@ class OrderRepository implements IOrderRepository
      */
     public function update(OrderRequest $request, Order $order): JsonResponse
     {
+        return response()->json([
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+            'order' => new OrderResource($order->load('products.color'))
+        ], Response::HTTP_OK);
         $this->checkLevelAccess(Auth::user()->id == $order->user_id);
 
         DB::beginTransaction();

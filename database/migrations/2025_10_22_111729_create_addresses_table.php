@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('discounts', function (Blueprint $table) {
+        Schema::create('addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->enum('type', ['percentage', 'fixed'])->default('percentage');
-            $table->decimal('value', 15, 2);
-            $table->decimal('max_value', 15, 2)->nullable();
-            $table->date('expire_date')->nullable();
-            $table->tinyInteger('active')->default(1);
+            $table->foreignId('user_id')->constrained('users');
+            $table->string('title');
+            $table->text('full_address');
+            $table->string('postal_code')->nullable();
+            $table->tinyInteger('is_default')->default(0);
             $table->timestamps();
         });
     }
