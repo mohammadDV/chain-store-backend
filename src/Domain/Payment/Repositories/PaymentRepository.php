@@ -66,7 +66,7 @@ class PaymentRepository implements IPaymentRepository
 
         $transaction = Transaction::query()
             ->where('bank_transaction_id', $bankTransactionId)
-            ->first();
+            ->firstOrFail();
 
         return [
             'bank_transaction_id' => $transaction->bank_transaction_id,

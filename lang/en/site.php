@@ -705,4 +705,6 @@ return array(
     'amount should grater than default amount' => 'Amount should be greater than :amount',
     'Discount not found' => 'Discount not found',
     'Address not found' => 'Address not found',
+    'order_paid_title' => 'Order Paid',
+    'order_paid_content' => 'Dear user: Your order with code :order_code has been successfully paid.',
 );

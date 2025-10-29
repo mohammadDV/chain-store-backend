@@ -6,15 +6,9 @@ use Application\Api\Payment\Requests\ManualPaymentRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
-use Domain\Claim\Models\Claim;
-use Domain\Claim\Repositories\ClaimRepository;
-use Domain\Claim\Repositories\Contracts\IClaimRepository;
-use Domain\IdentityRecord\Repositories\Contracts\IIdentityRecordRepository;
-use Domain\IdentityRecord\Repositories\IdentityRecordRepository;
 use Domain\Payment\Models\Transaction;
 use Domain\Payment\Repositories\Contracts\IPaymentRepository;
-use Domain\Plan\Models\Plan;
-use Domain\Plan\Repositories\SubscribeRepository;
+use Domain\Product\Repositories\OrderRepository;
 use Domain\User\Models\User;
 use Domain\Wallet\Repositories\WalletRepository;
 use Evryn\LaravelToman\CallbackRequest;
@@ -29,8 +23,6 @@ class PaymentController extends Controller
 
     public function __construct(
         protected IPaymentRepository $repository,
-        protected IClaimRepository $claimRepository,
-        protected IIdentityRecordRepository $identityRecordRepository,
     ) {}
 
 
@@ -51,14 +43,6 @@ class PaymentController extends Controller
     public function manualPayment(ManualPaymentRequest $request)
     {
         return response()->json($this->repository->manualPayment($request));
-    }
-
-    /**
-     * Redirect to Gateway for Identity.
-     */
-    public function redirectToGatewayForIdentity()
-    {
-        return $this->identityRecordRepository->redirectToGatewayForIdentity();
     }
 
     /**
@@ -156,8 +140,7 @@ class PaymentController extends Controller
     {
         match ($transaction->model_type) {
             Transaction::WALLET => app(WalletRepository::class)->completeTopUp($transaction->model_id),
-            Transaction::PLAN => app(SubscribeRepository::class)->createSubscription(Plan::find($transaction->model_id), User::find($transaction->user_id)),
-            Transaction::IDENTITY => app(IdentityRecordRepository::class)->changeStatusToPaid($transaction->model_id),
+            Transaction::ORDER => app(OrderRepository::class)->completeOrder($transaction->model_id),
         };
     }
 

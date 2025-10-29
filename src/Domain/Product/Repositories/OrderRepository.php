@@ -452,122 +452,41 @@ class OrderRepository implements IOrderRepository
         ], 500);
     }
 
-
     /**
-     * Update the order.
-     * @param OrderRequest $request
-     * @param Order $order
-     * @return JsonResponse
-     * @throws \Exception
+     * Complete the order
+     * @param int $orderId
+     * @return void
      */
-    public function update(OrderRequest $request, Order $order): JsonResponse
+    public function completeOrder(int $orderId) :void
     {
-        return response()->json([
-            'status' => 1,
-            'message' => __('site.The operation has been successfully'),
-            'order' => new OrderResource($order->load('products.color'))
-        ], Response::HTTP_OK);
-        $this->checkLevelAccess(Auth::user()->id == $order->user_id);
-
-        DB::beginTransaction();
-
         try {
-            $products = $request->input('products');
-            $discountCode = $request->input('discount_code');
-            $deliveryAmount = $request->input('delivery_amount', $order->delivery_amount);
+            DB::beginTransaction();
 
-            // Calculate total amount
-            $totalAmount = 0;
-            $productCount = 0;
+            // Create transaction record
+            $order = Order::find($orderId);
+            // Update order status
+            $order->update(['status' => Order::PAID]);
 
-            foreach ($products as $productData) {
-                $product = Product::find($productData['id']);
-
-                if (!$product) {
-                    return response()->json([
-                        'status' => 0,
-                        'message' => __('site.Product not found')
-                    ], Response::HTTP_NOT_FOUND);
-                }
-
-                $productAmount = $product->amount;
-
-                if ($product->discount > 0) {
-                    $productAmount = $productAmount - ($productAmount * $product->discount / 100);
-                }
-
-                $totalAmount += $productAmount * $productData['count'];
-                $productCount += $productData['count'];
-            }
-
-            // Apply discount code if provided
-            $discountAmount = 0;
-            $discountId = $order->discount_id;
-
-            if ($discountCode) {
-                $discount = Discount::where('code', $discountCode)->first();
-
-                if ($discount && $discount->isValid()) {
-                    $discountAmount = $discount->calculateDiscount($totalAmount);
-                    $discountId = $discount->id;
-                } else {
-                    return response()->json([
-                        'status' => 0,
-                        'message' => __('site.Invalid or expired discount code')
-                    ], Response::HTTP_BAD_REQUEST);
-                }
-            } elseif ($order->discount_id) {
-                // Keep existing discount
-                $discount = $order->discount;
-                if ($discount && $discount->isValid()) {
-                    $discountAmount = $discount->calculateDiscount($totalAmount);
-                }
-            }
-
-            // Calculate final total
-            $finalTotal = $totalAmount - $discountAmount + $deliveryAmount;
-
-            // Update order
-            $order->update([
-                'discount_id' => $discountId,
-                'product_count' => $productCount,
-                'total_amount' => $finalTotal,
-                'delivery_amount' => $deliveryAmount,
-                'discount_amount' => $discountAmount,
-            ]);
-
-            // Detach old products
-            $order->products()->detach();
-
-            // Attach new products
-            foreach ($products as $productData) {
-                $product = Product::find($productData['id']);
-                $productAmount = $product->amount;
-
-                if ($product->discount > 0) {
-                    $productAmount = $productAmount - ($productAmount * $product->discount / 100);
-                }
-
-                $order->products()->attach($productData['id'], [
-                    'count' => $productData['count'],
-                    'amount' => $productAmount,
-                    'status' => $order->status,
-                    'color_id' => $productData['color_id'] ?? null,
-                    'size_id' => $productData['size_id'] ?? null,
-                ]);
-            }
+            NotificationService::create([
+                'title' => __('site.order_paid_title'),
+                'content' => __('site.order_paid_content', ['order_code' => $order->code]),
+                'id' => $order->id,
+                'type' => NotificationService::ORDER,
+            ], $order->user);
 
             DB::commit();
 
-            return response()->json([
-                'status' => 1,
-                'message' => __('site.The operation has been successfully'),
-                'order' => new OrderResource($order->load('products'))
-            ], Response::HTTP_OK);
+            $this->service->sendNotification(
+                config('telegram.chat_id'),
+                'سفارش با موفقیت پرداخت شد' . PHP_EOL .
+                'order_id ' . $order->id . PHP_EOL .
+                'order_code ' . $order->code . PHP_EOL .
+                'order_amount ' . $order->total_amount . PHP_EOL .
+                'order_time ' . now()
+            );
 
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
         }
     }
 }

@@ -101,7 +101,6 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::get('/dashboard-info', [UserController::class, 'getDashboardInfo'])->name('profile.dashboard.info');
 
     // payment
-    Route::get('/payment/redirect-to-gateway-for-identity', [PaymentController::class, 'redirectToGatewayForIdentity'])->name('user.payment.redirect-to-gateway-for-identity');
     Route::post('/payment/manual-payment', [PaymentController::class, 'manualPayment'])->name('user.payment.manual-payment');
     Route::get('/payment/transactions', [PaymentController::class, 'index'])->name('user.payment.transactions');
 
@@ -111,6 +110,10 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::post('/wallet/top-up', [WalletController::class, 'topUp']);
     Route::post('/wallet/transfer', [WalletController::class, 'transfer']);
     Route::get('/wallet-transaction/{wallet}', [WalletTransactionController::class, 'index']);
+
+    // withdraw
+    Route::post('/withdraws', [WithdrawalTransactionController::class, 'store']);
+    Route::get('/withdraws', [WithdrawalTransactionController::class, 'index']);
 
 });
 
