@@ -79,6 +79,8 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::patch('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
     Route::post('orders/{order}/pay', [OrderController::class, 'payOrder'])->name('orders.pay');
 
+    //
+
 
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');
 

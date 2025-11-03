@@ -24,7 +24,9 @@ class PaymentRequest extends BaseRequest
         return [
             'payment_method' => ['required', 'string', 'in:wallet,bank'],
             'discount_code' => ['nullable', 'string', 'exists:discounts,code'],
-            'address_id' => ['required', 'exists:addresses,id'],
+            'address' => ['required', 'string'],
+            'fullname' => ['required', 'string'],
+            'postal_code' => ['required', 'string'],
             'description' => ['nullable', 'string', 'max:500'],
         ];
     }

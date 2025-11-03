@@ -10,7 +10,6 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
-use Domain\Product\Models\Address;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
@@ -301,17 +300,6 @@ class OrderRepository implements IOrderRepository
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse
     {
-        $address = Address::query()
-            ->where('user_id', Auth::user()->id)
-            ->where('id', $request->input('address_id'))
-            ->first();
-
-        if (!$address) {
-            return response()->json([
-                'status' => 0,
-                'message' => __('site.Address not found')
-            ], Response::HTTP_NOT_FOUND);
-        }
 
         $this->checkLevelAccess(
             Auth::user()->id == $order->user_id &&
@@ -344,13 +332,15 @@ class OrderRepository implements IOrderRepository
         }
 
         $order->update([
-            'address_id' => $address->id,
             'description' => $request->input('description'),
             'amount' => $amount,
             'total_amount' => $totalAmount,
             'discount_amount' => $discountAmount,
             'delivery_amount' => $deliveryAmount,
             'discount_id' => $discountId,
+            'fullname' => $request->input('fullname'),
+            'address' => $request->input('address'),
+            'postal_code' => $request->input('postal_code'),
         ]);
 
         if ($request->input('payment_method') === Transaction::WALLET) {

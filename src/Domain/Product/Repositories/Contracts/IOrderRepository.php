@@ -38,14 +38,6 @@ interface IOrderRepository
     public function store(OrderRequest $request): JsonResponse;
 
     /**
-     * Update the order.
-     * @param OrderRequest $request
-     * @param Order $order
-     * @return JsonResponse
-     */
-    public function update(OrderRequest $request, Order $order): JsonResponse;
-
-    /**
      * Check the order status.
      * @param CheckOrderCodeRequest $request
      * @return array
