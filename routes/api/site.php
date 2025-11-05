@@ -12,6 +12,7 @@ use Application\Api\Ticket\Controllers\TicketController;
 use Application\Api\Ticket\Controllers\TicketSubjectController;
 use Application\Api\User\Controllers\UserController;
 use Application\Api\Payment\Controllers\PaymentController;
+use Application\Api\Product\Controllers\DiscountController;
 use Application\Api\Wallet\Controllers\WalletController;
 use Application\Api\Wallet\Controllers\WalletTransactionController;
 use Application\Api\Wallet\Controllers\WithdrawalTransactionController;
@@ -47,6 +48,8 @@ Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('u
 Route::get('/payment', [PaymentController::class, 'payment'])->name('user.payment');
 Route::get('/payment/result/{id}', [PaymentController::class, 'show'])->name('user.payment.result');
 
+// discounts
+Route::get('/discount/active', [DiscountController::class, 'getActiveDiscount'])->name('discount.active');
 
 // Brand
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');

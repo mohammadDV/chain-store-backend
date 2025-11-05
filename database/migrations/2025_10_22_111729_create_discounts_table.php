@@ -17,6 +17,7 @@ return new class extends Migration
             $table->enum('type', ['percentage', 'fixed'])->default('percentage');
             $table->decimal('value', 15, 2);
             $table->decimal('max_value', 15, 2)->nullable();
+            $table->tinyInteger('visible')->default(0);
             $table->date('expire_date')->nullable();
             $table->tinyInteger('active')->default(1);
             $table->timestamps();
