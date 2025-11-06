@@ -54,7 +54,9 @@ Route::get('/discount/active', [DiscountController::class, 'getActiveDiscount'])
 // Brand
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{brand}', [BrandController::class, 'show'])->name('brands.show');
+Route::post('/banners', [BrandController::class, 'getBanners'])->name('banners.index');
 
+// posts
 Route::get('/posts', [PostController::class, 'getPosts'])->name('site.posts.index');
 Route::get('/posts/popular', [PostController::class, 'getPopularPosts'])->name('site.posts.popular');
 Route::get('/posts/latest', [PostController::class, 'getLatestPosts'])->name('site.posts.latest');

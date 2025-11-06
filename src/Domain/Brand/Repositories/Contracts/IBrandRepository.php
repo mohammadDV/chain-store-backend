@@ -5,6 +5,7 @@ namespace Domain\Brand\Repositories\Contracts;
 use Application\Api\Brand\Resources\BrandResource;
 use Core\Http\Requests\TableRequest;
 use Domain\Brand\Models\Brand;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
 /**
@@ -25,4 +26,11 @@ interface IBrandRepository
      * @return BrandResource
      */
     public function show(Brand $brand) :BrandResource;
+
+    /**
+     * Get the banners.
+     * @param Request $request
+     * @return Collection
+     */
+    public function getBanners(Request $request) :Collection;
 }

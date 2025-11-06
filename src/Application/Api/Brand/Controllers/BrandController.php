@@ -8,7 +8,7 @@ use Domain\Brand\Repositories\Contracts\IBrandRepository;
 use Domain\Brand\Models\Brand;
 use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
@@ -42,5 +42,15 @@ class BrandController extends Controller
     public function show(Brand $brand) :JsonResponse
     {
         return response()->json($this->repository->show($brand), Response::HTTP_OK);
+    }
+
+    /**
+     * Get the banners.
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getBanners(Request $request) :JsonResponse
+    {
+        return response()->json($this->repository->getBanners($request), Response::HTTP_OK);
     }
 }
