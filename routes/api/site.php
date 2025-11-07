@@ -19,10 +19,12 @@ use Application\Api\Wallet\Controllers\WithdrawalTransactionController;
 use Illuminate\Support\Facades\Route;
 
 // Category
-Route::get('/active-categories/{brand}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
-Route::get('/all-categories/{brand}', [CategoryController::class, 'allCategories'])->name('all-categories');
-Route::get('/categories/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
-Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('category.show');
+Route::prefix('categories')->group(function () {
+    Route::get('/active/{brand}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
+    Route::get('/all/{brand?}', [CategoryController::class, 'allCategories'])->name('all-categories');
+    Route::get('/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
+    Route::get('/{category}', [CategoryController::class, 'show'])->name('category.show');
+});
 
 
 // Products

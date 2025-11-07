@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Repositories;
 
+use Application\Api\Brand\Resources\BrandResource;
 use Application\Api\Product\Resources\CategoryResource;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
@@ -60,21 +61,47 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories with all nested children recursively.
-     * @param Brand $brand
+     * @param Brand|null $brand
      * @return Collection
      */
-    public function allCategories(Brand $brand)
+    public function allCategories(?Brand $brand = null)
     {
-        $categories = Category::query()
-            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
-            ->with(['childrenRecursive', 'brand']) // Load all nested children recursively
-            ->where('brand_id', $brand->id)
-            ->where('parent_id', 0)
-            ->where('status', 1)
-            ->orderBy('priority', 'desc')
-            ->get();
 
-        return CategoryResource::collection($categories);
+        if ($brand) {
+            $categories = Category::query()
+                ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
+                ->with(['childrenRecursive', 'brand']) // Load all nested children recursively
+                ->where('brand_id', $brand->id)
+                ->where('parent_id', 0)
+                ->where('status', 1)
+                ->orderBy('priority', 'desc')
+                ->get();
+        } else {
+            $categories = Category::query()
+                ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
+                ->with(['childrenRecursive', 'brand']) // Load all nested children recursively
+                ->whereHas('brand', function ($query) {
+                    $query->where('status', 1);
+                })
+                ->where('parent_id', 0)
+                ->where('status', 1)
+                ->orderBy('priority', 'desc')
+                ->get()
+                ->groupBy('brand_id', true)
+                ->map(function ($brandCategories, $brandId) {
+                    return [
+                        'brand' => new BrandResource($brandCategories->first()->brand),
+                        'categories' => CategoryResource::collection($brandCategories)->resolve(request()),
+                    ];
+                })
+                ->values();
+        }
+
+        if ($brand) {
+            return CategoryResource::collection($categories);
+        }
+
+        return $categories;
     }
 
     /**

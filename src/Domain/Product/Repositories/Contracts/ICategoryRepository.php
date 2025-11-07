@@ -33,9 +33,9 @@ interface ICategoryRepository
 
     /**
      * Get the productCategories.
-     * @param Brand $brand
+     * @param Brand|null $brand
      */
-    public function allCategories(Brand $brand);
+    public function allCategories(?Brand $brand = null);
 
     /**
      * Get the children of a specific category.

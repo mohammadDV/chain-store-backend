@@ -46,10 +46,10 @@ class CategoryController extends Controller
 
     /**
      * Get all of ProductCategories
-     * @param Brand $brand
+     * @param Brand|null $brand
      * @return JsonResponse
      */
-    public function allCategories(Brand $brand): JsonResponse
+    public function allCategories(?Brand $brand = null): JsonResponse
     {
         return response()->json($this->repository->allCategories($brand), Response::HTTP_OK);
     }
