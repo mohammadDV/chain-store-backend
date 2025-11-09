@@ -25,9 +25,7 @@ class OrderRequest extends BaseRequest
             'products' => ['required', 'array', 'min:1'],
             'products.*.id' => ['required', 'exists:products,id'],
             'products.*.count' => ['required', 'integer', 'min:1'],
-            'products.*.color_id' => ['nullable', 'exists:colors,id'],
             'products.*.size_id' => ['nullable', 'exists:sizes,id'],
-            'discount_code' => ['nullable', 'string', 'exists:discounts,code'],
         ];
     }
 }

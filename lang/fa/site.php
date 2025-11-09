@@ -1330,6 +1330,7 @@ return array(
     'amount should grater than default amount' => 'مبلغ قابل پرداخت باید بیشتر از مبلغ :amount تومان باشد',
     'Discount not found' => 'تخفیف یافت نشد',
     'Address not found' => 'آدرس یافت نشد',
+    'Insufficient stock' => 'موجودی انبار کافی نیست',
     'order_paid_title' => 'سفارش پرداخت شد',
     'order_paid_content' => 'کاربر گرامی: سفارش شما با کد :order_code با موفقیت پرداخت شد.',
 );

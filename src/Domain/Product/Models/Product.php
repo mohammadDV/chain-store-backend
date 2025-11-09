@@ -76,4 +76,11 @@ class Product extends Model
     {
         return $this->hasMany(Size::class);
     }
+
+    public function getAmountAttribute($value)
+    {
+        $rate = config('setting.money_rate', 1);
+
+        return ($value ?? 0) * $rate;
+    }
 }

@@ -257,11 +257,28 @@ class OrderRepository implements IOrderRepository
                     $productAmount = $productAmount - ($productAmount * $product->discount / 100);
                 }
 
+                if ($productData['size_id']) {
+                    $size = $product->sizes->findOrFail($productData['size_id']);
+                    if ($size->stock < $productData['count']) {
+                        return response()->json([
+                            'status' => 0,
+                            'message' => __('site.Insufficient stock'),
+                        ], Response::HTTP_BAD_REQUEST);
+                    }
+                } else {
+                    if ($product->stock < $productData['count']) {
+                        return response()->json([
+                            'status' => 0,
+                            'message' => __('site.Insufficient stock'),
+                        ], Response::HTTP_BAD_REQUEST);
+                    }
+                }
+
                 $order->products()->attach($productData['id'], [
                     'count' => $productData['count'],
                     'amount' => $productAmount,
                     'status' => Order::PENDING,
-                    'color_id' => $productData['color_id'] ?? null,
+                    'color_id' => $product?->color_id ?? null,
                     'size_id' => $productData['size_id'] ?? null,
                 ]);
 
