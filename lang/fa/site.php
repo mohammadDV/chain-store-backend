@@ -1165,6 +1165,17 @@ return array(
     'download file' => 'دانلود فایل',
     'All messages' => 'همه پیام‌ها',
 
+    // Catalog Management
+    'Catalog Management' => 'مدیریت کاتالوگ',
+    'brand' => 'برند',
+    'brands' => 'برندها',
+    'brand_information' => 'اطلاعات برند',
+    'brand_logo' => 'لوگوی برند',
+    'upload_brand_logo' => 'بارگذاری لوگوی برند',
+    'slug' => 'نامک',
+    'colors' => 'رنگ‌ها',
+    'select_brand_colors' => 'رنگ‌های مرتبط با برند را انتخاب کنید',
+
     // Post Management
     'post' => 'پست',
     'posts' => 'پست‌ها',

@@ -592,6 +592,17 @@ return array(
     'download file' => 'Download file',
     'All messages' => 'All messages',
 
+    // Catalog Management
+    'Catalog Management' => 'Catalog Management',
+    'brand' => 'Brand',
+    'brands' => 'Brands',
+    'brand_information' => 'Brand Information',
+    'brand_logo' => 'Brand Logo',
+    'upload_brand_logo' => 'Upload brand logo',
+    'slug' => 'Slug',
+    'colors' => 'Colors',
+    'select_brand_colors' => 'Select colors for this brand',
+
     // Post Management
     'post' => 'Post',
     'posts' => 'Posts',

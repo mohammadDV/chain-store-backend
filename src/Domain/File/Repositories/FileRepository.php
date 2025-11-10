@@ -38,7 +38,7 @@ class FileRepository implements IFileRepository {
         }
 
         if ($request->hasFile('image')) {
-            $this->imageService->setExclusiveDirectory('oshtow' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
+            $this->imageService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
                 $imageResult = $this->imageService->save($request->file('image'),
                 !empty($request->input('thumb')) ? 1 : 0
             );
@@ -77,7 +77,7 @@ class FileRepository implements IFileRepository {
 
         if ($request->hasFile('video')) {
 
-            $this->fileService->setExclusiveDirectory('oshtow' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'videos' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
+            $this->fileService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'videos' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
             $videoResult = $this->fileService->moveToStorage($request->file('video'));
 
             if (!$videoResult){
@@ -113,7 +113,7 @@ class FileRepository implements IFileRepository {
 
         if ($request->hasFile('file')) {
 
-            $this->fileService->setExclusiveDirectory('oshtow' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
+            $this->fileService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
             $fileResult = $this->fileService->moveToStorage($request->file('file'));
 
             if (!$fileResult){

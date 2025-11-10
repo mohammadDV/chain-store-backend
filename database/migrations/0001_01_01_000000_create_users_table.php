@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('mobile')->nullable();
             $table->text('biography')->nullable();
             $table->integer('point')->default(0);
-            $table->tinyInteger('rate')->default(0);
+            $table->tinyInteger('rate')->nullable()->default(0);
             $table->tinyInteger('level')->default(0);
             $table->tinyInteger('status')->default(0);
             $table->string('email')->unique();

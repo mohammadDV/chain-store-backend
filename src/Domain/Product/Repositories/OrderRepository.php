@@ -396,7 +396,7 @@ class OrderRepository implements IOrderRepository
                 ->where('user_id', Auth::user()->id)
                 ->firstOrFail();
 
-            // Update claim status
+            // Update order status
             $order->update(['status' => Order::PAID]);
 
             WalletTransaction::createTransaction(
@@ -407,8 +407,8 @@ class OrderRepository implements IOrderRepository
             );
 
             NotificationService::create([
-                'title' => __('site.claim_paid_title'),
-                'content' => __('site.claim_paid_content', ['order_code' => $order->code]),
+                'title' => __('site.order_paid_title'),
+                'content' => __('site.order_paid_content', ['order_code' => $order->code]),
                 'id' => $order->id,
                 'type' => NotificationService::ORDER,
             ], $order->user);

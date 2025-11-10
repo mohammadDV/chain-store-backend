@@ -20,7 +20,7 @@ class DashboardOverview extends BaseWidget
     {
 
         return [];
-        // Count projects and claims from last 30 days
+        // Count products and orders from last 30 days
         // $businesses = Business::where('status', Business::PENDING)->count();
         // $users = User::where('level', '!=', 3)->where('status', 1)->count();
         // $reviews = Review::where('status', Review::PENDING)->count();
