@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('brand_color', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('brand_id')->constrained('brands');
-            $table->foreignId('color_id')->constrained('colors');
+            $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
+            $table->foreignId('color_id')->constrained('colors')->onDelete('cascade');
             $table->tinyInteger('priority')->default(1);
             $table->tinyInteger('status')->default(1);
             $table->timestamps();

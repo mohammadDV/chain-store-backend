@@ -6,12 +6,7 @@
     <!-- Logo Section -->
     <div class="logo">
         <h1 class="logo-text">
-            <span class="logo-dots">
-                <span class="dot"></span>
-                <span class="dot"></span>
-                <span class="dot"></span>
-            </span>
-            Oshtow
+            BoofStore
         </h1>
     </div>
 

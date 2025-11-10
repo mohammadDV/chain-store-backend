@@ -183,8 +183,8 @@ class ViewTicket extends ViewRecord
 
         // Handle file upload
         if ($this->data['file'] instanceof TemporaryUploadedFile) {
-            // $filePath = $this->data['file']->store('oshtow/ticket-messages', 's3', 'public');
-            $filePath = Storage::disk('s3')->put('oshtow/ticket-messages', $this->data['file'], 'public');
+            // $filePath = $this->data['file']->store('boofstore/ticket-messages', 's3', 'public');
+            $filePath = Storage::disk('s3')->put('boofstore/ticket-messages', $this->data['file'], 'public');
         }
 
         TicketMessage::create([

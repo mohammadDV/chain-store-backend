@@ -11,7 +11,7 @@
                 <span class="dot"></span>
                 <span class="dot"></span>
             </span>
-            Oshtow
+            BoofStore
         </h1>
     </div>
 
