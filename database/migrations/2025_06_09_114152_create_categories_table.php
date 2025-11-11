@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->tinyInteger('status')->default(0);
+            $table->text('description')->nullable();
             $table->string('image', 2048)->nullable();
             $table->bigInteger('parent_id')->unsigned()->index()->default(0);
             $table->tinyInteger('priority')->unsigned()->index()->default(0);

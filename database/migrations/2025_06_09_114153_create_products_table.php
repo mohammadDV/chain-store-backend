@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->json('details')->nullable();
+            $table->text('details')->nullable();
             $table->integer('stock')->default(0);
             $table->integer('points')->default(0);
             $table->tinyInteger('rate')->default(0);
