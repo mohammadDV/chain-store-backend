@@ -16,4 +16,3 @@ class CreateCategory extends CreateRecord
         return $data;
     }
 }
-
