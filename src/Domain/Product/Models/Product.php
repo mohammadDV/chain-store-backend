@@ -22,8 +22,8 @@ class Product extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'status' => 'integer',
         'vip' => 'boolean',
+        'active' => 'boolean',
         'priority' => 'integer',
     ];
 
@@ -52,6 +52,9 @@ class Product extends Model
         return $this->belongsTo(Color::class);
     }
 
+    /**
+     * Get the files associated with the product.
+     */
     public function files()
     {
         return $this->hasMany(File::class);
