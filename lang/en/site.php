@@ -398,6 +398,7 @@ return array(
     'create' => 'Create',
     'delete' => 'Delete',
     'save' => 'Save',
+    'approve' => 'Approve',
     'cancel' => 'Cancel',
     'back' => 'Back',
     'search' => 'Search',
