@@ -14,6 +14,7 @@ class NotificationService
     const PRODUCT = 'product';
     const ORDER = 'order';
     const REVIEW = 'review';
+    const WALLET = 'wallet';
 
     /**
      * Create and send notification
