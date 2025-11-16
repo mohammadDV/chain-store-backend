@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 
 // Category
 Route::prefix('categories')->group(function () {
-    Route::get('/active/{brand}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
+    Route::get('/active/{brand?}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
     Route::get('/all/{brand?}', [CategoryController::class, 'allCategories'])->name('all-categories');
     Route::get('/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
     Route::get('/{category}', [CategoryController::class, 'show'])->name('category.show');

@@ -39,7 +39,7 @@ class CategoryController extends Controller
      * @param Brand $brand
      * @return JsonResponse
      */
-    public function activeProductCategories(Brand $brand): JsonResponse
+    public function activeProductCategories(?Brand $brand = null): JsonResponse
     {
         return response()->json($this->repository->activeProductCategories($brand), Response::HTTP_OK);
     }

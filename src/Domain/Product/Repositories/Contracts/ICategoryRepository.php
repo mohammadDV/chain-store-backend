@@ -27,9 +27,9 @@ interface ICategoryRepository
 
     /**
      * Get the productCategories.
-     * @param Brand $brand
+     * @param Brand|null $brand
      */
-    public function activeProductCategories(Brand $brand);
+    public function activeProductCategories(?Brand $brand = null);
 
     /**
      * Get the productCategories.
