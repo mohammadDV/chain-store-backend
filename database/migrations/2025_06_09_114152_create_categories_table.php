@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('image', 2048)->nullable();
             $table->bigInteger('parent_id')->unsigned()->index()->default(0);
             $table->tinyInteger('priority')->unsigned()->index()->default(0);
-            $table->foreignId('brand_id')->constrained('brands');
             $table->timestamps();
         });
     }

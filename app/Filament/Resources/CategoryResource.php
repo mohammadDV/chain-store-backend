@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -64,12 +65,12 @@ class CategoryResource extends Resource
                             ]),
                         Grid::make(2)
                             ->schema([
-                                Select::make('brand_id')
-                                    ->label(__('site.brand'))
-                                    ->relationship('brand', 'title')
+                                Select::make('brands')
+                                    ->label(__('site.brands'))
+                                    ->relationship('brands', 'title')
                                     ->searchable()
                                     ->preload()
-                                    ->required(),
+                                    ->multiple(),
                                 Select::make('parent_id')
                                     ->label(__('site.parent_category'))
                                     ->relationship('parent', 'title')
@@ -129,10 +130,10 @@ class CategoryResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(50),
-                TextColumn::make('brand.title')
-                    ->label(__('site.brand'))
-                    ->sortable()
-                    ->searchable()
+                TagsColumn::make('brands.title')
+                    ->label(__('site.brands'))
+                    ->limit(3)
+                    ->separator(',')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('parent.title')
                     ->label(__('site.parent_category'))
@@ -175,9 +176,10 @@ class CategoryResource extends Resource
                         1 => __('site.Active'),
                         0 => __('site.Inactive'),
                     ]),
-                SelectFilter::make('brand_id')
-                    ->label(__('site.brand'))
-                    ->relationship('brand', 'title'),
+                SelectFilter::make('brands')
+                    ->label(__('site.brands'))
+                    ->relationship('brands', 'title')
+                    ->multiple(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

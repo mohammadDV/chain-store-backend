@@ -42,14 +42,19 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories.
-     * @param Brand $brand
+     * @param Brand|null $brand
      * @return Collection
      */
-    public function activeProductCategories(Brand $brand)
+    public function activeProductCategories(?Brand $brand = null)
     {
         $categories = Category::query()
             ->select('id', 'title', 'image')
-            ->where('brand_id', $brand->id)
+            ->when($brand, function ($query) use ($brand) {
+                $query->whereHas('brands', function ($query) use ($brand) {
+                    $query->where('brand_id', $brand->id)
+                        ->where('brand_category.status', 1);
+                });
+            })
             ->where('parent_id', 0)
             ->where('status', 1)
             ->orderBy('priority', 'desc')
@@ -66,42 +71,21 @@ class CategoryRepository implements ICategoryRepository
      */
     public function allCategories(?Brand $brand = null)
     {
+        $categories = Category::query()
+            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')
+            ->with(['childrenRecursive']) // Load all nested children recursively
+            ->when($brand, function ($query) use ($brand) {
+                $query->whereHas('brands', function ($query) use ($brand) {
+                    $query->where('brand_id', $brand->id)
+                        ->where('brand_category.status', 1);
+                });
+            })
+            ->where('parent_id', 0)
+            ->where('status', 1)
+            ->orderBy('priority', 'desc')
+            ->get();
 
-        if ($brand) {
-            $categories = Category::query()
-                ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
-                ->with(['childrenRecursive', 'brand']) // Load all nested children recursively
-                ->where('brand_id', $brand->id)
-                ->where('parent_id', 0)
-                ->where('status', 1)
-                ->orderBy('priority', 'desc')
-                ->get();
-        } else {
-            $categories = Category::query()
-                ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
-                ->with(['childrenRecursive', 'brand']) // Load all nested children recursively
-                ->whereHas('brand', function ($query) {
-                    $query->where('status', 1);
-                })
-                ->where('parent_id', 0)
-                ->where('status', 1)
-                ->orderBy('priority', 'desc')
-                ->get()
-                ->groupBy('brand_id', true)
-                ->map(function ($brandCategories, $brandId) {
-                    return [
-                        'brand' => new BrandResource($brandCategories->first()->brand),
-                        'categories' => CategoryResource::collection($brandCategories)->resolve(request()),
-                    ];
-                })
-                ->values();
-        }
-
-        if ($brand) {
-            return CategoryResource::collection($categories);
-        }
-
-        return $categories;
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -112,8 +96,8 @@ class CategoryRepository implements ICategoryRepository
     public function getCategoryChildren(Category $category)
     {
         $categories = Category::query()
-            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority', 'brand_id')
-            ->with(['childrenRecursive', 'brand'])
+            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')
+            ->with(['childrenRecursive'])
             ->where('parent_id', $category->id)
             ->where('status', 1)
             ->orderBy('priority', 'desc')
@@ -129,6 +113,6 @@ class CategoryRepository implements ICategoryRepository
      */
     public function show(Category $category)
     {
-        return new CategoryResource($category->load('brand', 'childrenRecursive', 'parentRecursive'));
+        return new CategoryResource($category->load('childrenRecursive', 'parentRecursive'));
     }
 }

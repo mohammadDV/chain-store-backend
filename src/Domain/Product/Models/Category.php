@@ -14,26 +14,41 @@ class Category extends Model
 
     protected $guarded = [];
 
-    public function brand()
+    /**
+     * Get the brands that belong to the category.
+     */
+    public function brands()
     {
-        return $this->belongsTo(Brand::class);
+        return $this->belongsToMany(Brand::class, 'brand_category', 'category_id', 'brand_id')->withPivot('priority', 'status');
     }
 
+    /**
+     * Get the user that owns the category.
+     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * Get the products that belong to the category.
+     */
     public function products()
     {
         return $this->hasMany(Product::class);
     }
 
+    /**
+     * Get the parent category.
+     */
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
+    /**
+     * Get the children categories.
+     */
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id')->where('status', 1);
