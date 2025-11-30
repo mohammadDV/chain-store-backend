@@ -19,7 +19,7 @@ class ColorRepository implements IColorRepository
     use GlobalFunc;
 
     /**
-     * Get the productCategories pagination.
+     * Get the colors pagination.
      * @param TableRequest $request
      * @return LengthAwarePaginator
      */
@@ -47,7 +47,7 @@ class ColorRepository implements IColorRepository
             ->when($brand, function ($query) use ($brand) {
                 $query->whereHas('brands', function ($query) use ($brand) {
                     $query->where('brand_id', $brand->id)
-                        ->where('brand_category.status', 1);
+                        ->where('brand_color.status', 1);
                 });
             })
             ->where('status', 1)
@@ -59,7 +59,7 @@ class ColorRepository implements IColorRepository
     }
 
     /**
-     * Get the Category.
+     * Get the Color.
      * @param Color $color
      * @return ColorResource
      */

@@ -23,7 +23,7 @@ class ColorController extends Controller
     }
 
     /**
-     * Get all of ProductCategories with pagination
+     * Get all of Colors with pagination
      * @param TableRequest $request
      * @return JsonResponse
      */
@@ -33,7 +33,7 @@ class ColorController extends Controller
     }
 
     /**
-     * Get all of ProductCategories
+     * Get all of Colors
      * @param Brand $brand
      * @return JsonResponse
      */
