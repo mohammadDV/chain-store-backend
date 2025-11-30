@@ -6,6 +6,7 @@ use Application\Api\Notification\Controllers\NotificationController;
 use Application\Api\Product\Controllers\OrderController;
 use Application\Api\Post\Controllers\PostController;
 use Application\Api\Product\Controllers\CategoryController;
+use Application\Api\Product\Controllers\ColorController;
 use Application\Api\Product\Controllers\ProductController;
 use Application\Api\Review\Controllers\ReviewController;
 use Application\Api\Ticket\Controllers\TicketController;
@@ -24,6 +25,13 @@ Route::prefix('categories')->group(function () {
     Route::get('/all/{brand?}', [CategoryController::class, 'allCategories'])->name('all-categories');
     Route::get('/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
     Route::get('/{category}', [CategoryController::class, 'show'])->name('category.show');
+});
+
+// Colors
+Route::prefix('colors')->group(function () {
+    Route::get('/active/{brand?}', [ColorController::class, 'activeColors'])->name('active-colors');
+    Route::get('/{color}', [ColorController::class, 'show'])->name('color.show');
+    Route::get('/', [ColorController::class, 'index'])->name('colors.index');
 });
 
 
