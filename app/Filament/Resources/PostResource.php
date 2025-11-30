@@ -146,6 +146,8 @@ class PostResource extends Resource
                             ->helperText(__('site.special_post_help')),
                         Hidden::make('view')
                             ->default(0),
+                        Hidden::make('user_id')
+                            ->default(fn () => auth()->id()),
                     ])->columns(2),
             ]);
     }

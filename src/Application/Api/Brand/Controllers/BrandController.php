@@ -28,9 +28,6 @@ class BrandController extends Controller
      */
     public function index(TableRequest $request): JsonResponse
     {
-
-        $var = 9;
-        var_dump(!($var & 1));
         return response()->json($this->repository->index($request), Response::HTTP_OK);
     }
 

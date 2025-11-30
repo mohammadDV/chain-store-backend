@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BrandResource\Pages;
+use App\Filament\Resources\BrandResource\RelationManagers\BannersRelationManager;
 use Domain\Brand\Models\Brand;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
@@ -147,6 +148,12 @@ class BrandResource extends Resource
                     ->badge()
                     ->color('info')
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('banners_count')
+                    ->label(__('site.banners'))
+                    ->counts('banners')
+                    ->badge()
+                    ->color('info')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label(__('site.created_at'))
                     ->dateTime('Y/m/d H:i')
@@ -174,7 +181,7 @@ class BrandResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            BannersRelationManager::class,
         ];
     }
 
