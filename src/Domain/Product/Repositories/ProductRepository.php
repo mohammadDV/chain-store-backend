@@ -55,7 +55,7 @@ class ProductRepository implements IProductRepository
 
         $relatedProducts = json_decode($product->related_products, true);
         $relatedProducts = Product::query()
-            ->whereIn('url', $relatedProducts)
+            ->whereIn('url', !empty($relatedProducts) ? $relatedProducts : [])
             ->get()
             ->map(fn ($product) => new ProductResource($product));
 

@@ -192,7 +192,7 @@ class UpdateStockCommand extends Command
         return 0;
     }
 
-    private function extractStock(?string $string): string
+    private function extractStock(?string $string): string|int
     {
         $this->info("String: " . $string);
         if (empty($string)) {

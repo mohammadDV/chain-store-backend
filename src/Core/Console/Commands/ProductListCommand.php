@@ -125,11 +125,12 @@ class ProductListCommand extends Command
         $links = [];
 
         foreach ($content['products'] as $product) {
-            $url = $brand->domain . $this->extractLink($product ?? '');
 
+            $url = $this->extractLink($product ?? '');
             if(!empty($url)) {
+
                 $links[] = [
-                    'url' => $url,
+                    'url' => $brand->domain . $url,
                     'brand_id' => $brand->id,
                     'category_id' => $category->id,
                     'status' => 0,
