@@ -53,9 +53,16 @@ class ProductRepository implements IProductRepository
 
         $reviews = $this->getReviewsByRate($product->id);
 
+        $relatedProducts = json_decode($product->related_products, true);
+        $relatedProducts = Product::query()
+            ->whereIn('url', $relatedProducts)
+            ->get()
+            ->map(fn ($product) => new ProductResource($product));
+
         return [
             'product' => new ProductResource($product),
             'reviews' => $reviews,
+            'related_products' => $relatedProducts,
         ];
 
     }

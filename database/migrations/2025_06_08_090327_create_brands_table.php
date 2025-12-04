@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->string('logo', 2048)->nullable();
+            $table->string('domain', 2048)->nullable();
             $table->string('description', 2048)->nullable();
             $table->tinyInteger('status')->default(0);
             $table->tinyInteger('priority')->default(0);

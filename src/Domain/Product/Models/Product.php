@@ -25,6 +25,7 @@ class Product extends Model
         'vip' => 'boolean',
         'active' => 'boolean',
         'priority' => 'integer',
+        'related_products' => 'array',
     ];
 
     public function category()

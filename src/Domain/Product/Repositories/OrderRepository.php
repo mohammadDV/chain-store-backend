@@ -213,9 +213,9 @@ class OrderRepository implements IOrderRepository
                 $productAmount = $product->amount;
 
                 // Apply product discount if available
-                if ($product->discount > 0) {
-                    $productAmount = $productAmount - ($productAmount * $product->discount / 100);
-                }
+                // if ($product->discount > 0) {
+                //     $productAmount = $productAmount - ($productAmount * $product->discount / 100);
+                // }
 
                 $productsAmount += $productAmount * $productData['count'];
                 $productCount += $productData['count'];
@@ -253,9 +253,9 @@ class OrderRepository implements IOrderRepository
                 $product = Product::find($productData['id']);
                 $productAmount = $product->amount;
 
-                if ($product->discount > 0) {
-                    $productAmount = $productAmount - ($productAmount * $product->discount / 100);
-                }
+                // if ($product->discount > 0) {
+                //     $productAmount = $productAmount - ($productAmount * $product->discount / 100);
+                // }
 
                 if ($productData['size_id']) {
                     $size = $product->sizes->findOrFail($productData['size_id']);
