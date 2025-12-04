@@ -21,7 +21,7 @@ return new class extends Migration
             $table->tinyInteger('rate')->default(0);
             $table->text('url')->nullable();
             $table->decimal('amount', 15, 2);
-            $table->tinyInteger('discount')->default(0);
+            $table->decimal('discount_amount', 15, 2)->default(0);
             $table->string('image', 2048)->nullable();
             $table->string('code', 255)->nullable();
             $table->tinyInteger('active')->default(0);
@@ -30,6 +30,7 @@ return new class extends Migration
             $table->enum('status',['pending', 'completed'])->default('pending'); // pending, completed
             $table->tinyInteger('vip')->default(0);
             $table->tinyInteger('priority')->default(0);
+            $table->json('related_products')->nullable();
             $table->bigInteger('color_id')->unsigned()->index();
             $table->foreign('color_id')->references('id')->on('colors')->onDelete('cascade');
             $table->bigInteger('category_id')->unsigned()->index();

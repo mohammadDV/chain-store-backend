@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sizes', function (Blueprint $table) {
+        Schema::create('endpoints', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('code');
-            $table->integer('stock')->default(0);
-            $table->tinyInteger('status')->default(1);
-            $table->tinyInteger('priority')->default(1);
-            $table->foreignId('product_id')->constrained('products');
+            $table->string('url')->unique();
+            $table->tinyInteger('status')->default(0);
+            $table->foreignId('brand_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sizes');
+        Schema::dropIfExists('endpoints');
     }
 };

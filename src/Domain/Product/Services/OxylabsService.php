@@ -3,6 +3,7 @@
 namespace Domain\Product\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class OxylabsService
 {
@@ -25,17 +26,67 @@ class OxylabsService
             return null;
         }
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-        ])->withBasicAuth(config('oxylabs.username'), config('oxylabs.password'))
-            ->post('https://realtime.oxylabs.io/v1/queries', $params);
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+            ])->withBasicAuth(config('oxylabs.username'), config('oxylabs.password'))
+                ->timeout(30) // Add timeout to prevent hanging requests
+                ->post('https://realtime.oxylabs.io/v1/queries', $params);
 
-        // Check if the response was successful
-        if ($response->successful()) {
-            return $response->json();
+            // Check if the response was successful
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            // Handle HTTP errors (4xx, 5xx)
+            $statusCode = $response->status();
+            $errorBody = $response->body();
+            $errorJson = $response->json();
+
+            Log::error('Oxylabs API request failed', [
+                'key' => $key,
+                'url' => $url,
+                'status_code' => $statusCode,
+                'error_body' => $errorBody,
+                'error_json' => $errorJson,
+            ]);
+
+            // You can also throw an exception or return error details if needed
+            // For now, we'll just log and return null to maintain current behavior
+
+            return null;
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            // Handle connection errors (timeout, DNS failure, etc.)
+            //: Operation timed out after 30001 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://realtime.oxylabs.io/v1/queries
+            Log::error('Oxylabs API connection error 1', [
+                'key' => $key,
+                'url' => $url,
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+            ]);
+
+            return [
+                'status' => 2,
+                'message' => 'Connection error',
+                'error' => $e->getMessage(),
+            ];
+
+        } catch (\Exception $e) {
+            // Handle any other exceptions
+            Log::error('Oxylabs API request exception 2', [
+                'key' => $key,
+                'url' => $url,
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return [
+                'status' => 3,
+                'message' => 'Connection error',
+                'error' => $e->getMessage(),
+            ];
         }
-
-        return null;
     }
 
     /**
@@ -86,9 +137,19 @@ class OxylabsService
                             ['_fn' => 'css', '_args' => ['._mainPrice_1dnvn_52 > span']],
                         ]
                     ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['._originalPrice_1dnvn_81 > span']],
+                        ]
+                    ],
                     'size' => [
                         "_fns" => [
                             ['_fn' => 'css', '_args' => ['.gl-label > span']],
+                        ]
+                    ],
+                    'related_products' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.color-variation_variation__jECs6 > a']],
                         ]
                     ],
                     'images' => [
@@ -104,6 +165,55 @@ class OxylabsService
                     'details' => [
                         '_fns' => [
                             ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/div/div/div/div/div[3]/section[3]']],
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
+            'update_stock' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    // [
+                    //     "type" => "input",
+                    //     "value" => "pizza boxes",
+                    //     "selector" => [
+                    //         "type" => "xpath",
+                    //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
+                    //     ]
+                    // ],
+                    // [
+                    //     "type" => "click",
+                    //     "selector" => [
+                    //         "type" => "xpath",
+                    //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
+                    //     ]
+                    // ],
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 1
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'title' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']]
+                        ]
+                    ],
+                    'price' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['._mainPrice_1dnvn_52 > span']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['._originalPrice_1dnvn_81 > span']],
+                        ]
+                    ],
+                    'stock' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.scarcity-message_scarcity-message__7X5BG']],
                         ]
                     ],
                 ],
