@@ -33,8 +33,6 @@ return new class extends Migration
             $table->json('related_products')->nullable();
             $table->bigInteger('color_id')->unsigned()->index();
             $table->foreign('color_id')->references('id')->on('colors')->onDelete('cascade');
-            $table->bigInteger('category_id')->unsigned()->index();
-            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
             $table->bigInteger('brand_id')->unsigned()->index();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
             $table->bigInteger("user_id")->unsigned()->index();

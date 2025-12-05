@@ -136,6 +136,7 @@ class UserResource extends Resource
                     ->searchable(),
                 ImageColumn::make('profile_photo_path')
                     ->label(__('site.profile_photo_path'))
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->disk('s3')
                     ->circular()
                     ->size(40)

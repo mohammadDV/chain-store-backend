@@ -42,7 +42,7 @@ class ProductRepository implements IProductRepository
     {
         $product = Product::query()
                 ->with([
-                    'category.parentRecursive',
+                    'categories.parentRecursive',
                     'files',
                     'color',
                     'brand',
@@ -166,18 +166,22 @@ class ProductRepository implements IProductRepository
     public function similarProducts(Product $product)
     {
 
-        $categories = $product?->category
+        $categories = Category::query()
+            ->whereIn('id', $product->categories->pluck('id'))
             ?->parent
             ?->allChildren()
             ?->pluck('id')
             ?->toArray();
 
         $similarProducts = Product::query()
-            ->with(['category'])
+            ->with(['categories'])
             ->where('active', 1)
             ->where('status', Product::COMPLETED)
             ->where(function ($query) use ($categories) {
-                $query->whereIn('category_id', $categories);
+                $query->whereHas('categories', function ($query) use ($categories) {
+                    $query->whereIn('categories.id', $categories)
+                        ->orWhereIn('categories.parent_id', $categories);
+                });
             })
             ->where('id', '!=', $product->id)
             ->inRandomOrder()
@@ -305,9 +309,9 @@ class ProductRepository implements IProductRepository
 
             // category
             if (!empty($categories)) {
-                $query->whereHas('category', function ($q) use ($categories) {
-                    $q->whereIn('id', $categories)
-                      ->orWhereIn('parent_id', $categories);
+                $query->whereHas('categories', function ($q) use ($categories) {
+                    $q->whereIn('categories.id', $categories)
+                      ->orWhereIn('categories.parent_id', $categories);
                 });
             }
 

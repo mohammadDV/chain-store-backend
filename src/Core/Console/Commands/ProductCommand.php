@@ -99,11 +99,13 @@ class ProductCommand extends Command
             'vip' => false,
             'priority' => 1,
             'color_id' => 1,
-            'category_id' => 9,
             'brand_id' => 1,
             'user_id' => 1,
             'related_products' => !empty($productData['related_products']) ? json_encode($productData['related_products']) : null,
         ]);
+
+        // Sync categories using the many-to-many relationship
+        $product->categories()->sync([$this->categoryId]);
 
         // Sync images: only add/remove what's needed
         if (!empty($productData['images'])) {

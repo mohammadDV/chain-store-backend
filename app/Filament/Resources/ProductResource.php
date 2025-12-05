@@ -90,9 +90,10 @@ class ProductResource extends Resource
                                 ->searchable()
                                 ->preload()
                                 ->required(),
-                            Select::make('category_id')
+                            Select::make('categories')
                                 ->label(__('site.category'))
-                                ->relationship('category', 'title')
+                                ->relationship('categories', 'title')
+                                ->multiple()
                                 ->searchable()
                                 ->preload()
                                 ->required(),
@@ -120,8 +121,7 @@ class ProductResource extends Resource
                                     ->label(__('site.discount'))
                                     ->numeric()
                                     ->default(0)
-                                    ->minValue(0)
-                                    ->maxValue(100),
+                                    ->minValue(0),
                                 TextInput::make('stock')
                                     ->label(__('site.stock'))
                                     ->numeric()
@@ -214,9 +214,11 @@ class ProductResource extends Resource
                     ->label(__('site.brand'))
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('category.title')
+                TextColumn::make('categories.title')
                     ->label(__('site.category'))
-                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->badge()
+                    ->separator(',')
                     ->searchable(),
                 TextColumn::make('color.title')
                     ->label(__('site.color'))
@@ -292,9 +294,9 @@ class ProductResource extends Resource
                     ->label(__('site.brand'))
                     ->options(fn () => Brand::query()->pluck('title', 'id')->all())
                     ->searchable(),
-                SelectFilter::make('category_id')
+                SelectFilter::make('categories')
                     ->label(__('site.category'))
-                    ->options(fn () => ProductCategory::query()->pluck('title', 'id')->all())
+                    ->relationship('categories', 'title')
                     ->searchable(),
                 SelectFilter::make('color_id')
                     ->label(__('site.color'))

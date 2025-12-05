@@ -102,9 +102,10 @@ class OrderProductsRelationManager extends RelationManager
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('category.title')
+                TextColumn::make('categories.title')
                     ->label(__('site.category'))
-                    ->sortable()
+                    ->badge()
+                    ->separator(',')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('pivot.count')

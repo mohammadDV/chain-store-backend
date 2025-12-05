@@ -30,7 +30,7 @@ class ProductResource extends JsonResource
             'image' => $this->image,
             'rate' => $this->rate,
             'reviews_count' => $this->reviews()->count(),
-            'category' => new CategoryResource($this->whenLoaded('category')),
+            'categories' => CategoryResource::collection($this->whenLoaded('categories')),
             'files' => FileResource::collection($this->whenLoaded('files')),
             'user' => new UserResource($this->whenLoaded('user')),
             'sizes' => SizeResource::collection($this->whenLoaded('sizes')),
