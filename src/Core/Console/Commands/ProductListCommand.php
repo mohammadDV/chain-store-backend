@@ -17,7 +17,7 @@ class ProductListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'get-data:product-list';
+    protected $signature = 'get-data:product-list {brand_id} {category_id}';
 
     /**
      * The console command description.
@@ -36,8 +36,21 @@ class ProductListCommand extends Command
 
         $oxylabsService = new OxylabsService();
 
-        $brand = Brand::find(1);
-        $category = Category::find(6);
+        $brandId = $this->argument('brand_id');
+        $categoryId = $this->argument('category_id');
+
+        $brand = Brand::find($brandId);
+        $category = Category::find($categoryId);
+
+        if (!$brand) {
+            $this->error("Brand with ID {$brandId} not found.");
+            return 1;
+        }
+
+        if (!$category) {
+            $this->error("Category with ID {$categoryId} not found.");
+            return 1;
+        }
 
         $start = 0;
         $stop = false;

@@ -16,7 +16,7 @@ class ProductCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'get-data:product';
+    protected $signature = 'get-data:product {--limit=10 : Limit the number of endpoints to process}';
 
     /**
      * The console command description.
@@ -34,11 +34,13 @@ class ProductCommand extends Command
 
         $oxylabsService = new OxylabsService();
 
+        $limit = (int) $this->option('limit');
+
         $endpoints = Endpoint::query()
             ->with('brand')
             ->where('status', 0)
             ->WhereNotNull('url')
-            ->limit(5)
+            ->limit($limit)
             ->get();
 
         // $this->url = 'https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html';
@@ -46,12 +48,8 @@ class ProductCommand extends Command
         $count = 0;
         $countfailed = 0;
         foreach($endpoints as $endpoint) {
-            // $endpoint->url = "https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html";
-            // $endpoint->url = "https://www.adidas.com.tr/tr/almanya-tiro-travel-crew-sweatshirt/JZ9328.html";
 
             $filters = $this->retryRequest($oxylabsService, 'product', $endpoint->url, 1, $endpoint?->brand?->domain);
-
-            // dd($filters);
 
             if(!empty($filters['status']) && $filters['status'] == 2) {
                 $countfailed++;
