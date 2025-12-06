@@ -2,12 +2,15 @@
 
 namespace Core\Console\Commands;
 
+use Core\Console\Commands\Traits\RequestTrait;
+use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
 use Domain\Product\Services\OxylabsService;
 use Illuminate\Console\Command;
 
 class ProductCommand extends Command
 {
+    use RequestTrait;
     /**
      * The name and signature of the console command.
      *
@@ -22,10 +25,6 @@ class ProductCommand extends Command
      */
     protected $description = 'Fetch product from Oxylabs';
 
-    protected int $categoryId = 9;
-    protected ?string $url = null;
-    protected ?string $domain = 'https://www.adidas.com.tr';
-
 
     /**
      * Execute the console command.
@@ -35,58 +34,57 @@ class ProductCommand extends Command
 
         $oxylabsService = new OxylabsService();
 
-        // $url = 'https://www.adidas.com.tr/tr/copa-mundial-cim-saha-kramponu/JP6693.html';
-        // $url = 'https://www.adidas.com.tr/tr/essentials-3-stripes-french-terry-sweatshirt/JE6372.html';
-        // $this->url = 'https://www.adidas.com.tr/tr/stan-smith-shoes/FX5499.html';
-        // $this->url = 'https://www.adidas.com.tr/tr/adicolor-3-stripes-sprinter-sort/JD3119.html';
-        $this->url = 'https://www.adidas.com.tr/tr/adidas-disney-minnie-mouse-cocuk-tayti/JL9192.html';
+        $endpoints = Endpoint::query()
+            ->with('brand')
+            ->where('status', 0)
+            ->WhereNotNull('url')
+            ->limit(5)
+            ->get();
 
+        // $this->url = 'https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html';
 
-        $filters = $this->retryRequest($oxylabsService);
+        $count = 0;
+        $countfailed = 0;
+        foreach($endpoints as $endpoint) {
+            // $endpoint->url = "https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html";
+            // $endpoint->url = "https://www.adidas.com.tr/tr/almanya-tiro-travel-crew-sweatshirt/JZ9328.html";
 
-        if(!empty($filters['status']) && $filters['status'] == 2) {
-            $this->error("Connection error: " . $filters['error']);
-            return;
-        }
+            $filters = $this->retryRequest($oxylabsService, 'product', $endpoint->url, 1, $endpoint?->brand?->domain);
 
-        $productData = $this->cleanProductData($filters, $this->domain);
+            // dd($filters);
 
-        // dd($productData);
-
-        $this->storeProduct($productData);
-
-        $this->info("Products: " . var_export($productData, true));
-
-
-    }
-
-    private function retryRequest(OxylabsService $oxylabsService, int $attempt = 1): array
-    {
-        $this->info("URL: " . $this->url);
-        $this->info("Attempt: " . $attempt);
-        $this->info("--------------------------------");
-
-        $filters = $oxylabsService->fetchRequest('product', $this->url);
-
-        if(!empty($filters['status']) && $filters['status'] == 2) {
-            if($attempt >= 3) {
-                $this->error("Connection error after 3 attempts: " . $filters['error']);
-                return $filters;
+            if(!empty($filters['status']) && $filters['status'] == 2) {
+                $countfailed++;
+                if ($countfailed >= 3) {
+                    $this->error("Failed to get product data: " . $endpoint->url);
+                    return;
+                }
+                continue;
             }
 
-            $this->error("Connection error (attempt {$attempt}/3): " . $filters['error']);
-            sleep(20);
-            return $this->retryRequest($oxylabsService, $attempt + 1);
+            $productData = $this->cleanProductData($filters, $endpoint?->brand?->domain);
+
+            $product = $this->storeProduct($productData, $endpoint->category_id, $endpoint->url);
+
+            if (!empty($product?->id)) {
+                $endpoint->update([
+                    'status' => 1,
+                ]);
+                $count++;
+                $this->info("Products: " . $endpoint->url);
+                $this->info("Category: " . $endpoint->category_id);
+                $this->info("Products: " . $product->id);
+            }
+            sleep(10);
         }
 
-        return $filters;
-
+        $this->info("Done: " . $count);
     }
 
-    private function storeProduct(array $productData): Product {
+    private function storeProduct(array $productData, int $categoryId, string $url): Product {
 
         $product = Product::updateOrCreate([
-            'url' => $this->url,
+            'url' => $url,
         ], [
             'title' => $productData['title'],
             'description' => $productData['explanation'],
@@ -95,7 +93,7 @@ class ProductCommand extends Command
             'discount' => $productData['discount'],
             'image' => $productData['images'][0] ?? null,
             'status' => Product::PENDING,
-            'stock' => 10,
+            'stock' => config('product.default_stock'),
             'vip' => false,
             'priority' => 1,
             'color_id' => 1,
@@ -105,7 +103,7 @@ class ProductCommand extends Command
         ]);
 
         // Sync categories using the many-to-many relationship
-        $product->categories()->sync([$this->categoryId]);
+        $product->categories()->sync([$categoryId]);
 
         // Sync images: only add/remove what's needed
         if (!empty($productData['images'])) {
@@ -135,7 +133,7 @@ class ProductCommand extends Command
                     [
                         'title' => trim($sizeTitle),
                         'status' => 1,
-                        'stock' => 5,
+                        'stock' => config('product.default_stock'),
                         'priority' => 100 - $key,
                     ]
                 );
@@ -152,7 +150,7 @@ class ProductCommand extends Command
      * @param   string $domain The domain of the product
      * @throws  Exception If required product data is missing
      */
-    private function cleanProductData(array $response): array
+    private function cleanProductData(array $response, string $domain): array
     {
         // Extract product content from results
         $content = $response['results'][0]['content'] ?? null;
@@ -169,10 +167,10 @@ class ProductCommand extends Command
         $productExplanation = $this->extractTextContent($content['explanation'] ?? null);
         $productDetails = $this->extractTextContent($content['details'] ?? null);
         $productImages = $this->extractImages($content['images'] ?? null);
-        $productRelatedProducts = $this->extractRelatedProducts($content['related_products'] ?? null);
+        $productRelatedProducts = $this->extractRelatedProducts($content['related_products'] ?? null, $domain);
         $productSize = $this->extractSize($content['size'] ?? null);
         $productPrice = $this->extractPrice($content['price'][1] ?? null);
-        $productDiscount = $this->extractDiscount($content['discount'][0] ?? null);
+        $productDiscount = $this->extractDiscount($content['discount'] ?? null);
 
         // Return normalized product data
         return [
@@ -193,25 +191,12 @@ class ProductCommand extends Command
             return 0;
         }
 
-        // Pattern matches: <span>1.499,00 TL</span> or <span>5.399 TL</span>
-        // <span class="_sale-color_1dnvn_101">2.099 TL</span>
-        preg_match('/<span[^>]*>([^<]+)<\/span>/i', $price, $matches);
+        // Pattern matches: <span data-testid="discount-text" class="_discountText_1dnvn_90">-40%<span class="_visuallyHidden_1dnvn_2">&#304;ndirim</span></span>
+        preg_match('/<span[^>]*data-testid="discount-text"[^>]*>(-?\d+)%<span/i', $price, $matches);
         if(!empty($matches[1])) {
-            $priceString = $matches[1];
-
-            // Remove "TL" text
-            $priceString = preg_replace('/\s*TL\s*/i', '', $priceString);
-
-            // Remove thousands separator (period)
-            $priceString = str_replace('.', '', $priceString);
-
-            // Remove decimal separator (comma) and everything after it if present
-            if (strpos($priceString, ',') !== false) {
-                $priceString = strstr($priceString, ',', true);
-            }
-
-            // Convert to integer
-            return (int) $priceString;
+            // Extract the number from the discount percentage (e.g., 40 from "-40%")
+            $discountNumber = abs((int) $matches[1]);
+            return $discountNumber;
         }
         return 0;
     }
@@ -269,7 +254,7 @@ class ProductCommand extends Command
         return $sizes;
     }
 
-    private function extractRelatedProducts(?array $array): array
+    private function extractRelatedProducts(?array $array, string $domain): array
     {
         if (empty($array)) {
             return [];
@@ -285,7 +270,7 @@ class ProductCommand extends Command
                 $url = $matches[1];
                 // Convert relative URLs to absolute URLs
                 if (strpos($url, '/') === 0 && strpos($url, '//') !== 0) {
-                    $url = $this->domain . $url;
+                    $url = $domain . $url;
                 }
                 $images[] = $url;
             }

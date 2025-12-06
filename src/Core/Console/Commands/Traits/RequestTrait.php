@@ -15,7 +15,7 @@ trait RequestTrait
         $filters = $oxylabsService->fetchRequest($type, $url);
 
         if(!empty($filters['status']) && $filters['status'] == 2) {
-            if($attempt >= 3) {
+            if($attempt >= 5) {
                 $this->error("Connection error after 3 attempts: " . $filters['error']);
                 return $filters;
             }

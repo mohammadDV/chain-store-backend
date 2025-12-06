@@ -1204,6 +1204,7 @@ return array(
     'view_count' => 'تعداد بازدید',
     'color' => 'رنگ',
     'size' => 'سایز',
+    'sizes' => 'سایزها',
 
     // Post Management
     'post' => 'پست',
@@ -1214,6 +1215,12 @@ return array(
     'content' => 'محتوای',
     'post_image' => 'تصویر پست',
     'upload_post_image' => 'تصویر پست را آپلود کنید',
+    'image_source' => 'منبع تصویر',
+    'upload_file' => 'آپلود فایل',
+    'enter_url' => 'وارد کردن لینک',
+    'image_url' => 'لینک تصویر',
+    'image_preview' => 'پیش‌نمایش تصویر',
+    'image_preview_error' => 'بارگذاری تصویر ناموفق بود. لطفاً لینک را بررسی کنید.',
     'generate_thumbnails' => 'تولید تصاویر کوچک',
     'generate_thumbnails_help' => 'تصاویر کوچک و اسلاید را به طور خودکار تولید کنید',
     'author' => 'نویسنده',

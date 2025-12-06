@@ -140,25 +140,12 @@ class UpdateStockCommand extends Command
             return 0;
         }
 
-        // Pattern matches: <span>1.499,00 TL</span> or <span>5.399 TL</span>
-        // <span class="_sale-color_1dnvn_101">2.099 TL</span>
-        preg_match('/<span[^>]*>([^<]+)<\/span>/i', $price, $matches);
+        // Pattern matches: <span data-testid="discount-text" class="_discountText_1dnvn_90">-40%<span class="_visuallyHidden_1dnvn_2">&#304;ndirim</span></span>
+        preg_match('/<span[^>]*data-testid="discount-text"[^>]*>(-?\d+)%<span/i', $price, $matches);
         if(!empty($matches[1])) {
-            $priceString = $matches[1];
-
-            // Remove "TL" text
-            $priceString = preg_replace('/\s*TL\s*/i', '', $priceString);
-
-            // Remove thousands separator (period)
-            $priceString = str_replace('.', '', $priceString);
-
-            // Remove decimal separator (comma) and everything after it if present
-            if (strpos($priceString, ',') !== false) {
-                $priceString = strstr($priceString, ',', true);
-            }
-
-            // Convert to integer
-            return (int) $priceString;
+            // Extract the number from the discount percentage (e.g., 40 from "-40%")
+            $discountNumber = abs((int) $matches[1]);
+            return $discountNumber;
         }
         return 0;
     }
@@ -197,7 +184,7 @@ class UpdateStockCommand extends Command
         $this->info("String: " . $string);
         if (empty($string)) {
             $this->info("Stock is empty");
-            return 5;
+            return config('product.default_stock');
         }
 
         $stock = 0;

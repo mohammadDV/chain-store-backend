@@ -632,6 +632,7 @@ return array(
     'view_count' => 'View Count',
     'color' => 'Color',
     'size' => 'Size',
+    'sizes' => 'Sizes',
 
     // Post Management
     'post' => 'Post',
@@ -642,6 +643,12 @@ return array(
     'content' => 'Content',
     'post_image' => 'Post Image',
     'upload_post_image' => 'Upload post image',
+    'image_source' => 'Image Source',
+    'upload_file' => 'Upload File',
+    'enter_url' => 'Enter URL',
+    'image_url' => 'Image URL',
+    'image_preview' => 'Image Preview',
+    'image_preview_error' => 'Failed to load image. Please check the URL.',
     'generate_thumbnails' => 'Generate Thumbnails',
     'generate_thumbnails_help' => 'Automatically generate thumbnail and slide images',
     'author' => 'Author',

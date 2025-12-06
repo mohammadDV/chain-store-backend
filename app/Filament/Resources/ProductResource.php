@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category as ProductCategory;
 use Domain\Product\Models\Color;
@@ -16,12 +17,16 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\View;
+use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -66,13 +71,47 @@ class ProductResource extends Resource
                                     ->label(__('site.code'))
                                     ->maxLength(255),
                             ]),
-                        Textarea::make('description')
+                        RichEditor::make('description')
                             ->label(__('site.description'))
-                            ->rows(4)
+                            ->fileAttachmentsDisk('s3')
+                            ->fileAttachmentsDirectory('products/description')
+                            ->fileAttachmentsVisibility('public')
+                            ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'h2',
+                                'h3',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'undo',
+                            ])
                             ->columnSpanFull(),
-                        Textarea::make('details')
+                        RichEditor::make('details')
                             ->label(__('site.details'))
-                            ->rows(6)
+                            ->fileAttachmentsDisk('s3')
+                            ->fileAttachmentsDirectory('products/details')
+                            ->fileAttachmentsVisibility('public')
+                            ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
+                                'bold',
+                                'bulletList',
+                                'codeBlock',
+                                'h2',
+                                'h3',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'undo',
+                            ])
                             ->columnSpanFull(),
                         TextInput::make('url')
                             ->label(__('site.url'))
@@ -88,20 +127,17 @@ class ProductResource extends Resource
                                 ->label(__('site.brand'))
                                 ->relationship('brand', 'title')
                                 ->searchable()
-                                ->preload()
                                 ->required(),
                             Select::make('categories')
                                 ->label(__('site.category'))
                                 ->relationship('categories', 'title')
                                 ->multiple()
                                 ->searchable()
-                                ->preload()
                                 ->required(),
                             Select::make('color_id')
                                 ->label(__('site.color'))
                                 ->relationship('color', 'title')
                                 ->searchable()
-                                ->preload()
                                 ->required(),
                             Hidden::make('user_id')
                                 ->default(fn (): ?int => Auth::id())
@@ -114,14 +150,15 @@ class ProductResource extends Resource
                             ->schema([
                                 TextInput::make('amount')
                                     ->label(__('site.amount'))
-                                    ->numeric()
+                                    // ->numeric()
                                     ->required()
                                     ->minValue(0),
                                 TextInput::make('discount')
                                     ->label(__('site.discount'))
                                     ->numeric()
                                     ->default(0)
-                                    ->minValue(0),
+                                    ->minValue(0)
+                                    ->maxValue(99),
                                 TextInput::make('stock')
                                     ->label(__('site.stock'))
                                     ->numeric()
@@ -178,14 +215,52 @@ class ProductResource extends Resource
                     ]),
                 Section::make(__('site.media'))
                     ->schema([
-                        FileUpload::make('image')
+                        Hidden::make('image')
+                            ->dehydrated(),
+                        Select::make('image_source')
+                            ->label(__('site.image_source'))
+                            ->options([
+                                'upload' => __('site.upload_file'),
+                                'url' => __('site.enter_url'),
+                            ])
+                            ->default('upload')
+                            ->live()
+                            ->required()
+                            ->dehydrated(false),
+                        FileUpload::make('image_upload')
                             ->label(__('site.product_image'))
                             ->placeholder(__('site.upload_product_image'))
                             ->image()
                             ->imageEditor()
                             ->disk('s3')
                             ->directory('products/images')
-                            ->visibility('public'),
+                            ->visibility('public')
+                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
+                            ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $imagePath = is_array($state) ? reset($state) : $state;
+                                    $set('image', $imagePath);
+                                }
+                            })
+                            ->dehydrated(false),
+                        TextInput::make('image_url')
+                            ->label(__('site.image_url'))
+                            ->placeholder('https://example.com/image.jpg')
+                            ->url()
+                            ->maxLength(2048)
+                            ->live()
+                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                            ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                            ->afterStateUpdated(function ($state, callable $set) {
+                                if ($state) {
+                                    $set('image', $state);
+                                }
+                            })
+                            ->dehydrated(false),
+                        View::make('filament.components.image-url-preview')
+                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                            ->dehydrated(false),
                     ])->columns(1),
             ]);
     }
@@ -198,13 +273,10 @@ class ProductResource extends Resource
                     ->label(__('site.table_id'))
                     ->sortable()
                     ->searchable(),
-                ImageColumn::make('image')
+                ViewColumn::make('image')
                     ->label(__('site.image'))
-                    ->disk('s3')
-                    ->visibility('public')
-                    ->extraImgAttributes(['loading' => 'lazy'])
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->size(40),
+                    ->view('filament.components.image-with-popup')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('title')
                     ->label(__('site.title'))
                     ->searchable()
@@ -232,9 +304,9 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('amount')
                     ->label(__('site.amount'))
-                    ->numeric()
+                    // ->numeric()
                     ->sortable()
-                    ->formatStateUsing(fn ($state) => number_format($state ?? 0)),
+                    ->formatStateUsing(fn ($state, $record) => number_format($record->getRawOriginal('amount') ?? 0)),
                 TextColumn::make('discount')
                     ->label(__('site.discount'))
                     ->sortable()
@@ -328,6 +400,7 @@ class ProductResource extends Resource
     {
         return [
             FilesRelationManager::class,
+            SizesRelationManager::class,
         ];
     }
 

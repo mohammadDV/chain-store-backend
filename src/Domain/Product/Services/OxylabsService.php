@@ -139,7 +139,7 @@ class OxylabsService
                     ],
                     'discount' => [
                         "_fns" => [
-                            ['_fn' => 'css', '_args' => ['._originalPrice_1dnvn_81 > span']],
+                            ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
                         ]
                     ],
                     'size' => [

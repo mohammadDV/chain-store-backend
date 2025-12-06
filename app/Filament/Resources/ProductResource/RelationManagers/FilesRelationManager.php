@@ -10,7 +10,9 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,7 +20,7 @@ class FilesRelationManager extends RelationManager
 {
     protected static string $relationship = 'files';
 
-    protected static ?string $recordTitleAttribute = 'path';
+    protected static ?string $recordTitleAttribute = 'id';
 
     public static function getTitle(Model $ownerRecord, string $pageClass): string
     {
@@ -39,13 +41,6 @@ class FilesRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                FileUpload::make('path')
-                    ->label(__('site.file'))
-                    ->disk('s3')
-                    ->directory('products/files')
-                    ->visibility('public')
-                    ->preserveFilenames()
-                    ->required(),
                 Select::make('type')
                     ->label(__('site.type'))
                     ->options([
@@ -54,6 +49,22 @@ class FilesRelationManager extends RelationManager
                         'document' => __('site.document'),
                     ])
                     ->default('image')
+                    ->required()
+                    ->reactive(),
+                FileUpload::make('path')
+                    ->label(__('site.file'))
+                    ->disk('s3')
+                    ->directory('products/files')
+                    ->visibility('public')
+                    ->image(fn (callable $get) => $get('type') === 'image')
+                    ->imageEditor(fn (callable $get) => $get('type') === 'image')
+                    ->acceptedFileTypes(fn (callable $get) => match ($get('type')) {
+                        'image' => ['image/*'],
+                        'video' => ['video/*'],
+                        'document' => ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+                        default => null,
+                    })
+                    ->preserveFilenames()
                     ->required(),
                 Toggle::make('status')
                     ->label(__('site.status'))
@@ -69,13 +80,27 @@ class FilesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('path')
+                ImageColumn::make('path')
                     ->label(__('site.file'))
-                    ->searchable()
-                    ->limit(30),
+                    ->disk('s3')
+                    ->visibility('public')
+                    ->extraImgAttributes(['loading' => 'lazy'])
+                    ->size(60)
+                    ->circular(false)
+                    ,
+                ViewColumn::make('path')
+                    ->label(__('site.file_path'))
+                    ->view('filament.components.image-with-popup')
+                    ->searchable(),
                 TextColumn::make('type')
                     ->label(__('site.type'))
-                    ->badge(),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'image' => 'success',
+                        'video' => 'warning',
+                        'document' => 'info',
+                        default => 'gray',
+                    }),
                 IconColumn::make('status')
                     ->label(__('site.status'))
                     ->boolean()
@@ -87,7 +112,8 @@ class FilesRelationManager extends RelationManager
                 TextColumn::make('created_at')
                     ->label(__('site.created_at'))
                     ->dateTime('Y/m/d H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
@@ -101,4 +127,3 @@ class FilesRelationManager extends RelationManager
             ]);
     }
 }
-
