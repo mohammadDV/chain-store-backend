@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use App\ProductAttribute;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\File;
@@ -51,6 +52,11 @@ class Product extends Model
     public function color()
     {
         return $this->belongsTo(Color::class);
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(ProductAttribute::class);
     }
 
     /**

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager;
+use App\Filament\Resources\ProductResource\RelationManagers\ProductAttributeRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category as ProductCategory;
@@ -401,6 +402,7 @@ class ProductResource extends Resource
         return [
             FilesRelationManager::class,
             SizesRelationManager::class,
+            ProductAttributeRelationManager::class,
         ];
     }
 
