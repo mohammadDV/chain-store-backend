@@ -2,9 +2,10 @@
 
 namespace Core\Http\traits;
 
-use App\Services\Image\ImageService;
 use Domain\User\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 trait GlobalFunc
 {
@@ -40,26 +41,39 @@ trait GlobalFunc
     }
 
     /**
-     * Check the level access
-     * @param ImageService $imageService
-     * @param $file
-     * @param string $url
-     * @param string $image
-     * @return void
+     * Manually check if user is authenticated via Sanctum token and get user ID
+     * This method doesn't use Auth facade or middleware
+     *
+     * @param Request $request
+     * @return int|null Returns user ID if authenticated, null otherwise
      */
-    // public function uploadImage(ImageService $imageService, $file,string $url, $image){
-    //     $imageService->setExclusiveDirectory($url);
-    //     $result = $imageService->save($file);
-    //     if ($result && !empty($image)){
-    //         if(env('APP_ENV') == "production"){
-    //             Storage::disk('s3')->delete($image);
-    //         }else{
-    //             $imageService->deleteImage($image);
-    //         }
-    //     }
-    //     $imageService->reset();
+    public function getUserIdFromToken(Request $request): ?int
+    {
+        $authHeader = $request->header('Authorization');
 
-    //     return $result;
-    // }
+        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+            return null;
+        }
+
+        $fullToken = substr($authHeader, 7); // Remove "Bearer " prefix
+
+        // Sanctum tokens are in format: {id}|{token}
+        // We need to extract only the token part (after the |)
+        if (str_contains($fullToken, '|')) {
+            $tokenParts = explode('|', $fullToken, 2);
+            $token = $tokenParts[1]; // Get the token part after the |
+        } else {
+            $token = $fullToken; // Fallback if no | separator
+        }
+
+        $hashedToken = hash('sha256', $token);
+
+        // Check if token exists in personal_access_tokens table
+        $tokenRecord = DB::table('personal_access_tokens')
+            ->where('token', $hashedToken)
+            ->first();
+
+        return $tokenRecord ? $tokenRecord->tokenable_id : null;
+    }
 }
 ;

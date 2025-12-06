@@ -1174,8 +1174,11 @@ return array(
     'upload_brand_logo' => 'بارگذاری لوگوی برند',
     'banner' => 'بنر',
     'banners' => 'بنرها',
+    'banner_information' => 'اطلاعات بنر',
     'banner_image' => 'تصویر بنر',
     'upload_banner_image' => 'بارگذاری تصویر بنر',
+    'select_brand_optional' => 'انتخاب برند (اختیاری)',
+    'no_brand' => 'بدون برند',
     'link' => 'لینک',
     'product' => 'محصول',
     'products' => 'محصولات',
@@ -1205,6 +1208,9 @@ return array(
     'color' => 'رنگ',
     'size' => 'سایز',
     'sizes' => 'سایزها',
+    'value' => 'مقدار',
+    'product_attribute' => 'ویژگی محصول',
+    'product_attributes' => 'ویژگی‌های محصول',
 
     // Post Management
     'post' => 'پست',

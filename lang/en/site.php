@@ -602,8 +602,11 @@ return array(
     'upload_brand_logo' => 'Upload brand logo',
     'banner' => 'Banner',
     'banners' => 'Banners',
+    'banner_information' => 'Banner Information',
     'banner_image' => 'Banner Image',
     'upload_banner_image' => 'Upload banner image',
+    'select_brand_optional' => 'Select a brand (optional)',
+    'no_brand' => 'No Brand',
     'link' => 'Link',
     'product' => 'Product',
     'products' => 'Products',
@@ -633,6 +636,9 @@ return array(
     'color' => 'Color',
     'size' => 'Size',
     'sizes' => 'Sizes',
+    'value' => 'Value',
+    'product_attribute' => 'Product Attribute',
+    'product_attributes' => 'Product Attributes',
 
     // Post Management
     'post' => 'Post',

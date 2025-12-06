@@ -66,8 +66,11 @@ class BrandRepository implements IBrandRepository
                     $query->where('id', $request->get('brand'));
                 });
             })
+            ->when(empty($request->get('brand')), function ($query) {
+                $query->whereNull('brand_id');
+            })
             ->inRandomOrder()
-            ->limit(5)
+            ->limit(10)
             ->get();
 
         return $banners->map(fn ($banner) => new BannerResource($banner));

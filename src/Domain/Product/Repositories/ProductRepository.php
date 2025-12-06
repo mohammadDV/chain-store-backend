@@ -44,6 +44,7 @@ class ProductRepository implements IProductRepository
                 ->with([
                     'categories.parentRecursive',
                     'files',
+                    'attributes',
                     'color',
                     'brand',
                     'sizes'

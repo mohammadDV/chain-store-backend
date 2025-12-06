@@ -69,7 +69,7 @@ class ReviewRepository implements IReviewRepository
     public function getReviewsPerProduct(TableRequest $request, Product $product) :LengthAwarePaginator
     {
         $reviews = Review::query()
-            ->with('user:id,nickname,profile_photo_path,rate', 'services', 'files')
+            ->with('user:id,nickname,profile_photo_path,rate')
             ->withCount('likes')
             ->where('product_id', $product->id)
             ->where('status', Review::APPROVED)
