@@ -12,9 +12,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -22,7 +20,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Hidden;
 use Filament\Tables\Filters\SelectFilter;
@@ -164,6 +161,7 @@ class PostResource extends Resource
                     ->label(__('site.image'))
                     ->disk('s3')
                     ->visibility('public')
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->extraImgAttributes(['loading' => 'lazy'])
                     ->url(fn ($record) => $record->image ? $record->image : null)
                     ->circular()
