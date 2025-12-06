@@ -91,6 +91,6 @@ class ProductAttributeRelationManager extends RelationManager
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ])
-            ->defaultSort('priority', 'desc');
+            ->defaultSort('id', 'desc');
     }
 }

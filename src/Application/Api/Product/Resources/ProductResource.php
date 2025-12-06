@@ -2,7 +2,7 @@
 
 namespace Application\Api\Product\Resources;
 
-use App\Filament\Resources\BrandResource;
+use Application\Api\Brand\Resources\BrandResource;
 use Application\Api\Product\Resources\CategoryResource;
 use Application\Api\Product\Resources\FileResource;
 use Illuminate\Http\Resources\Json\JsonResource;
