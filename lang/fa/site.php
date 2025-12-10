@@ -1190,6 +1190,7 @@ return array(
     'upload_category_image' => 'تصویر دسته‌بندی را بارگذاری کنید',
     'slug' => 'نامک',
     'colors' => 'رنگ‌ها',
+    'color_information' => 'اطلاعات رنگ',
     'select_brand_colors' => 'رنگ‌های مرتبط با برند را انتخاب کنید',
     'product_information' => 'اطلاعات محصول',
     'pricing_inventory' => 'قیمت و موجودی',

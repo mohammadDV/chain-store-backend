@@ -618,6 +618,7 @@ return array(
     'upload_category_image' => 'Upload category image',
     'slug' => 'Slug',
     'colors' => 'Colors',
+    'color_information' => 'Color Information',
     'select_brand_colors' => 'Select colors for this brand',
     'product_information' => 'Product Information',
     'pricing_inventory' => 'Pricing & Inventory',
