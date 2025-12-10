@@ -14,14 +14,14 @@ trait RequestTrait
 
         $filters = $oxylabsService->fetchRequest($type, $url);
 
-        if(!empty($filters['status']) && $filters['status'] == 2) {
-            if($attempt >= 5) {
-                $this->error("Connection error after 3 attempts: " . $filters['error']);
+        if(empty($filters) || !empty($filters['status']) && $filters['status'] == 2) {
+            if($attempt >= 3) {
+                $this->error("Connection error after 3 attempts: ");
                 return $filters;
             }
 
-            $this->error("Connection error (attempt {$attempt}/3): " . $filters['error']);
-            sleep(20);
+            $this->error("Connection error (attempt {$attempt}/3): ");
+            sleep(5);
             return $this->retryRequest($oxylabsService, $type, $url, $attempt + 1);
         }
 

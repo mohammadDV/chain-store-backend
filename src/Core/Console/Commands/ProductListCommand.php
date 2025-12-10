@@ -17,7 +17,7 @@ class ProductListCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'get-data:product-list {brand_id} {category_id}';
+    protected $signature = 'get-data:product-list {brand_id} {category_id} {url}';
 
     /**
      * The console command description.
@@ -25,8 +25,6 @@ class ProductListCommand extends Command
      * @var string
      */
     protected $description = 'Fetch products list from Oxylabs';
-
-    protected string $url = 'https://www.adidas.com.tr/tr/erkek-giyim-ceket_mont';
 
     /**
      * Execute the console command.
@@ -67,7 +65,7 @@ class ProductListCommand extends Command
 
         while(!$stop) {
             // $domain = 'https://www.adidas.com.tr';
-            $url = $this->url . '?start=' . $start;
+            $url = $this->argument('url') . '?start=' . $start;
 
             $filters = $this->retryRequest($oxylabsService, 'productList', $url);
 

@@ -114,16 +114,16 @@ class OxylabsService
                     //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
                     //     ]
                     // ],
-                    [
-                        "type" => "click",
-                        "selector" => [
-                            "type" => "xpath",
-                            "value" => "//button[@class='accordion_accordion__header__GK4__']"
-                        ]
-                    ],
+                    // [
+                    //     "type" => "click",
+                    //     "selector" => [
+                    //         "type" => "xpath",
+                    //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
+                    //     ]
+                    // ],
                     [
                         "type" => "wait",
-                        "wait_time_s" => 2
+                        "wait_time_s" => 1
                     ]
                 ],
                 'parsing_instructions' => [
@@ -157,16 +157,16 @@ class OxylabsService
                             ['_fn' => 'css', '_args' => ['.desktop-zoom_content__qj_J5 > picture']],
                         ]
                     ],
-                    'explanation' => [
-                        '_fns' => [
-                            ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/div/div/div/div/div[3]/section[2]']],
-                        ]
-                    ],
-                    'details' => [
-                        '_fns' => [
-                            ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/div/div/div/div/div[3]/section[3]']],
-                        ]
-                    ],
+                    // 'explanation' => [
+                    //     '_fns' => [
+                    //         ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/div/div/div/div/div[3]/section[2]']],
+                    //     ]
+                    // ],
+                    // 'details' => [
+                    //     '_fns' => [
+                    //         ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/div/div/div/div/div[3]/section[3]']],
+                    //     ]
+                    // ],
                 ],
                 'url' => $url,
             ],

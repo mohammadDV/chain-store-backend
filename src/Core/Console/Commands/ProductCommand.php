@@ -40,6 +40,7 @@ class ProductCommand extends Command
             ->with('brand')
             ->where('status', 0)
             ->WhereNotNull('url')
+            ->orderBy('id', 'asc')
             ->limit($limit)
             ->get();
 
@@ -73,7 +74,7 @@ class ProductCommand extends Command
                 $this->info("Category: " . $endpoint->category_id);
                 $this->info("Products: " . $product->id);
             }
-            sleep(10);
+            sleep(2);
         }
 
         $this->info("Done: " . $count);
@@ -85,8 +86,8 @@ class ProductCommand extends Command
             'url' => $url,
         ], [
             'title' => $productData['title'],
-            'description' => $productData['explanation'],
-            'details' => $productData['details'],
+            'description' => '',
+            'details' => '',
             'amount' => $productData['price'],
             'discount' => $productData['discount'],
             'image' => $productData['images'][0] ?? null,
@@ -162,8 +163,8 @@ class ProductCommand extends Command
         if (!$productTitle) {
             throw new \Exception('Product not found');
         }
-        $productExplanation = $this->extractTextContent($content['explanation'] ?? null);
-        $productDetails = $this->extractTextContent($content['details'] ?? null);
+        // $productExplanation = $this->extractTextContent($content['explanation'] ?? null);
+        // $productDetails = $this->extractTextContent($content['details'] ?? null);
         $productImages = $this->extractImages($content['images'] ?? null);
         $productRelatedProducts = $this->extractRelatedProducts($content['related_products'] ?? null, $domain);
         $productSize = $this->extractSize($content['size'] ?? null);
@@ -173,8 +174,8 @@ class ProductCommand extends Command
         // Return normalized product data
         return [
             'title' => $productTitle,
-            'explanation' => $productExplanation,
-            'details' => $productDetails,
+            // 'explanation' => $productExplanation,
+            // 'details' => $productDetails,
             'images' => $productImages,
             'size' => $productSize,
             'price' => $productPrice,
