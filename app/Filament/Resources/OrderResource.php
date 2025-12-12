@@ -62,7 +62,7 @@ class OrderResource extends Resource
                                     ->dehydrated(false),
                                 Select::make('user_id')
                                     ->label(__('site.user'))
-                                    ->relationship('user', 'nickname')
+                                    ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                                     ->searchable()
                                     ->preload()
                                     ->required()
