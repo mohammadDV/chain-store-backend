@@ -91,10 +91,7 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::post('orders/{order}/check-discount', [OrderController::class, 'checkDiscount'])->name('orders.check-discount');
     Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::patch('orders/{order}', [OrderController::class, 'update'])->name('orders.update');
     Route::post('orders/{order}/pay', [OrderController::class, 'payOrder'])->name('orders.pay');
-
-    //
 
 
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');

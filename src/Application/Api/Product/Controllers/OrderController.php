@@ -55,17 +55,6 @@ class OrderController extends Controller
     }
 
     /**
-     * Update the order.
-     * @param OrderRequest $request
-     * @param Order $order
-     * @return JsonResponse
-     */
-    public function update(OrderRequest $request, Order $order): JsonResponse
-    {
-        return $this->repository->update($request, $order);
-    }
-
-    /**
      * Check the order status.
      * @param CheckOrderCodeRequest $request
      * @return JsonResponse
