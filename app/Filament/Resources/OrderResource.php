@@ -250,7 +250,7 @@ class OrderResource extends Resource
                     ]),
                 SelectFilter::make('user_id')
                     ->label(__('site.user'))
-                    ->relationship('user', 'nickname')
+                    ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                     ->searchable()
                     ->preload(),
                 SelectFilter::make('vip')
