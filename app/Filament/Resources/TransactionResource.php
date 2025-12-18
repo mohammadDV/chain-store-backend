@@ -54,7 +54,7 @@ class TransactionResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('user_id')
                             ->label(__('site.user'))
-                            ->relationship('user', 'nickname')
+                            ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                             ->searchable()
                             ->preload()
                             ->disabled()
@@ -171,7 +171,7 @@ class TransactionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label(__('site.user'))
-                    ->relationship('user', 'nickname')
+                    ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                     ->searchable()
                     ->preload(),
                 Tables\Filters\SelectFilter::make('status')

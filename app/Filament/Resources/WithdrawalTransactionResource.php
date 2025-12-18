@@ -62,7 +62,7 @@ class WithdrawalTransactionResource extends Resource
                             ->required(),
                         Forms\Components\Select::make('user_id')
                             ->label(__('site.user'))
-                            ->relationship('wallet.user', 'nickname')
+                            ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                             ->disabled()
                             ->required(),
                         Forms\Components\TextInput::make('amount')
@@ -180,7 +180,7 @@ class WithdrawalTransactionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('wallet.user_id')
                     ->label(__('site.user'))
-                    ->relationship('wallet.user', 'nickname')
+                    ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                     ->searchable()
                     ->preload(),
                 Tables\Filters\SelectFilter::make('status')

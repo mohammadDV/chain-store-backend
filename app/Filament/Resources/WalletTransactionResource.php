@@ -163,7 +163,7 @@ class WalletTransactionResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('wallet.user_id')
                     ->label(__('site.user'))
-                    ->relationship('wallet.user', 'nickname')
+                    ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                     ->searchable()
                     ->preload(),
                 Tables\Filters\SelectFilter::make('type')
