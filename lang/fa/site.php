@@ -1160,6 +1160,7 @@ return array(
     'message' => 'پیام',
     'has_file' => 'دارای فایل',
     'file' => 'فایل',
+    'file_path' => 'مسیر فایل',
     'chat_id' => 'شناسه گفتگو',
     'no_file' => 'بدون فایل',
     'download file' => 'دانلود فایل',

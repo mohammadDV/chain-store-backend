@@ -588,6 +588,7 @@ return array(
     'message' => 'Message',
     'has_file' => 'Has File',
     'file' => 'File',
+    'file_path' => 'File Path',
     'chat_id' => 'Chat ID',
     'no_file' => 'No file',
     'download file' => 'Download file',
