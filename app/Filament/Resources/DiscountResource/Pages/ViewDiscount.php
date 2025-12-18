@@ -17,4 +17,3 @@ class ViewDiscount extends ViewRecord
         ];
     }
 }
-
