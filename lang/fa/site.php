@@ -1435,4 +1435,19 @@ return array(
     'Insufficient stock' => 'موجودی انبار کافی نیست',
     'order_paid_title' => 'سفارش پرداخت شد',
     'order_paid_content' => 'کاربر گرامی: سفارش شما با کد :order_code با موفقیت پرداخت شد.',
+
+    // Cost Management
+    'Cost Management' => 'مدیریت هزینه‌ها',
+    'costs' => 'هزینه‌ها',
+    'cost' => 'هزینه',
+    'cost_information' => 'اطلاعات هزینه',
+    'cost_categories' => 'دسته‌بندی هزینه‌ها',
+    'cost_category' => 'دسته‌بندی هزینه',
+    'total_amount_per_category' => 'مجموع مبلغ هر دسته',
+    'total_amount_this_month' => 'مجموع مبلغ این ماه',
+    'costs_count' => 'تعداد هزینه‌ها',
+    'total' => 'جمع کل',
+    'total_revenue' => 'درآمد کل',
+    'created_from' => 'از تاریخ',
+    'created_until' => 'تا تاریخ',
 );

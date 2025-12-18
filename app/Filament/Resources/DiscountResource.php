@@ -209,4 +209,3 @@ class DiscountResource extends Resource
         return static::getModel()::count();
     }
 }
-

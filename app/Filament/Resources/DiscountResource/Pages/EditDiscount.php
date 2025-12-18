@@ -17,4 +17,3 @@ class EditDiscount extends EditRecord
         ];
     }
 }
-

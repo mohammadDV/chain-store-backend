@@ -811,4 +811,19 @@ return array(
     'Insufficient stock' => 'Insufficient stock',
     'order_paid_title' => 'Order Paid',
     'order_paid_content' => 'Dear user: Your order with code :order_code has been successfully paid.',
+
+    // Cost Management
+    'Cost Management' => 'Cost Management',
+    'costs' => 'Costs',
+    'cost' => 'Cost',
+    'cost_information' => 'Cost Information',
+    'cost_categories' => 'Cost Categories',
+    'cost_category' => 'Cost Category',
+    'total_amount_per_category' => 'Total Amount per Category',
+    'total_amount_this_month' => 'Total Amount This Month',
+    'costs_count' => 'Costs Count',
+    'total' => 'Total',
+    'total_revenue' => 'Total Revenue',
+    'created_from' => 'From Date',
+    'created_until' => 'Until Date',
 );

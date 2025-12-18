@@ -53,10 +53,7 @@ class Transaction extends Model
     public function getRevenueAttribute(): float
     {
         return match ($this->model_type) {
-            self::WALLET => $this->amount * 0.10,  // 10% from WALLET
-            self::PLAN => $this->amount * 1.00,    // 100% from PLAN
-            self::IDENTITY => ($this->amount * 1.00) - 15000, // 100% from IDENTITY
-            self::SECURE => $this->amount * 0.10,   // 10% from SECURE
+            self::WALLET => $this->amount,  // 10% from WALLET
             default => 0,
         };
     }

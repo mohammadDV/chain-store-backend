@@ -17,4 +17,3 @@ class ListDiscounts extends ListRecords
         ];
     }
 }
-
