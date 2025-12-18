@@ -51,13 +51,8 @@ class OxylabsService
                 'error_json' => $errorJson,
             ]);
 
-            // You can also throw an exception or return error details if needed
-            // For now, we'll just log and return null to maintain current behavior
-
             return null;
         } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            // Handle connection errors (timeout, DNS failure, etc.)
-            //: Operation timed out after 30001 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://realtime.oxylabs.io/v1/queries
             Log::error('Oxylabs API connection error 1', [
                 'key' => $key,
                 'url' => $url,
@@ -101,7 +96,7 @@ class OxylabsService
     {
 
         $config = [
-            'product' => [
+            'adidas_product' => [
                 'geo_location' => "TR",
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
@@ -123,7 +118,7 @@ class OxylabsService
                     // ],
                     [
                         "type" => "wait",
-                        "wait_time_s" => 1
+                        "wait_time_s" => 2
                     ]
                 ],
                 'parsing_instructions' => [
@@ -134,7 +129,7 @@ class OxylabsService
                     ],
                     'price' => [
                         "_fns" => [
-                            ['_fn' => 'css', '_args' => ['._mainPrice_1dnvn_52 > span']],
+                            ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
                         ]
                     ],
                     'discount' => [
@@ -170,7 +165,7 @@ class OxylabsService
                 ],
                 'url' => $url,
             ],
-            'update_stock' => [
+            'adidas_update_stock' => [
                 'geo_location' => "TR",
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
@@ -203,6 +198,108 @@ class OxylabsService
                     ],
                     'price' => [
                         "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
+                        ]
+                    ],
+                    'stock' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.scarcity-message_scarcity-message__7X5BG']],
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
+            'adidas_productList' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'parsing_instructions' => [
+                    'products' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-grid_product-card__8ufJk > div']]
+                        ]
+                    ],
+                    'title' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
+                            ['_fn' => 'element_text']
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
+            'decathlon_product' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 2
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'title' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
+                            ['_fn' => 'element_text']
+                        ]
+                    ],
+                    'price' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.vtmn-items-end > span']],
+                        ]
+                    ],
+                    'code' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.current-selected-model']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.price-discount']],
+                        ]
+                    ],
+                    'size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
+                        ]
+                    ],
+                    'related_products' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.variant-list__item > button']],
+                        ]
+                    ],
+                    'images' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.swiper-media__image']],
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
+            'decathlon_update_stock' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 1
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'title' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']]
+                        ]
+                    ],
+                    'price' => [
+                        "_fns" => [
                             ['_fn' => 'css', '_args' => ['._mainPrice_1dnvn_52 > span']],
                         ]
                     ],
@@ -219,13 +316,13 @@ class OxylabsService
                 ],
                 'url' => $url,
             ],
-            'productList' => [
+            'decathlon_productList' => [
                 'geo_location' => "TR",
                 'source' => 'universal_ecommerce',
                 'parsing_instructions' => [
                     'products' => [
                         "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-grid_product-card__8ufJk > div']]
+                            ['_fn' => 'css', '_args' => ['.dpb-bottom-btn-padding > a']]
                         ]
                     ],
                     'title' => [
@@ -234,36 +331,40 @@ class OxylabsService
                             ['_fn' => 'element_text']
                         ]
                     ],
-                    // 'price' => [
-                    //     "_fns" => [
-                    //         ['_fn' => 'xpath_one', '_args' => [".//span[@class='rd-price-information__price']/text()"]],
-                    //         ['_fn' => 'amount_from_string']
-                    //     ]
-                    // ],
-                    // 'reviews' => [
-                    //     '_fns' => [
-                    //         ['_fn' => 'xpath_one', '_args' => ['/html/body/div[2]/main/div[2]/div[3]/a/p[2]']],
-                    //     ]
-                    // ],
-                    // 'main_image' => [
-                    //     '_fns' => [
-                    //         ['_fn' => 'css', '_args' => ['._flyouts_cskbw_98 > img']]
-                    //     ]
-                    // ],
-                    // 'stack_images' => [
-                    //     '_fns' => [
-                    //         ['_fn' => 'xpath', '_args' => ["/html/body/div[2]/main/div[2]/div[4]/section/ul"]]
-                    //     ]
-                    // ]
-
+                ],
+                'url' => $url,
+            ],
+            'product_size' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 2
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'price' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
+                            // ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="main-price"]']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
+                        ]
+                    ],
+                    'size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.gl-label > span']],
+                        ]
+                    ],
                 ],
                 'url' => $url,
             ],
         ];
-
-        // if (!isset($config[$key])) {
-        //     throw new Exception('Marketplace not supported'); // Unsupported marketplace
-        // }
 
         $params = $config[$key];
         $params['parse'] = true;

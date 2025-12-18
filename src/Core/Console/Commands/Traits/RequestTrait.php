@@ -17,6 +17,11 @@ trait RequestTrait
         if(empty($filters) || !empty($filters['status']) && $filters['status'] == 2) {
             if($attempt >= 3) {
                 $this->error("Connection error after 3 attempts: ");
+                if (empty($filters)) {
+                    return [
+                        'status' => 4,
+                    ];
+                }
                 return $filters;
             }
 

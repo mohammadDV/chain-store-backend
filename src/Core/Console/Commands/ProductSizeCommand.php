@@ -44,6 +44,8 @@ class ProductSizeCommand extends Command
         $endpoints = Product::query()
             ->with('sizes')
             ->with('brand')
+            ->whereNotNull('url')
+            ->where('is_failed', 0)
             ->where(function($query) {
                 $query->whereHas('sizes', function($query) {
                     $query->where('code', 'AAA');
@@ -61,24 +63,21 @@ class ProductSizeCommand extends Command
         foreach($endpoints as $endpoint) {
 
             $filters = $this->retryRequest($oxylabsService, 'product_size', $endpoint->url, 1, $endpoint?->brand?->domain);
+            if(!empty($filters['status']) && $filters['status'] == 4) {
+
+                continue;
+            }
+
 
             if(!empty($filters['status']) && $filters['status'] == 2) {
-                $countfailed++;
-                if ($countfailed >= 3) {
-                    $this->error("Failed to get product data: " . $endpoint->url);
-                    return;
-                }
+
                 continue;
             }
 
             $productData = $this->cleanProductData($filters);
 
             if(!empty($productData['status']) && $productData['status'] == 2) {
-                $countfailed++;
-                if ($countfailed >= 3) {
-                    $this->error("Failed to get product data: " . $endpoint->url);
-                    return;
-                }
+
                 continue;
             }
 
@@ -145,7 +144,7 @@ class ProductSizeCommand extends Command
             throw new \Exception('Invalid product data structure');
         }
 
-        if (empty($content['size'])) {
+        if (empty($content['size']) || empty($content['price'][1])) {
             return ['status' => 3];
             throw new \Exception('Product sizes not found');
         }
