@@ -54,6 +54,7 @@ class Transaction extends Model
     {
         return match ($this->model_type) {
             self::WALLET => $this->amount,  // 10% from WALLET
+            self::ORDER => $this->amount,  // 10% from ORDER
             default => 0,
         };
     }
@@ -101,7 +102,7 @@ class Transaction extends Model
     {
         $revenue = [];
 
-        foreach ([self::WALLET, self::PLAN, self::IDENTITY, self::SECURE] as $type) {
+        foreach ([self::WALLET, self::ORDER] as $type) {
             $revenue[$type] = static::where('model_type', $type)
                 ->where('status', self::COMPLETED)
                 ->get()
