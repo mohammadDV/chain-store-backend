@@ -138,7 +138,6 @@ class ProductResource extends Resource
                             Select::make('color_id')
                                 ->label(__('site.color'))
                                 ->relationship('color', 'title')
-                                ->searchable()
                                 ->required(),
                             Hidden::make('user_id')
                                 ->default(fn (): ?int => Auth::id())
