@@ -14,6 +14,7 @@ use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
+use Domain\Setting\Services\SettingService;
 use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
@@ -32,8 +33,11 @@ class OrderRepository implements IOrderRepository
 {
     use GlobalFunc;
 
-    public function __construct(protected TelegramNotificationService $service, protected IWalletRepository $walletRepository)
-    {
+    public function __construct(
+        protected TelegramNotificationService $service,
+        protected IWalletRepository $walletRepository,
+        protected SettingService $settingService
+    ){
         //
     }
 
@@ -230,6 +234,8 @@ class OrderRepository implements IOrderRepository
             // Calculate final total
             $totalAmount = $productsAmount + $deliveryAmount;
 
+            $profitRate = $this->settingService->getProfitRateWithFallback();
+
             // Create order
             $order = Order::updateOrCreate([
                 'user_id' => Auth::user()->id,
@@ -238,11 +244,16 @@ class OrderRepository implements IOrderRepository
                 'product_count' => $productCount,
                 'amount' => $productsAmount,
                 'total_amount' => $totalAmount,
+                'discount_amount' => 0,
                 'delivery_amount' => $deliveryAmount,
+                'discount_id' => null,
                 'active' => 1,
                 'vip' => 0,
                 'code' => Order::generateCode(),
                 'expire_date' => now()->addMinutes(30),
+                'profit_rate' => $profitRate,
+                'profit' => ($productsAmount * $profitRate / 100) + $deliveryAmount,
+                'exchange_rate' => $this->settingService->getExchangeRateWithFallback(),
             ]);
 
             // Detach old products
@@ -324,7 +335,6 @@ class OrderRepository implements IOrderRepository
         );
 
         $amount = $order->amount;
-        $totalAmount = $order->total_amount;
         $discountAmount = 0;
         $deliveryAmount = $order->delivery_amount;
         $discountId = null;
@@ -332,6 +342,7 @@ class OrderRepository implements IOrderRepository
         if (!empty($request->input('discount_code'))) {
 
             $calclulatedAmount = $this->checkDiscount($order, $request->input('discount_code'));
+
 
             if (empty($calclulatedAmount['status'])) {
                 return response()->json([
@@ -346,7 +357,18 @@ class OrderRepository implements IOrderRepository
             $deliveryAmount = $calclulatedAmount['delivery_amount'];
             $discountId = $calclulatedAmount['discount_id'];
 
+
+        } else {
+            $deliveryAmount = 0;
+
+            if ($amount < config('product.default_limit_delivery_amount')) {
+                $deliveryAmount = config('product.default_delivery_amount');
+            }
+
+            $totalAmount = $amount + $deliveryAmount;
         }
+
+        $profitRate = $this->settingService->getProfitRateWithFallback();
 
         $order->update([
             'description' => $request->input('description'),
@@ -358,6 +380,9 @@ class OrderRepository implements IOrderRepository
             'fullname' => $request->input('fullname'),
             'address' => $request->input('address'),
             'postal_code' => $request->input('postal_code'),
+            'profit_rate' => $profitRate,
+            'profit' => ($amount * $profitRate / 100) + $deliveryAmount - $discountAmount,
+            'exchange_rate' => $this->settingService->getExchangeRateWithFallback(),
         ]);
 
         if ($request->input('payment_method') === Transaction::WALLET) {

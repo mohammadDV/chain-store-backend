@@ -1254,6 +1254,16 @@ return array(
 
     // Settings Section
     'settings' => 'تنظیمات',
+    'setting' => 'تنظیمات',
+    'setting_information' => 'اطلاعات تنظیمات',
+    'profit_rate' => 'نرخ سود',
+    'profit_rate_help' => 'نرخ سود به درصد',
+    'exchange_rate' => 'نرخ ارز',
+    'exchange_rate_help' => 'نرخ ارز',
+    'security' => 'امنیت',
+    'security_code' => 'کد امنیتی',
+    'security_code_help' => 'کد امنیتی را برای به‌روزرسانی تنظیمات وارد کنید',
+    'invalid_security_code' => 'کد امنیتی نامعتبر است. لطفا کد صحیح را برای به‌روزرسانی تنظیمات وارد کنید.',
     'media' => 'رسانه',
     'table_id' => 'شناسه',
     'created_at' => 'تاریخ ایجاد',

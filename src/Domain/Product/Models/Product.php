@@ -7,6 +7,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\File;
 use Domain\Review\Models\Review;
+use Domain\Setting\Services\SettingService;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -89,8 +90,21 @@ class Product extends Model
 
     public function getAmountAttribute($value)
     {
-        $rate = config('setting.money_rate', 1);
+        $settingService = app(SettingService::class);
+        $rate = $settingService->getExchangeRateWithFallback();
 
-        return ($value ?? 0) * $rate;
+        $dicountRate = max(0, $this->discount);
+
+        $amount = $value ?? 0;
+
+        $payableAmount = $amount * $rate;
+
+        $profit = $payableAmount * $settingService->getProfitRateWithFallback() / 100;
+
+        if ($dicountRate > 0) {
+            $amount = $amount * 100 / $this->discount;
+        }
+
+        return ceil(($payableAmount + $profit) / 1000) * 1000;
     }
 }
