@@ -40,7 +40,7 @@ class EditProduct extends EditRecord
             $data['image_source'] = 'upload';
         }
 
-        // Get raw database value for amount (bypass the accessor that multiplies by money_rate)
+        // Get raw database value for amount (bypass the accessor that multiplies by exchange_rate)
         if (isset($this->record)) {
             $data['amount'] = $this->record->getRawOriginal('amount');
         }

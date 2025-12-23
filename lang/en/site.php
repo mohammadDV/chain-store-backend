@@ -682,6 +682,16 @@ return array(
 
     // Settings Section
     'settings' => 'Settings',
+    'setting' => 'Setting',
+    'setting_information' => 'Setting Information',
+    'profit_rate' => 'Profit Rate',
+    'profit_rate_help' => 'The profit rate percentage',
+    'exchange_rate' => 'Exchange Rate',
+    'exchange_rate_help' => 'The exchange rate',
+    'security' => 'Security',
+    'security_code' => 'Security Code',
+    'security_code_help' => 'Enter the security code to update settings',
+    'invalid_security_code' => 'Invalid security code. Please enter the correct code to update settings.',
     'media' => 'Media',
     'table_id' => 'ID',
     'created_at' => 'Created At',

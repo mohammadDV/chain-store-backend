@@ -27,6 +27,9 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('code')->unique();
+            $table->decimal('profit', 15, 2)->default(0);
+            $table->decimal('profit_rate', 15, 2)->default(0);
+            $table->decimal('exchange_rate', 15, 2)->default(0);
             $table->date('expire_date')->nullable();
             $table->timestamps();
         });
