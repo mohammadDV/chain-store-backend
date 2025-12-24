@@ -151,6 +151,10 @@ class ProductRepository implements IProductRepository
                 $query->where('brand_id', $brand);
             })
             ->where('active', 1)
+            ->whereHas('sizes', function ($query) {
+                $query->where('status', 1)
+                    ->where('stock', '>', 0);
+            })
             ->where('status', Product::COMPLETED)
             ->orderBy($column, $request->get('sort', 'desc'))
             ->limit(config('product.limit'))
@@ -177,6 +181,10 @@ class ProductRepository implements IProductRepository
         $similarProducts = Product::query()
             ->with(['categories'])
             ->where('active', 1)
+            ->whereHas('sizes', function ($query) {
+                $query->where('status', 1)
+                    ->where('stock', '>', 0);
+            })
             ->where('status', Product::COMPLETED)
             ->where(function ($query) use ($categories) {
                 $query->whereHas('categories', function ($query) use ($categories) {
@@ -212,6 +220,10 @@ class ProductRepository implements IProductRepository
 
         $queryProduct = Product::query()
             ->where('active', 1)
+            ->whereHas('sizes', function ($query) {
+                $query->where('status', 1)
+                    ->where('stock', '>', 0);
+            })
             ->where('status', Product::COMPLETED)
             ->where(function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%')
@@ -276,6 +288,10 @@ class ProductRepository implements IProductRepository
                 ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
                 ->withCount('reviews')
                 ->where('active', 1)
+                ->whereHas('sizes', function ($query) {
+                    $query->where('status', 1)
+                        ->where('stock', '>', 0);
+                })
                 ->where('status', Product::COMPLETED);
 
             if (!empty($search)) {
