@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Core\Http\traits\GlobalFunc;
 use Domain\Chat\Models\ChatMessage;
 use Domain\Notification\Services\NotificationService;
+use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Ticket\Models\Ticket;
 use Domain\User\Models\User;
@@ -124,6 +125,22 @@ class UserRepository implements IUserRepository
                 ->where('status', Ticket::STATUS_ACTIVE)
                 ->count();
 
+
+        $orderInProgressCount = Order::query()
+            ->where('user_id', Auth::user()->id)
+            ->whereIn('status', [Order::PAID, Order::SHIPPED, ORDER::RETURNED])
+            ->count();
+
+        $orderCancelledCount = Order::query()
+            ->where('user_id', Auth::user()->id)
+            ->whereIn('status', [Order::CANCELLED, ORDER::FAILED, ORDER::EXPIRED, ORDER::REFUNDED])
+            ->count();
+
+        $orderDeliveredAmount = Order::query()
+            ->where('user_id', Auth::user()->id)
+            ->where('status', Order::DELIVERED)
+            ->sum('total_amount');
+
         // $messageCount = ChatMessage::query()
         //         ->whereHas('chat', function ($query) {
         //             return $query->where('user_id', Auth::user()->id)
@@ -136,7 +153,9 @@ class UserRepository implements IUserRepository
         return [
             'product_count' => $productCount,
             'tickets' => $ticketCount,
-            // 'messages' => $messageCount,
+            'order_in_progress_count' => $orderInProgressCount,
+            'order_cancelled_count' => $orderCancelledCount,
+            'order_delivered_amount' => $orderDeliveredAmount,
         ];
     }
 

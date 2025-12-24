@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Application\Api\User\Resources\UserResource;
+use Domain\Wallet\Models\Wallet;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Http;
 
@@ -133,6 +134,13 @@ class AuthController extends Controller
                 $user->assignRole(['user']);
 
                 $user->createToken('chainstoretoken')->plainTextToken;
+
+                Wallet::create([
+                    'user_id' => $user->id,
+                    'balance' => 0,
+                    'currency' => Wallet::IRR,
+                    'status' => 1
+                ]);
             }
         }
 
@@ -195,6 +203,13 @@ class AuthController extends Controller
         $user->assignRole(['user']);
 
         $token = $user->createToken('chainstoretoken')->plainTextToken;
+
+        Wallet::create([
+            'user_id' => $user->id,
+            'balance' => 0,
+            'currency' => Wallet::IRR,
+            'status' => 1
+        ]);
 
         event(new Registered($user));
 
