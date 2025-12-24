@@ -59,4 +59,10 @@ interface IOrderRepository
      * @return JsonResponse
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse;
+
+    /**
+     * Expire pending orders that have been created more than one hour ago.
+     * @return int Number of expired orders
+     */
+    public function expirePendingOrders(): int;
 }

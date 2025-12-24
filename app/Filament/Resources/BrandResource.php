@@ -11,6 +11,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -80,6 +81,10 @@ class BrandResource extends Resource
                                     ->numeric()
                                     ->default(0),
                             ]),
+                        Toggle::make('has_stock_management')
+                            ->label(__('site.has_stock_management'))
+                            ->default(0)
+                            ->columnSpanFull(),
                         Select::make('colors')
                             ->label(__('site.colors'))
                             ->relationship('colors', 'title')
@@ -138,6 +143,16 @@ class BrandResource extends Resource
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (int $state): string => $state === 1 ? __('site.Active') : __('site.Inactive')),
+                TextColumn::make('has_stock_management')
+                    ->label(__('site.has_stock_management'))
+                    ->badge()
+                    ->color(fn (int $state): string => match ($state) {
+                        1 => 'success',
+                        0 => 'gray',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (int $state): string => $state === 1 ? __('site.Yes') : __('site.No'))
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('priority')
                     ->label(__('site.priority'))
                     ->sortable()

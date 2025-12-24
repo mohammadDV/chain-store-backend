@@ -12,7 +12,9 @@ use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
+use Domain\Product\Models\OrderProduct;
 use Domain\Product\Models\Product;
+use Domain\Product\Models\Size;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Services\TelegramNotificationService;
@@ -270,19 +272,34 @@ class OrderRepository implements IOrderRepository
 
                 if ($productData['size_id']) {
                     $size = $product->sizes->findOrFail($productData['size_id']);
-                    if ($size->stock < $productData['count']) {
+
+                    $productsOrderedCount = 0;
+                    if (!empty($product->brand->has_stock_management)) {
+                        $productsOrderedCount = OrderProduct::query()
+                            ->whereHas('order', function ($query) {
+                                $query->where('status', Order::PENDING)
+                                    ->where('active', 1);
+                            })
+                            ->where('product_id', $product->id)
+                            ->where('size_id', $productData['size_id'])
+                            ->sum('count');
+                    }
+
+                    $productStock = $size->stock - $productsOrderedCount;
+
+                    if ($productStock < $productData['count']) {
                         return response()->json([
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
                         ], Response::HTTP_BAD_REQUEST);
                     }
                 } else {
-                    if ($product->stock < $productData['count']) {
+                    // if ($product->stock < $productData['count']) {
                         return response()->json([
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
                         ], Response::HTTP_BAD_REQUEST);
-                    }
+                    // }
                 }
 
                 $order->products()->attach($productData['id'], [
@@ -328,6 +345,13 @@ class OrderRepository implements IOrderRepository
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse
     {
+
+        if ($order->status == Order::EXPIRED) {
+            return response()->json([
+                'status' => 0,
+                'message' => __('site.Order expired'),
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         $this->checkLevelAccess(
             Auth::user()->id == $order->user_id &&
@@ -499,6 +523,15 @@ class OrderRepository implements IOrderRepository
             // Update order status
             $order->update(['status' => Order::PAID]);
 
+            // Update stock
+            foreach ($order->products as $product) {
+                if ($product?->brand?->has_stock_management && $product?->pivot?->size_id) {
+                    Size::query()
+                        ->where('id', $product->pivot->size_id)
+                        ->decrement('stock', $product->pivot->count);
+                }
+            }
+
             NotificationService::create([
                 'title' => __('site.order_paid_title'),
                 'content' => __('site.order_paid_content', ['order_code' => $order->code]),
@@ -520,5 +553,26 @@ class OrderRepository implements IOrderRepository
         } catch (\Exception $e) {
             DB::rollBack();
         }
+    }
+
+    /**
+     * Expire pending orders that have been created more than one hour ago.
+     * @return int Number of expired orders
+     */
+    public function expirePendingOrders(): int
+    {
+        $oneHourAgo = now()->subHour();
+
+        $expiredCount = Order::query()
+            ->whereDoesntHave('transactions', function ($query) {
+                $query->where('status', Transaction::PENDING)
+                    ->where('created_at', '>=', now()->subMinutes(15));
+            })
+            ->where('status', Order::PENDING)
+            ->where('active', 1)
+            ->where('created_at', '<=', $oneHourAgo)
+            ->update(['status' => Order::EXPIRED]);
+
+        return $expiredCount;
     }
 }

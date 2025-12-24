@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('description', 2048)->nullable();
             $table->tinyInteger('status')->default(0);
             $table->tinyInteger('priority')->default(0);
+            $table->tinyInteger('has_stock_management')->default(0);
             $table->timestamps();
         });
     }

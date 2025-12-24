@@ -621,6 +621,7 @@ return array(
     'colors' => 'Colors',
     'color_information' => 'Color Information',
     'select_brand_colors' => 'Select colors for this brand',
+    'has_stock_management' => 'Has Stock Management',
     'product_information' => 'Product Information',
     'pricing_inventory' => 'Pricing & Inventory',
     'product_relations' => 'Product Relationships',
@@ -822,6 +823,13 @@ return array(
     'Insufficient stock' => 'Insufficient stock',
     'order_paid_title' => 'Order Paid',
     'order_paid_content' => 'Dear user: Your order with code :order_code has been successfully paid.',
+    'Order expired' => 'Order expired',
+    'Pending Orders (Should Expire)' => 'Pending Orders (Should Expire)',
+    'Total Pending Orders' => 'Total Pending Orders',
+    'Orders pending > 1 hour' => 'Orders pending > 1 hour',
+    'All active pending orders' => 'All active pending orders',
+    'Expired Today' => 'Expired Today',
+    'Expired in last 24 hours' => 'Expired in last 24 hours',
 
     // Cost Management
     'Cost Management' => 'Cost Management',

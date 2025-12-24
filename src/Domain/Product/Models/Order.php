@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use Domain\Payment\Models\Transaction;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,6 +53,11 @@ class Order extends Model
         } while ($exists);
 
         return (string)$code;
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'model_id', 'id')->where('model_type', Transaction::ORDER);
     }
 
 }
