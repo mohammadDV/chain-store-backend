@@ -1193,6 +1193,7 @@ return array(
     'colors' => 'رنگ‌ها',
     'color_information' => 'اطلاعات رنگ',
     'select_brand_colors' => 'رنگ‌های مرتبط با برند را انتخاب کنید',
+    'has_stock_management' => 'مدیریت موجودی',
     'product_information' => 'اطلاعات محصول',
     'pricing_inventory' => 'قیمت و موجودی',
     'product_relations' => 'ارتباطات محصول',
@@ -1446,6 +1447,13 @@ return array(
     'Insufficient stock' => 'موجودی انبار کافی نیست',
     'order_paid_title' => 'سفارش پرداخت شد',
     'order_paid_content' => 'کاربر گرامی: سفارش شما با کد :order_code با موفقیت پرداخت شد.',
+    'Order expired' => 'سفارش منقضی شده است',
+    'Pending Orders (Should Expire)' => 'سفارش‌های در انتظار (باید منقضی شوند)',
+    'Total Pending Orders' => 'کل سفارش‌های در انتظار',
+    'Orders pending > 1 hour' => 'سفارش‌های در انتظار بیش از 1 ساعت',
+    'All active pending orders' => 'همه سفارش‌های در انتظار فعال',
+    'Expired Today' => 'منقضی شده امروز',
+    'Expired in last 24 hours' => 'منقضی شده در 24 ساعت گذشته',
 
     // Cost Management
     'Cost Management' => 'مدیریت هزینه‌ها',

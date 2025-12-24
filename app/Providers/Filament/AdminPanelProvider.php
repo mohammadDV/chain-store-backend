@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Widgets\DashboardOverview;
 use App\Filament\Widgets\LatestTickets;
+use App\Filament\Widgets\OrderExpirationMonitor;
 use App\Filament\Widgets\ProductsByStatusChart;
 use App\Filament\Widgets\ReviewsByStatusChart;
 use Filament\Http\Middleware\Authenticate;
@@ -46,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 ProductsByStatusChart::class,
                 ReviewsByStatusChart::class,
                 LatestTickets::class,
+                OrderExpirationMonitor::class,
             ])
             ->middleware([
                 EncryptCookies::class,

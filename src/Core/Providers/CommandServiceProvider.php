@@ -3,6 +3,7 @@
 namespace Core\Providers;
 
 use Core\Console\Commands\AddPermissions;
+use Core\Console\Commands\ExpirePendingOrdersCommand;
 use Core\Console\Commands\ProductCommand;
 use Core\Console\Commands\ProductListCommand;
 use Core\Console\Commands\ProductSizeCommand;
@@ -22,6 +23,7 @@ class CommandServiceProvider extends ServiceProvider
             ProductCommand::class,
             UpdateStockCommand::class,
             ProductSizeCommand::class,
+            ExpirePendingOrdersCommand::class,
         ]);
     }
 
