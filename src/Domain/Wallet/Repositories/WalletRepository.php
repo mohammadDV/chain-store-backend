@@ -119,8 +119,8 @@ class WalletRepository implements IWalletRepository
      */
     public function completeTopUp(int $walletTransactionId) :void
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             // Create transaction record
             $walletTransaction = WalletTransaction::find($walletTransactionId);
@@ -161,8 +161,8 @@ class WalletRepository implements IWalletRepository
      */
     public function transfer(TransferRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             $senderWallet = $this->findByUserId(Auth::id());
             $recipient = User::query()
@@ -291,8 +291,8 @@ class WalletRepository implements IWalletRepository
      */
     public function withdraw(WithdrawRequest $request): JsonResponse
     {
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             $wallet = $this->findByUserId(Auth::id());
             $amount = $request->amount;

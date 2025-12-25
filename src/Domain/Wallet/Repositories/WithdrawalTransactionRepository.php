@@ -75,8 +75,8 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             ], Response::HTTP_BAD_REQUEST);
         }
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             $wallet = Wallet::query()
                     ->where('user_id', Auth::id())
@@ -162,8 +162,8 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             $data['image'] = $request->input('image');
         }
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             if ($request->input('status') == WithdrawalTransaction::REJECT) {
                 WalletTransaction::createTransaction(

@@ -196,7 +196,6 @@ class OrderRepository implements IOrderRepository
      */
     public function store(OrderRequest $request): JsonResponse
     {
-
         DB::beginTransaction();
 
         try {
@@ -210,6 +209,7 @@ class OrderRepository implements IOrderRepository
                 $product = Product::find($productData['id']);
 
                 if (!$product) {
+                    DB::rollBack();
                     return response()->json([
                         'status' => 0,
                         'message' => __('site.Product not found')
@@ -288,6 +288,7 @@ class OrderRepository implements IOrderRepository
                     $productStock = $size->stock - $productsOrderedCount;
 
                     if ($productStock < $productData['count']) {
+                        DB::rollBack();
                         return response()->json([
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
@@ -295,6 +296,7 @@ class OrderRepository implements IOrderRepository
                     }
                 } else {
                     // if ($product->stock < $productData['count']) {
+                        DB::rollBack();
                         return response()->json([
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
@@ -425,19 +427,21 @@ class OrderRepository implements IOrderRepository
      */
     private function payWithWallet(Order $order): JsonResponse
     {
-        $wallet = $this->walletRepository->findByUserId(Auth::id());
-
-        $amount = $order->total_amount;
-
-        if ($wallet->balance < $amount) {
-            return response()->json([
-                'status' => 0,
-                'message' => __('site.Insufficient funds'),
-            ], Response::HTTP_PAYMENT_REQUIRED);
-        }
+        DB::beginTransaction();
 
         try {
-            DB::beginTransaction();
+
+            $wallet = $this->walletRepository->findByUserId(Auth::id());
+
+            $amount = $order->total_amount;
+
+            if ($wallet->balance < $amount) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => 0,
+                    'message' => __('site.Insufficient funds'),
+                ], Response::HTTP_PAYMENT_REQUIRED);
+            }
 
             // Get the wallet of the user that created this project
             $wallet = Wallet::query()
@@ -515,8 +519,9 @@ class OrderRepository implements IOrderRepository
      */
     public function completeOrder(int $orderId) :void
     {
+        DB::beginTransaction();
+
         try {
-            DB::beginTransaction();
 
             // Create transaction record
             $order = Order::find($orderId);

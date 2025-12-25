@@ -116,8 +116,8 @@ class ReviewRepository implements IReviewRepository
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        DB::beginTransaction();
         try {
-            DB::beginTransaction();
 
             $review = Review::create([
                 'comment' => $request->input('comment'),

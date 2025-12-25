@@ -220,8 +220,8 @@ class WithdrawalTransactionResource extends Resource
                     ->modalSubmitActionLabel(__('site.confirm_complete'))
                     ->modalCancelActionLabel(__('site.cancel'))
                     ->action(function (WithdrawalTransaction $withdrawalTransaction, array $data): void {
+                        DB::beginTransaction();
                         try {
-                            DB::beginTransaction();
 
                             $updateData = [
                                 'status' => WithdrawalTransaction::COMPLETED,
@@ -286,8 +286,8 @@ class WithdrawalTransactionResource extends Resource
                     ->modalSubmitActionLabel(__('site.confirm_reject'))
                     ->modalCancelActionLabel(__('site.cancel'))
                     ->action(function (WithdrawalTransaction $withdrawalTransaction, array $data): void {
+                        DB::beginTransaction();
                         try {
-                            DB::beginTransaction();
 
                             // Create refund transaction to return money to wallet
                             WalletTransaction::createTransaction(
