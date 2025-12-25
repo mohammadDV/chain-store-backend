@@ -36,7 +36,6 @@ class UpdateStockCommand extends Command
 
         $sizes = Size::query()
             ->with('product.brand')
-            ->whereIn('id', [156, 157, 158, 159])
             ->whereHas('product', function($query) {
                 $query->where('status', Product::COMPLETED)
                     ->where('brand_id', 1)
