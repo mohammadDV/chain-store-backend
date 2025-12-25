@@ -62,7 +62,7 @@ class DecathlonBrandService implements BrandServiceInterface
         }
 
         $links = [];
-        foreach ($content['products'] as $product) {
+        foreach ($content['products'] ?? [] as $product) {
             $url = $this->extractLink($product ?? '');
             if (!empty($url)) {
                 $links[] = [
@@ -322,7 +322,7 @@ class DecathlonBrandService implements BrandServiceInterface
 
         $relatedProducts = [];
         $endpoints = [];
-        foreach ($productData['related_products'] as $relatedProduct) {
+        foreach ($productData['related_products'] ?? [] as $relatedProduct) {
             if(strlen($relatedProduct) > 5 && $relatedProduct != $productData['code']) {
                 $otherUrl = explode('?', $url)[0] . "?mc=" . $relatedProduct;
                 $relatedProducts[] = $otherUrl;
@@ -366,7 +366,7 @@ class DecathlonBrandService implements BrandServiceInterface
         if (!empty($productData['images'])) {
 
             // Create or update images
-            foreach ($productData['images'] as $key => $imagePath) {
+            foreach ($productData['images'] ?? [] as $key => $imagePath) {
                 $product->files()->updateOrCreate(
                     [
                         'path' => $imagePath,
@@ -385,7 +385,7 @@ class DecathlonBrandService implements BrandServiceInterface
 
             $priority = 100;
             // Create or update sizes
-            foreach ($productData['size'] as $key => $status) {
+            foreach ($productData['size'] ?? [] as $key => $status) {
                 $sizeTitle = trim($key, '.');
 
                 switch (strtolower($status)) {

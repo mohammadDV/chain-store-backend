@@ -69,7 +69,7 @@ class AdidasBrandService implements BrandServiceInterface
 
         $links = [];
 
-        foreach ($content['products'] as $product) {
+        foreach ($content['products'] ?? [] as $product) {
             $url = $this->extractLink($product ?? '');
             if (!empty($url)) {
                 $links[] = [
@@ -378,7 +378,7 @@ class AdidasBrandService implements BrandServiceInterface
         if (!empty($productData['images'])) {
 
             // Create or update images
-            foreach ($productData['images'] as $key => $imagePath) {
+            foreach ($productData['images'] ?? [] as $key => $imagePath) {
                 $product->files()->updateOrCreate(
                     [
                         'path' => $imagePath,
@@ -396,7 +396,7 @@ class AdidasBrandService implements BrandServiceInterface
         if (!empty($productData['size'])) {
 
             // Create or update sizes
-            foreach ($productData['size'] as $key => $sizeTitle) {
+            foreach ($productData['size'] ?? [] as $key => $sizeTitle) {
                 $product->sizes()->updateOrCreate(
                     ['code' => trim($sizeTitle)],
                     [
