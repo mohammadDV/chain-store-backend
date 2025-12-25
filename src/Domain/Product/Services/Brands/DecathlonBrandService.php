@@ -437,4 +437,29 @@ class DecathlonBrandService implements BrandServiceInterface
 
         return $product;
     }
+
+    public function cleanStockData(array $response, string $domain, string $sizeCode): array
+    {
+        // TODO: Implement cleanStockData() method.
+    }
+
+    public function getUpdateStockParsingKey(): string
+    {
+        // TODO: Implement getUpdateStockParsingKey() method.
+        return 'decathlon_update_stock';
+    }
+
+    public function updateProduct(array $productData, Product $product, Size $size): Product {
+    {
+        $product->update([
+            'amount' => $productData['price'],
+            'discount' => $productData['discount'],
+        ]);
+
+        $size->update([
+            'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
+        ]);
+
+        return $product;
+    }
 }
