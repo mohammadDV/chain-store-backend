@@ -6,6 +6,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
+use Domain\Product\Models\Size;
 
 /**
  * Decathlon brand-specific product scraping service
@@ -449,7 +450,15 @@ class DecathlonBrandService implements BrandServiceInterface
         return 'decathlon_update_stock';
     }
 
-    public function updateProduct(array $productData, Product $product, Size $size): Product {
+    /**
+     * Update product data in the database
+     *
+     * @param array $productData Product data to update
+     * @param Product $product Product model
+     * @param Size $size Size model
+     * @return Product Product model
+     */
+    public function updateProduct(array $productData, Product $product, Size $size): Product
     {
         $product->update([
             'amount' => $productData['price'],
