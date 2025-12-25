@@ -172,7 +172,7 @@ class OxylabsService
                 "browser_instructions" => [
                     [
                         "type" => "wait",
-                        "wait_time_s" => 1
+                        "wait_time_s" => 2
                     ]
                 ],
                 'parsing_instructions' => [

@@ -487,6 +487,7 @@ class AdidasBrandService implements BrandServiceInterface
 
         $size->update([
             'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
+            'updated_at' => now(),
         ]);
 
         return $product;
