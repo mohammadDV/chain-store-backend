@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('view_count')->default(0);
             $table->enum('status',['pending', 'completed'])->default('pending'); // pending, completed
             $table->tinyInteger('vip')->default(0);
+            $table->tinyInteger('is_failed')->default(0);
             $table->tinyInteger('priority')->default(0);
             $table->json('related_products')->nullable();
             $table->bigInteger('color_id')->unsigned()->index();

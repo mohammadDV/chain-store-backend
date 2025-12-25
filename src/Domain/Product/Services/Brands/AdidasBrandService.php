@@ -5,6 +5,7 @@ namespace Domain\Product\Services\Brands;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
+use Domain\Product\Models\Size;
 
 /**
  * Adidas brand-specific product scraping service
@@ -87,6 +88,47 @@ class AdidasBrandService implements BrandServiceInterface
     }
 
     /**
+     * Clean and normalize stock data from API response
+     *
+     * @param array $response The raw response from Oxylabs API
+     * @param string $domain The brand domain (e.g., 'https://www.adidas.com.tr')
+     * @param string $sizeCode The size code
+     * @return array Normalized stock data with keys: stock
+     * @throws \Exception If required stock data is missing
+     */
+    public function cleanStockData(array $response, string $domain, string $sizeCode): array
+    {
+        // Extract product content from results
+        $content = $response['results'][0]['content'] ?? null;
+
+        if (!$content) {
+            throw new \Exception('Invalid product data structure');
+        }
+
+        // Extract and validate title
+        $productTitle = $this->extractTitle($content['title'][0] ?? null);
+        if (!$productTitle) {
+            throw new \Exception('Product not found');
+        }
+
+        $productSize = $this->extractSize($content['size'] ?? null);
+        $productStock = 0;
+        if (in_array($sizeCode, $productSize)) {
+            $productStock = $this->extractStock($content['stock'][0] ?? null);
+        }
+        $productPrice = $this->extractPrice($content['price'][1] ?? null);
+        $productDiscount = $this->extractDiscount($content['discount'][0] ?? null);
+
+        // Return normalized product data
+        return [
+            'title' => $productTitle,
+            'stock' => $productStock,
+            'price' => $productPrice,
+            'discount' => $productDiscount,
+        ];
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function getProductParsingKey(): string
@@ -100,6 +142,14 @@ class AdidasBrandService implements BrandServiceInterface
     public function getProductListParsingKey(): string
     {
         return 'adidas_productList';
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getUpdateStockParsingKey(): string
+    {
+        return 'adidas_update_stock';
     }
 
     /**
@@ -388,5 +438,57 @@ class AdidasBrandService implements BrandServiceInterface
         $text = trim($text);
 
         return $text;
+    }
+
+    /**
+     * Extract stock from HTML
+     *
+     * @param string|null $string The HTML content to extract stock from
+     * @return string|int Stock value or 'notfound' if stock is not found
+     */
+    public function extractStock(?string $string): string|int
+    {
+        if (empty($string)) {
+            return config('product.default_stock');
+        }
+
+        $stock = 0;
+        // Pattern matches:div class="scarcity-message_scarcity-message__7X5BG" data-auto-id="scarcity-message" aria-live="polite" role="status">Stokta yaln&#305;zca 2 adet kald&#305;</div>
+        preg_match('/<div[^>]*>([^<]+)<\/div>/i', $string, $matches);
+        if(!empty($matches[1])) {
+            $content = html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8');
+            if (trim(strtolower($content)) == 'tükenmek üzere') {
+                return 'notfound';
+            }
+            // Extract number from the content (e.g., "Stokta yalnızca 2 adet kaldı" -> 2)
+            preg_match('/\d+/', $content, $numberMatches);
+            if(!empty($numberMatches[0])) {
+                return (int) $numberMatches[0];
+            }
+        }
+
+        return $stock;
+    }
+
+    /**
+     * Update product data in the database
+     *
+     * @param array $productData Product data to update
+     * @param Product $product Product model
+     * @param Size $size Size model
+     * @return Product Product model
+     */
+    public function updateProduct(array $productData, Product $product, Size $size): Product {
+
+        $product->update([
+            'amount' => $productData['price'],
+            'discount' => $productData['discount'],
+        ]);
+
+        $size->update([
+            'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
+        ]);
+
+        return $product;
     }
 }

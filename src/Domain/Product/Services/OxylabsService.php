@@ -170,21 +170,6 @@ class OxylabsService
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
                 "browser_instructions" => [
-                    // [
-                    //     "type" => "input",
-                    //     "value" => "pizza boxes",
-                    //     "selector" => [
-                    //         "type" => "xpath",
-                    //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
-                    //     ]
-                    // ],
-                    // [
-                    //     "type" => "click",
-                    //     "selector" => [
-                    //         "type" => "xpath",
-                    //         "value" => "//button[@class='accordion_accordion__header__GK4__']"
-                    //     ]
-                    // ],
                     [
                         "type" => "wait",
                         "wait_time_s" => 1
@@ -209,6 +194,11 @@ class OxylabsService
                     'stock' => [
                         "_fns" => [
                             ['_fn' => 'css', '_args' => ['.scarcity-message_scarcity-message__7X5BG']],
+                        ]
+                    ],
+                    'size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.gl-label > span']],
                         ]
                     ],
                 ],

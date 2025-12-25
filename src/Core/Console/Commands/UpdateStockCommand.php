@@ -4,29 +4,27 @@ namespace Core\Console\Commands;
 
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Services\Brands\BrandServiceFactory;
 use Domain\Product\Services\OxylabsService;
 use Illuminate\Console\Command;
+use Core\Console\Commands\Traits\RequestTrait;
 
 class UpdateStockCommand extends Command
 {
+    use RequestTrait;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'get-data:update-stock';
+    protected $signature = 'get-data:update-stock {--limit=10 : Limit the number of sizes to process}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fetch product from Oxylabs';
-
-    protected int $categoryId = 9;
-    protected ?string $url = null;
-    protected ?string $domain = 'https://www.adidas.com.tr';
-
+    protected $description = 'Fetch product from Oxylabs and update stock in the database';
 
     /**
      * Execute the console command.
@@ -36,200 +34,60 @@ class UpdateStockCommand extends Command
 
         $oxylabsService = new OxylabsService();
 
-        $size = Size::find(48);
-        $product = Product::find($size->product_id);
-
-        // $url = 'https://www.adidas.com.tr/tr/copa-mundial-cim-saha-kramponu/JP6693.html';
-        // $url = 'https://www.adidas.com.tr/tr/essentials-3-stripes-french-terry-sweatshirt/JE6372.html';
-        // $this->url = 'https://www.adidas.com.tr/tr/stan-smith-shoes/FX5499.html?forceSelSize=36';
-        $this->url = $product->url . '?forceSelSize=' . str_replace(' ', '+', $size->code);
-
-
-        $filters = $this->retryRequest($oxylabsService);
-
-        if(!empty($filters['status']) && $filters['status'] == 2) {
-            $this->error("Connection error: " . $filters['error']);
-            return;
-        }
-
-        $productData = $this->cleanProductData($filters, $this->domain);
-
-        $this->updateProduct($productData, $product, $size);
-
-        // $this->info("Products: " . var_export($filters, true));
-        $this->info("Products: " . var_export($productData, true));
+        $sizes = Size::query()
+            ->with('product.brand')
+            ->whereIn('id', [156, 157, 158, 159])
+            ->whereHas('product', function($query) {
+                $query->where('status', Product::COMPLETED)
+                    ->where('brand_id', 1)
+                    ->where('is_failed', 0)
+                    ->where('active', 1);
+            })
+            ->orderBy('updated_at', 'asc')
+            ->limit($this->option('limit', 10))
+            ->get();
 
 
-    }
+        $count = 0;
+        foreach($sizes as $size) {
 
-    private function retryRequest(OxylabsService $oxylabsService, int $attempt = 1): array
-    {
-        $this->info("URL: " . $this->url);
-        $this->info("Attempt: " . $attempt);
-        $this->info("--------------------------------");
+            try {
+                $url = $size?->product?->url . '?forceSelSize=' . str_replace(' ', '+', $size->code);
+                // Get the appropriate brand service
+                $brandService = BrandServiceFactory::getService($size?->product?->brand);
+                $parsingKey = $brandService->getUpdateStockParsingKey();
 
-        $filters = $oxylabsService->fetchRequest('update_stock', $this->url);
+                $filters = $this->retryRequest($oxylabsService, $parsingKey, $url, 1);
 
-        if(!empty($filters['status']) && $filters['status'] == 2) {
-            if($attempt >= 3) {
-                $this->error("Connection error after 3 attempts: " . $filters['error']);
-                return $filters;
-            }
+                if(!empty($filters['status']) && in_array($filters['status'], [4, 2])) {
+                    continue;
+                }
 
-            $this->error("Connection error (attempt {$attempt}/3): " . $filters['error']);
-            sleep(20);
-            return $this->retryRequest($oxylabsService, $attempt + 1);
-        }
+                // Use brand service to clean product data
+                $productData = $brandService->cleanStockData($filters, $size?->product?->brand?->domain, $size->code);
 
-        return $filters;
+                if(!empty($productData['status']) && $productData['status'] == 2) {
+                    continue;
+                }
 
-    }
+                if(!empty($productData['status']) && $productData['status'] == 3) {
 
-    private function updateProduct(array $productData, Product $product, Size $size): Product {
+                    $this->error("Failed to get product sizesssssssssss: " . $url);
+                    continue;
+                }
 
-        $product->update([
-            'amount' => $productData['price'],
-            'discount' => $productData['discount'],
-        ]);
+                $product = $brandService->updateProduct($productData, $size?->product, $size);
 
-        $size->update([
-            'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
-        ]);
-
-        return $product;
-    }
-
-    /**
-     * Clean and normalize the Kaufland product data
-     *
-     * @param   array  $kauflandComProduct The raw product data from API
-     * @param   string $domain The domain of the product
-     * @throws  Exception If required product data is missing
-     */
-    private function cleanProductData(array $response): array
-    {
-        // Extract product content from results
-        $content = $response['results'][0]['content'] ?? null;
-
-        if (!$content) {
-            throw new \Exception('Invalid product data structure');
-        }
-
-        // Extract and validate title
-        $productTitle = $this->extractTitle($content['title'][0] ?? null);
-        if (!$productTitle) {
-            throw new \Exception('Product not found');
-        }
-
-        $productStock = $this->extractStock($content['stock'][0] ?? null);
-        $productPrice = $this->extractPrice($content['price'][1] ?? null);
-        $productDiscount = $this->extractDiscount($content['discount'][0] ?? null);
-
-        // Return normalized product data
-        return [
-            'title' => $productTitle,
-            'stock' => $productStock,
-            'price' => $productPrice,
-            'discount' => $productDiscount,
-        ];
-    }
-
-    private function extractDiscount(?string $price): int
-    {
-        if (empty($price)) {
-            return 0;
-        }
-
-        // Pattern matches: <span data-testid="discount-text" class="_discountText_1dnvn_90">-40%<span class="_visuallyHidden_1dnvn_2">&#304;ndirim</span></span>
-        preg_match('/<span[^>]*data-testid="discount-text"[^>]*>(-?\d+)%<span/i', $price, $matches);
-        if(!empty($matches[1])) {
-            // Extract the number from the discount percentage (e.g., 40 from "-40%")
-            $discountNumber = abs((int) $matches[1]);
-            return $discountNumber;
-        }
-        return 0;
-    }
-
-    private function extractPrice(?string $price): int
-    {
-        if (empty($price)) {
-            return 0;
-        }
-
-        // Pattern matches: <span>1.499,00 TL</span> or <span>5.399 TL</span>
-        // <span class="_sale-color_1dnvn_101">2.099 TL</span>
-        preg_match('/<span[^>]*>([^<]+)<\/span>/i', $price, $matches);
-        if(!empty($matches[1])) {
-            $priceString = $matches[1];
-
-            // Remove "TL" text
-            $priceString = preg_replace('/\s*TL\s*/i', '', $priceString);
-
-            // Remove thousands separator (period)
-            $priceString = str_replace('.', '', $priceString);
-
-            // Remove decimal separator (comma) and everything after it if present
-            if (strpos($priceString, ',') !== false) {
-                $priceString = strstr($priceString, ',', true);
-            }
-
-            // Convert to integer
-            return (int) $priceString;
-        }
-        return 0;
-    }
-
-    private function extractStock(?string $string): string|int
-    {
-        $this->info("String: " . $string);
-        if (empty($string)) {
-            $this->info("Stock is empty");
-            return config('product.default_stock');
-        }
-
-        $stock = 0;
-
-        // Pattern matches:div class="scarcity-message_scarcity-message__7X5BG" data-auto-id="scarcity-message" aria-live="polite" role="status">Stokta yaln&#305;zca 2 adet kald&#305;</div>
-        preg_match('/<div[^>]*>([^<]+)<\/div>/i', $string, $matches);
-        if(!empty($matches[1])) {
-            $content = html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8');
-            $this->info("Content: " . $content);
-            if (trim(strtolower($content)) == 'tükenmek üzere') {
-                return 'notfound';
-            }
-            // Extract number from the content (e.g., "Stokta yalnızca 2 adet kaldı" -> 2)
-            preg_match('/\d+/', $content, $numberMatches);
-            $this->info("Numbers matches: " . var_export($numberMatches, true));
-            if(!empty($numberMatches[0])) {
-                $this->info("---Number matches: " . $numberMatches[0]);
-                $stock = (int) $numberMatches[0];
+                if (!empty($product?->id)) {
+                    $count++;
+                    $this->info("Products: " . $product->id);
+                    $this->info("Size: " . $size->id);
+                    $this->info("Count: {$count}/{$sizes->count()}");
+                }
+            } catch (\Exception $e) {
+                $this->error("Error processing size {$size->id}: " . $e->getMessage());
+                continue;
             }
         }
-
-        return $stock;
     }
-
-    /**
-     * Extract clean text content from HTML
-     *
-     * @param string|null $html The HTML content to clean
-     * @return string Clean text content
-     */
-    private function extractTitle(?string $html): string
-    {
-        if (empty($html)) {
-            return '';
-        }
-
-        // Decode HTML entities first
-        $html = html_entity_decode($html, ENT_QUOTES, 'UTF-8');
-
-        // Remove all HTML tags
-        $text = strip_tags($html);
-        $text = trim($text);
-
-        return $text;
-    }
-
-
 }
