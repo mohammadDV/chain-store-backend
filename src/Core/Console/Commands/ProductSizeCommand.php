@@ -138,7 +138,7 @@ class ProductSizeCommand extends Command
             return ['status' => 3];
         }
 
-        if (in_array('AAA', $content['size'])) {
+        if (in_array('<span>AAA</span>', $content['size'])) {
             return ['status' => 3];
         }
 
