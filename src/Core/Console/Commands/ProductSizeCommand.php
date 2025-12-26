@@ -3,7 +3,6 @@
 namespace Core\Console\Commands;
 
 use Core\Console\Commands\Traits\RequestTrait;
-use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
 use Domain\Product\Services\OxylabsService;
@@ -17,14 +16,14 @@ class ProductSizeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'get-data:product-size {--limit=10 : Limit the number of endpoints to process}';
+    protected $signature = 'update-data:adidas-product-size {--limit=10 : Limit the number of endpoints to process} {--failed=0 : Failed products} {--all=0 : Failed products}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fetch product from Oxylabs';
+    protected $description = 'update product sizes when the products does not have sizes and for compleleting the product sizes';
 
 
     /**
@@ -36,53 +35,48 @@ class ProductSizeCommand extends Command
         $oxylabsService = new OxylabsService();
 
         $limit = (int) $this->option('limit');
+        $isFailed = (int) $this->option('failed');
+        $isAll = (int) $this->option('all');
 
         Size::query()
             ->where('code', 'AAA')
             ->delete();
 
         $endpoints = Product::query()
+            ->where('id', 12)
             ->with('sizes')
             ->with('brand')
+            ->where('brand_id', 1)
             ->whereNotNull('url')
-            ->where('is_failed', 0)
-            ->where(function($query) {
-                $query->whereHas('sizes', function($query) {
-                    $query->where('code', 'AAA');
-                })->orWhereDoesntHave('sizes');
+            ->where(function($query) use ($isFailed) {
+                $query->where('is_failed', $isFailed);
             })
-            ->orderBy('id', 'asc')
+            ->when($isAll == 0, function($query) {
+                $query->whereDoesntHave('sizes');
+            })
+            ->orderBy('updated_at', 'asc')
             ->limit($limit)
             ->get();
 
-
-        // $this->url = 'https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html';
-
         $count = 0;
-        $countfailed = 0;
         foreach($endpoints as $endpoint) {
 
-            $filters = $this->retryRequest($oxylabsService, 'product_size', $endpoint->url, 1, $endpoint?->brand?->domain);
-            if(!empty($filters['status']) && $filters['status'] == 4) {
-
-                continue;
-            }
-
-
-            if(!empty($filters['status']) && $filters['status'] == 2) {
-
+            $filters = $this->retryRequest($oxylabsService, 'adidas_product_size', $endpoint->url, 1, $endpoint?->brand?->domain);
+            if(!empty($filters['status']) && in_array($filters['status'], [4, 2])) {
                 continue;
             }
 
             $productData = $this->cleanProductData($filters);
 
             if(!empty($productData['status']) && $productData['status'] == 2) {
-
                 continue;
             }
 
             if(!empty($productData['status']) && $productData['status'] == 3) {
 
+                $endpoint->update([
+                    'is_failed' => 1,
+                ]);
                 $this->error("Failed to get product sizesssssssssss: " . $endpoint->url);
                 continue;
             }
@@ -105,23 +99,20 @@ class ProductSizeCommand extends Command
         $product->update([
             'amount' => $productData['price'],
             'discount' => $productData['discount'],
+            'is_failed' => 0,
+            'updated_at' => now(),
         ]);
 
-        // Sync sizes: only add/remove what's needed
-        if (!empty($productData['size'])) {
-
-            // Create or update sizes
-            foreach ($productData['size'] as $key => $sizeTitle) {
-                $product->sizes()->updateOrCreate(
-                    ['code' => trim($sizeTitle)],
-                    [
-                        'title' => trim($sizeTitle),
-                        'status' => 1,
-                        'stock' => config('product.default_stock'),
-                        'priority' => 100 - $key,
-                    ]
-                );
-            }
+        // Create or update sizes
+        foreach ($productData['size'] ?? [] as $key => $sizeTitle) {
+            $product->sizes()->updateOrCreate(
+                ['code' => trim($sizeTitle)],
+                [
+                    'title' => trim($sizeTitle),
+                    'status' => 1,
+                    'priority' => 100 - $key,
+                ]
+            );
         }
 
         return $product;
@@ -141,12 +132,10 @@ class ProductSizeCommand extends Command
 
         if (!$content) {
             return ['status' => 2];
-            throw new \Exception('Invalid product data structure');
         }
 
         if (empty($content['size']) || empty($content['price'][1])) {
             return ['status' => 3];
-            throw new \Exception('Product sizes not found');
         }
 
         $productSize = $this->extractSize($content['size'] ?? null);

@@ -222,6 +222,36 @@ class OxylabsService
                 ],
                 'url' => $url,
             ],
+            'adidas_product_size' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 2
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'price' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
+                            // ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="main-price"]']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
+                        ]
+                    ],
+                    'size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.gl-label > span']],
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
             'decathlon_product' => [
                 'geo_location' => "TR",
                 'source' => 'universal_ecommerce',
@@ -319,36 +349,6 @@ class OxylabsService
                         "_fns" => [
                             ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
                             ['_fn' => 'element_text']
-                        ]
-                    ],
-                ],
-                'url' => $url,
-            ],
-            'product_size' => [
-                'geo_location' => "TR",
-                'source' => 'universal_ecommerce',
-                'render' => 'html',
-                "browser_instructions" => [
-                    [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
-                ],
-                'parsing_instructions' => [
-                    'price' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
-                            // ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="main-price"]']],
-                        ]
-                    ],
-                    'discount' => [
-                        "_fns" => [
-                            ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
-                        ]
-                    ],
-                    'size' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.gl-label > span']],
                         ]
                     ],
                 ],

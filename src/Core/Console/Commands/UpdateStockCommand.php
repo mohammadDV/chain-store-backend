@@ -17,7 +17,7 @@ class UpdateStockCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'get-data:update-stock {--limit=10 : Limit the number of sizes to process}';
+    protected $signature = 'update-data:adidas-update-stock {--limit=500 : Limit the number of sizes to process}';
 
     /**
      * The console command description.
