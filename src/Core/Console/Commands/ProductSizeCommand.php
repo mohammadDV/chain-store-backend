@@ -75,6 +75,7 @@ class ProductSizeCommand extends Command
 
                 $endpoint->update([
                     'is_failed' => 1,
+                    'updated_at' => now(),
                 ]);
                 $this->error("Failed to get product sizesssssssssss: " . $endpoint->url);
                 continue;
@@ -134,6 +135,10 @@ class ProductSizeCommand extends Command
         }
 
         if (empty($content['size']) || empty($content['price'][1])) {
+            return ['status' => 3];
+        }
+
+        if (in_array('AAA', $content['size'])) {
             return ['status' => 3];
         }
 
