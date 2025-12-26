@@ -38,9 +38,9 @@ class ProductSizeCommand extends Command
         $isFailed = (int) $this->option('failed');
         $isAll = (int) $this->option('all');
 
-        Size::query()
-            ->where('code', 'AAA')
-            ->delete();
+        // Size::query()
+        //     ->where('code', 'AAA')
+        //     ->delete();
 
         $endpoints = Product::query()
             ->with('sizes')
@@ -135,10 +135,6 @@ class ProductSizeCommand extends Command
         }
 
         if (empty($content['size']) || empty($content['price'][1])) {
-            return ['status' => 3];
-        }
-
-        if (in_array('<span>AAA</span>', $content['size'])) {
             return ['status' => 3];
         }
 
