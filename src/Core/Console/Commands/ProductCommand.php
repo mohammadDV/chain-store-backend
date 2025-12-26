@@ -4,7 +4,6 @@ namespace Core\Console\Commands;
 
 use Core\Console\Commands\Traits\RequestTrait;
 use Domain\Product\Models\Endpoint;
-use Domain\Product\Models\Product;
 use Domain\Product\Services\OxylabsService;
 use Domain\Product\Services\Brands\BrandServiceFactory;
 use Illuminate\Console\Command;

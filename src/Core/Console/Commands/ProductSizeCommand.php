@@ -43,7 +43,6 @@ class ProductSizeCommand extends Command
             ->delete();
 
         $endpoints = Product::query()
-            ->where('id', 12)
             ->with('sizes')
             ->with('brand')
             ->where('brand_id', 1)

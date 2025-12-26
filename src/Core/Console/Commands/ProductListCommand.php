@@ -5,8 +5,6 @@ namespace Core\Console\Commands;
 use Domain\Product\Services\OxylabsService;
 use Illuminate\Console\Command;
 use Core\Console\Commands\Traits\RequestTrait;
-use Domain\Brand\Models\Brand;
-use Domain\Product\Models\Category;
 use Domain\Product\Models\Endpoint;
 use Domain\Product\Services\Brands\BrandServiceFactory;
 use Domain\Product\Services\Brands\BrandEnum;
