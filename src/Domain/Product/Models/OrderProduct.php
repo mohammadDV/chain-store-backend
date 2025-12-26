@@ -2,7 +2,6 @@
 
 namespace Domain\Product\Models;
 
-use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
