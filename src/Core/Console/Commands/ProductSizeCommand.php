@@ -38,9 +38,9 @@ class ProductSizeCommand extends Command
         $isFailed = (int) $this->option('failed');
         $isAll = (int) $this->option('all');
 
-        // Size::query()
-        //     ->where('code', 'AAA')
-        //     ->delete();
+        Size::query()
+            ->where('code', 'AAA')
+            ->delete();
 
         $endpoints = Product::query()
             ->with('sizes')
