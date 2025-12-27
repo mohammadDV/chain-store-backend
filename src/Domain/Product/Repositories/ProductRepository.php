@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Application\Api\Product\Requests\SearchProductRequest;
 use Application\Api\Product\Resources\CategoryResource;
 use Application\Api\Product\Resources\ProductBoxResource;
+use Application\Api\Product\Resources\ProductFavoriteResource;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Favorite;
 use Domain\Review\Models\Review;
@@ -50,6 +51,7 @@ class ProductRepository implements IProductRepository
                     'sizes'
                 ])
                 ->where('id', $product->id)
+                ->active()
                 ->first();
 
         $reviews = $this->getReviewsByRate($product->id);
@@ -116,10 +118,11 @@ class ProductRepository implements IProductRepository
             ->when(!empty($search), function ($query) use ($search) {
                 return $query->where('title', 'like', '%' . $search . '%');
             })
+            ->active()
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
 
-        return $products->through(fn ($product) => new ProductBoxResource($product));
+        return $products->through(fn ($product) => new ProductFavoriteResource($product));
     }
 
         /**
@@ -132,6 +135,7 @@ class ProductRepository implements IProductRepository
         $column = $request->get('column', 'id');
         $brand = $request->get('brand');
 
+        $isRandom = false;
         match ($column) {
             'rate' => $column = 'rate',
             'order' => $column = 'order_count',
@@ -139,10 +143,10 @@ class ProductRepository implements IProductRepository
             'discount' => $column = 'discount',
             'reviews' => $column = 'reviews_count',
             'amount' => $column = 'amount',
+            'vip' => $column = 'vip',
+            'random' => $isRandom = true,
             default => $column = 'id',
         };
-
-        // var_dump($column);  exit;
 
         $products = Product::query()
             ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
@@ -150,13 +154,12 @@ class ProductRepository implements IProductRepository
             ->when(!empty($brand), function ($query) use ($brand) {
                 $query->where('brand_id', $brand);
             })
-            ->where('active', 1)
-            ->whereHas('sizes', function ($query) {
-                $query->where('status', 1)
-                    ->where('stock', '>', 0);
+            ->active()
+            ->when($isRandom, function ($query) {
+                $query->inRandomOrder();
+            }, function ($query) use ($column, $request) {
+                $query->orderBy($column, $request->get('sort', 'desc'));
             })
-            ->where('status', Product::COMPLETED)
-            ->orderBy($column, $request->get('sort', 'desc'))
             ->limit(config('product.limit'))
             ->get()
             ->map(fn ($product) => new ProductBoxResource($product));
@@ -179,13 +182,8 @@ class ProductRepository implements IProductRepository
             ?->toArray();
 
         $similarProducts = Product::query()
+            ->active()
             ->with(['categories'])
-            ->where('active', 1)
-            ->whereHas('sizes', function ($query) {
-                $query->where('status', 1)
-                    ->where('stock', '>', 0);
-            })
-            ->where('status', Product::COMPLETED)
             ->where(function ($query) use ($categories) {
                 $query->whereHas('categories', function ($query) use ($categories) {
                     $query->whereIn('categories.id', $categories)
@@ -219,12 +217,7 @@ class ProductRepository implements IProductRepository
             ->get();
 
         $queryProduct = Product::query()
-            ->where('active', 1)
-            ->whereHas('sizes', function ($query) {
-                $query->where('status', 1)
-                    ->where('stock', '>', 0);
-            })
-            ->where('status', Product::COMPLETED)
+            ->active()
             ->where(function ($query) use ($search) {
                 $query->where('title', 'like', '%' . $search . '%')
                     ->orWhere('description', 'like', '%' . $search . '%')
@@ -287,12 +280,7 @@ class ProductRepository implements IProductRepository
             $query = Product::query()
                 ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
                 ->withCount('reviews')
-                ->where('active', 1)
-                ->whereHas('sizes', function ($query) {
-                    $query->where('status', 1)
-                        ->where('stock', '>', 0);
-                })
-                ->where('status', Product::COMPLETED);
+                ->active();
 
             if (!empty($search)) {
                 $query->where(function ($query) use ($search) {

@@ -27,13 +27,7 @@ class UserController extends Controller
         return response()->json($this->repository->index());
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
-    public function getActivityCount(): JsonResponse
-    {
-        return response()->json($this->repository->getActivityCount());
-    }
+    
 
     /**
      * Get the dashboard info.

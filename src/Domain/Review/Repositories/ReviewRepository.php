@@ -35,7 +35,7 @@ class ReviewRepository implements IReviewRepository
 
         $search = $request->get('query');
         return Review::query()
-            ->with('user:id,nickname,profile_photo_path,rate')
+            ->with('user:id,nickname,profile_photo_path,rate', 'product:id,title,amount,image')
             ->withCount('likes')
             ->when(!empty($search), function ($query) use ($search) {
                 return $query->where('comment', 'like', '%' . $search . '%');

@@ -9,6 +9,7 @@ use Domain\Product\Models\File;
 use Domain\Review\Models\Review;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -106,5 +107,22 @@ class Product extends Model
         }
 
         return ceil(($payableAmount + $profit) / 1000) * 1000;
+    }
+
+    /**
+     * Get the active plans
+     *
+     * @param Builder $builder The query builder
+     * @return Builder              The query builder including the active statement
+     */
+    public function scopeActive(Builder $builder): Builder
+    {
+        return $builder->where('active', 1)
+            ->whereHas('sizes', function ($query) {
+                $query->where('status', 1)
+                    ->where('stock', '>', 0);
+            })
+            ->where('status', self::COMPLETED)
+            ->where('is_failed', 0);
     }
 }

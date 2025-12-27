@@ -2,16 +2,12 @@
 
 namespace Domain\User\Repositories;
 
-use Application\Api\Product\Resources\ProductResource;
 use Application\Api\User\Requests\ChangePasswordRequest;
 use Application\Api\User\Requests\UpdateUserRequest;
 use Application\Api\User\Resources\UserResource;
-use Carbon\Carbon;
 use Core\Http\traits\GlobalFunc;
-use Domain\Chat\Models\ChatMessage;
 use Domain\Notification\Services\NotificationService;
 use Domain\Product\Models\Order;
-use Domain\Product\Models\Product;
 use Domain\Ticket\Models\Ticket;
 use Domain\User\Models\User;
 use Domain\User\Repositories\Contracts\IUserRepository;
@@ -44,26 +40,8 @@ class UserRepository implements IUserRepository
      */
     public function getUserInfo(User $user) :array
     {
-
-        $senderQuery = Product::query()
-            ->with([
-                'area'
-            ])
-            ->where('user_id', $user->id)
-            ->where('active', 1)
-            ->orderBy('id', 'desc');
-
-        $senderProducts = $senderQuery
-            ->limit(4)
-            ->get()
-            ->map(fn ($product) => new ProductResource($product));
-
-        $senderProductsCount = $senderQuery->count();
-
         return [
             'user' => new UserResource($user),
-            'products' => $senderProducts,
-            'products_count' => $senderProductsCount,
         ];
     }
 
@@ -81,10 +59,6 @@ class UserRepository implements IUserRepository
                 'last_name' => Auth::user()->last_name,
                 'email' => Auth::user()->email,
                 'nickname' => Auth::user()->nickname,
-                'address' => Auth::user()->address,
-                'country_id' => Auth::user()->country_id,
-                'city_id' => Auth::user()->city_id,
-                'area_id' => Auth::user()->area_id,
                 'mobile' => Auth::user()->mobile,
                 'biography' => Auth::user()->biography,
                 'profile_photo_path' => Auth::user()->profile_photo_path,
@@ -116,9 +90,6 @@ class UserRepository implements IUserRepository
      */
     public function getDashboardInfo() :array
     {
-        $productCount = Product::query()
-                ->where('user_id', Auth::user()->id)
-                ->count();
 
         $ticketCount = Ticket::query()
                 ->where('user_id', Auth::user()->id)
@@ -151,7 +122,6 @@ class UserRepository implements IUserRepository
         //         ->count();
 
         return [
-            'product_count' => $productCount,
             'tickets' => $ticketCount,
             'order_in_progress_count' => $orderInProgressCount,
             'order_cancelled_count' => $orderCancelledCount,
@@ -181,9 +151,6 @@ class UserRepository implements IUserRepository
             'first_name'            => $request->input('first_name'),
             'last_name'             => $request->input('last_name'),
             'nickname'              => $request->input('nickname'),
-            'address'               => $request->input('address'),
-            'country_id'            => $request->input('country_id'),
-            'city_id'               => $request->input('city_id'),
             'mobile'                => $request->input('mobile'),
             'biography'             => $request->input('biography'),
             'profile_photo_path'    => $request->input('profile_photo_path', config('image.default-profile-image')),

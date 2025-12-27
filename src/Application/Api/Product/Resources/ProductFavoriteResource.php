@@ -4,7 +4,7 @@ namespace Application\Api\Product\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProductBoxResource extends JsonResource
+class ProductFavoriteResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,6 +22,7 @@ class ProductBoxResource extends JsonResource
             'discount' => intval($this->discount),
             'image' => $this->image,
             'rate' => $this->rate,
+            'is_favorite' => true,
         ];
     }
 }

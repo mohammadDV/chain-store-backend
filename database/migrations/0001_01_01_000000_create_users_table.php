@@ -17,12 +17,8 @@ return new class extends Migration
             $table->string('last_name')->nullable();
             $table->string('nickname')->nullable();
             $table->string('customer_number');
-            $table->text('address')->nullable();
             $table->foreignId('role_id')->unsigned();
-            $table->foreignId('country_id')->nullable();
-            $table->foreignId('city_id')->nullable();
             $table->foreignId('type')->default(1); // 1 : normal user // 2 : admin user
-            $table->string('national_code')->nullable();
             $table->string('mobile')->nullable();
             $table->text('biography')->nullable();
             $table->integer('point')->default(0);
