@@ -302,6 +302,41 @@ class OxylabsService
                 ],
                 'url' => $url,
             ],
+            'decathlon_update_sizes_and_stock' => [
+                'geo_location' => "TR",
+                'source' => 'universal_ecommerce',
+                'render' => 'html',
+                "browser_instructions" => [
+                    [
+                        "type" => "wait",
+                        "wait_time_s" => 2
+                    ]
+                ],
+                'parsing_instructions' => [
+                    'title' => [
+                        "_fns" => [
+                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
+                            ['_fn' => 'element_text']
+                        ]
+                    ],
+                    'price' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.vtmn-items-end > span']],
+                        ]
+                    ],
+                    'discount' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.price-discount']],
+                        ]
+                    ],
+                    'size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
+                        ]
+                    ],
+                ],
+                'url' => $url,
+            ],
             'decathlon_update_stock' => [
                 'geo_location' => "TR",
                 'source' => 'universal_ecommerce',

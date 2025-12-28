@@ -19,7 +19,6 @@ class DecathlonBrandService implements BrandServiceInterface
      */
     public function cleanProductData(array $response, string $domain): array
     {
-        // TODO: Implement Decathlon product data extraction
         // Extract product content from results
         $content = $response['results'][0]['content'] ?? null;
 
@@ -27,7 +26,6 @@ class DecathlonBrandService implements BrandServiceInterface
             throw new \Exception('Invalid product data structure');
         }
 
-        // TODO: Implement Decathlon-specific extraction methods
         $productTitle = $this->extractTitle($content['title'] ?? null);
         $productPrice = $this->extractPrice($content['price'][0] ?? null);
         $productDiscount = $this->extractDiscount($content['discount'][0] ?? null);
@@ -53,7 +51,6 @@ class DecathlonBrandService implements BrandServiceInterface
      */
     public function cleanProductList(array $response, Brand $brand, Category $category): array
     {
-        // TODO: Implement Decathlon product list extraction
         // Extract product content from results
         $content = $response['results'][0]['content'] ?? null;
 
@@ -85,7 +82,6 @@ class DecathlonBrandService implements BrandServiceInterface
      */
     public function getProductParsingKey(): string
     {
-        // TODO: Update this if Decathlon needs a different parsing key
         // You may need to add a new key in OxylabsService.php
         return 'decathlon_product';
     }
@@ -95,11 +91,8 @@ class DecathlonBrandService implements BrandServiceInterface
      */
     public function getProductListParsingKey(): string
     {
-        // TODO: Update this if Decathlon needs a different parsing key
         return 'decathlon_productList';
     }
-
-    // TODO: Implement the following private methods based on Decathlon's HTML structure:
 
     /**
      * Extract code from HTML
@@ -442,12 +435,12 @@ class DecathlonBrandService implements BrandServiceInterface
     public function cleanStockData(array $response, string $domain, string $sizeCode): array
     {
         // TODO: Implement cleanStockData() method.
+        return [];
     }
 
     public function getUpdateStockParsingKey(): string
     {
-        // TODO: Implement getUpdateStockParsingKey() method.
-        return 'decathlon_update_stock';
+        return 'decathlon_update_sizes_and_stock';
     }
 
     /**
@@ -455,19 +448,53 @@ class DecathlonBrandService implements BrandServiceInterface
      *
      * @param array $productData Product data to update
      * @param Product $product Product model
-     * @param Size $size Size model
+     * @param ?Size $size Size model
      * @return Product Product model
      */
-    public function updateProduct(array $productData, Product $product, Size $size): Product
-    {
+    public function updateProduct(array $productData, Product $product, ?Size $size = null): Product {
+
         $product->update([
             'amount' => $productData['price'],
             'discount' => $productData['discount'],
+            'is_failed' => 0,
+            'updated_at' => now(),
         ]);
 
-        $size->update([
-            'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
-        ]);
+        // Sync sizes: only add/remove what's needed
+        if (!empty($productData['size'])) {
+
+            $priority = 100;
+            // Create or update sizes
+            foreach ($productData['size'] ?? [] as $key => $status) {
+                $sizeTitle = trim($key, '.');
+
+                switch (strtolower($status)) {
+                    case 'instock':
+                        $stock = config('product.default_stock');
+                        break;
+                    case 'low':
+                        $stock = 5;
+                        break;
+                    case 'outofstock':
+                        $stock = 0;
+                        break;
+                    default:
+                        $stock = config('product.default_stock');
+                        break;
+                }
+
+                $product->sizes()->updateOrCreate(
+                    ['code' => trim($sizeTitle)],
+                    [
+                        'title' => trim($sizeTitle),
+                        'status' => 1,
+                        'stock' => $stock,
+                        'priority' => $priority,
+                    ]
+                );
+                $priority--;
+            }
+        }
 
         return $product;
     }
