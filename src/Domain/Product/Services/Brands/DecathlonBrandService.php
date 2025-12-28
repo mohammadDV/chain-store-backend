@@ -32,6 +32,9 @@ class DecathlonBrandService implements BrandServiceInterface
         $productCode = $this->extractCode($content['code'][0] ?? null);
         $productImages = $this->extractImages($content['images'] ?? null);
         $productSize = $this->extractSize($content['size'] ?? null);
+        if (empty($productSize) && !empty($content['one_size'][0])) {
+            $productSize = $this->extractOneSize($content['one_size'][0] ?? null);
+        }
         $productRelatedProducts = $this->extractRelatedProducts($content['related_products'] ?? null, $domain);
 
         // Return normalized product data
@@ -175,6 +178,34 @@ class DecathlonBrandService implements BrandServiceInterface
             return (int) $priceString;
         }
         return 0;
+    }
+
+    /**
+     * Extract sizes with stock status from HTML array
+     *
+     * @param string|null $array Array of HTML strings containing size information
+     * @return array One size
+     */
+    private function extractOneSize(?string $html): array
+    {
+        if (empty($html)) {
+            return [];
+        }
+
+        $sizes = [];
+
+        // Pattern matches: <div class="vtmn-sku-selector--monosku ...">M 56-59cm <span class="sku-selector__stock sku-selector__stock--inStock ...">...</span></div>
+        // Extract size text before the span and stock status from span class
+        preg_match('/<div[^>]*class="[^"]*vtmn-sku-selector--monosku[^"]*"[^>]*>([^<]+)<span[^>]*class="[^"]*sku-selector__stock--(inStock|low|outOfStock)[^"]*"[^>]*>/i', $html, $matches);
+
+        if (!empty($matches[1]) && !empty($matches[2])) {
+            // Decode HTML entities to properly handle Turkish characters (e.g., Ş from &#350;)
+            $size = trim(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8'));
+            $stockStatus = $matches[2];
+            $sizes[$size] = $stockStatus;
+        }
+
+        return $sizes;
     }
 
     /**

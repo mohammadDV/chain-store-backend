@@ -289,6 +289,11 @@ class OxylabsService
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
                         ]
                     ],
+                    'one_size' => [
+                        "_fns" => [
+                            ['_fn' => 'css', '_args' => ['.vtmn-sku-selector--monosku']],
+                        ]
+                    ],
                     'related_products' => [
                         "_fns" => [
                             ['_fn' => 'css', '_args' => ['.variant-list__item > button']],
@@ -334,38 +339,9 @@ class OxylabsService
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
                         ]
                     ],
-                ],
-                'url' => $url,
-            ],
-            'decathlon_update_stock' => [
-                'geo_location' => "TR",
-                'source' => 'universal_ecommerce',
-                'render' => 'html',
-                "browser_instructions" => [
-                    [
-                        "type" => "wait",
-                        "wait_time_s" => 1
-                    ]
-                ],
-                'parsing_instructions' => [
-                    'title' => [
+                    'one_size' => [
                         "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']]
-                        ]
-                    ],
-                    'price' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['._mainPrice_1dnvn_52 > span']],
-                        ]
-                    ],
-                    'discount' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['._originalPrice_1dnvn_81 > span']],
-                        ]
-                    ],
-                    'stock' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.scarcity-message_scarcity-message__7X5BG']],
+                            ['_fn' => 'css', '_args' => ['.vtmn-sku-selector--monosku']],
                         ]
                     ],
                 ],
