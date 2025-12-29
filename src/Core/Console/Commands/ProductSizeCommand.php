@@ -81,6 +81,11 @@ class ProductSizeCommand extends Command
                 continue;
             }
 
+            if(empty($productData['price'])) {
+                $this->error("Price not found: " . $endpoint->id . " - " . $endpoint->url);
+                continue;
+            }
+
             $product = $this->storeProduct($productData, $endpoint);
 
             if (!empty($product?->id)) {

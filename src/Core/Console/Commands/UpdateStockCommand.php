@@ -75,6 +75,11 @@ class UpdateStockCommand extends Command
                     continue;
                 }
 
+                if(empty($productData['price'])) {
+                    $this->error("Price not found: " . $size->id . " - " . $url);
+                    continue;
+                }
+
                 $product = $brandService->updateProduct($productData, $size?->product, $size);
 
                 if (!empty($product?->id)) {
