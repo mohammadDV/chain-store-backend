@@ -92,8 +92,9 @@ class ProductCommand extends Command
                     ]);
                     $count++;
                     $this->info("Products: " . $endpoint->url);
-                    $this->info("Category: " . $endpoint->category_id);
                     $this->info("Products: " . $product->id);
+                    $this->info("count: " . $count . " / " . $endpoints->count());
+                    $this->info("************************************************");
                 }
             } catch (\Exception $e) {
                 $this->error("Error processing endpoint {$endpoint->id}: " . $e->getMessage());

@@ -104,8 +104,9 @@ class UpdateSizeAndStockCommand extends Command
                 if (!empty($finalProduct?->id)) {
                     $count++;
                     $this->info("Products: " . $product->url);
-                    $this->info("Category: " . $product->category_id);
                     $this->info("Products: " . $finalProduct->id);
+                    $this->info("count: " . $count . " / " . $endpoints->count());
+                    $this->info("************************************************");
                 }
             } catch (\Exception $e) {
                 $this->error("Error processing endpoint {$product->id}: " . $e->getMessage());
