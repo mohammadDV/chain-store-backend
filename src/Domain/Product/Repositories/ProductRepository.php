@@ -176,8 +176,6 @@ class ProductRepository implements IProductRepository
 
         $categories = Category::query()
             ->whereIn('id', $product->categories->pluck('id'))
-            ?->parent
-            ?->allChildren()
             ?->pluck('id')
             ?->toArray();
 
