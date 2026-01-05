@@ -229,5 +229,6 @@ return [
         'send_date' => 'تاریخ ارسال',
         'receive_date' => 'تاریخ دریافت',
         'confirmation_code' => 'کد تایید',
+        'discount_code' => 'کد تخفیف',
     ],
 ];

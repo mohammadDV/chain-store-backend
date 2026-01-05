@@ -99,7 +99,7 @@ class UserRepository implements IUserRepository
 
         $orderInProgressCount = Order::query()
             ->where('user_id', Auth::user()->id)
-            ->whereIn('status', [Order::PAID, Order::SHIPPED, ORDER::RETURNED])
+            ->whereIn('status', [Order::PAID, Order::SHIPPED, ORDER::RETURNED, Order::PENDING])
             ->count();
 
         $orderCancelledCount = Order::query()

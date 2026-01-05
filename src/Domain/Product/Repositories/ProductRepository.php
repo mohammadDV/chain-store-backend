@@ -57,7 +57,8 @@ class ProductRepository implements IProductRepository
         $reviews = $this->getReviewsByRate($product->id);
 
         $relatedProducts = json_decode($product->related_products, true);
-        $relatedProducts = Product::query()
+        $relatedProducts = Product::query()        
+            ->active()
             ->whereIn('url', !empty($relatedProducts) ? $relatedProducts : [])
             ->get()
             ->map(fn ($product) => new ProductResource($product));
@@ -312,6 +313,18 @@ class ProductRepository implements IProductRepository
 
             // category
             if (!empty($categories)) {
+
+                $parents = Category::query()
+                    ->whereIn('parent_id', $categories)
+                    ->pluck('id')
+                    ->toArray();
+
+                    
+                    $categories = array_merge($categories, $parents);
+                    $categories = array_unique($categories);
+                    // var_dump($categories);
+                    // dd($parents);
+
                 $query->whereHas('categories', function ($q) use ($categories) {
                     $q->whereIn('categories.id', $categories)
                       ->orWhereIn('categories.parent_id', $categories);
@@ -349,28 +362,25 @@ class ProductRepository implements IProductRepository
             5 => __('site.excellent')
         ];
 
+        // Calculate total reviews once (matching the same filters as the grouped query)
+        $totalReviews = Review::query()
+            ->where('active', 1)
+            ->where('status', Review::APPROVED)
+            ->when($productId ?? false, function ($query) use ($productId) {
+                return $query->where('product_id', $productId);
+            })
+            ->count();
+
         return $query->groupBy('rate')
             ->orderBy('rate', 'desc')
             ->get()
-            ->map(function ($item) use ($titles) {
+            ->map(function ($item) use ($titles, $totalReviews) {
                 return [
                     'title' => $titles[$item->rate],
                     'rate' => $item->rate,
                     'count' => $item->count,
-                    'percentage' => 0 // Will be calculated below
+                    'percentage' => $totalReviews > 0 ? round(($item->count / $totalReviews) * 100, 2) : 0
                 ];
-            })
-            ->map(function ($item, $index) use ($productId) {
-                // Calculate percentage based on total reviews
-                $totalReviews = Review::query()
-                    ->where('status', 1)
-                    ->when($productId ?? false, function ($query) use ($productId) {
-                        return $query->where('product_id', $productId);
-                    })
-                    ->count();
-
-                $item['percentage'] = $totalReviews > 0 ? round(($item['count'] / $totalReviews) * 100, 2) : 0;
-                return $item;
             });
     }
 }

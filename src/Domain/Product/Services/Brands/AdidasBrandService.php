@@ -475,10 +475,10 @@ class AdidasBrandService implements BrandServiceInterface
      *
      * @param array $productData Product data to update
      * @param Product $product Product model
-     * @param Size $size Size model
+     * @param ?Size $size Size model
      * @return Product Product model
      */
-    public function updateProduct(array $productData, Product $product, Size $size): Product {
+    public function updateProduct(array $productData, Product $product, ?Size $size = null): Product {
 
         $product->update([
             'amount' => $productData['price'],

@@ -37,9 +37,6 @@ class UpdateUserRequest extends FormRequest
             'bg_photo_path' => ['nullable', 'string'],
             'mobile' => ['required', 'string', 'min:11', 'max:15'],
             'status' => ['required','in:0,1'],
-            'address' => ['nullable', 'string', 'min:5', 'max:255'],
-            'country_id' => ['required', 'exists:countries,id'],
-            'city_id' => ['required', 'exists:cities,id'],
         ];
     }
 

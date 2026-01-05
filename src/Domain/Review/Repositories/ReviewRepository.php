@@ -37,6 +37,7 @@ class ReviewRepository implements IReviewRepository
         return Review::query()
             ->with('user:id,nickname,profile_photo_path,rate', 'product:id,title,amount,image')
             ->withCount('likes')
+            ->where('user_id', Auth::id())
             ->when(!empty($search), function ($query) use ($search) {
                 return $query->where('comment', 'like', '%' . $search . '%');
             })
@@ -124,12 +125,11 @@ class ReviewRepository implements IReviewRepository
                 'rate' => $request->input('rate'),
                 'product_id' => $product->id,
                 'user_id' => Auth::id(),
-                'status' => Review::PENDING,
+                'status' => Review::APPROVED,
             ]);
 
             // Calculate average rate from all reviews for this product
             $averageRate = Review::where('product_id', $product->id)
-                ->where('status', Review::APPROVED)
                 ->where('active', 1)
                 ->avg('rate');
 
