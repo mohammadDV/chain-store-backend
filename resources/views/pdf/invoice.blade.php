@@ -254,7 +254,15 @@
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>
                 <span class="text-bold">نام کامل:</span>
-                <span>{{ $order->fullname ?? ($order->user?->first_name . ' ' . $order->user?->last_name) ?? '-' }}</span>
+                <span>
+                    @if($order->fullname)
+                        {{ $order->fullname }}
+                    @elseif($order->user && ($order->user->first_name || $order->user->last_name))
+                        {{ trim($order->user->first_name . ' ' . $order->user->last_name) }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>

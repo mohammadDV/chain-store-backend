@@ -407,9 +407,10 @@ class OrderResource extends Resource
     {
         // Load order with necessary relationships
         // Note: discount_amount may not exist in products table, so we don't eager load it
+        // Include brand_id in products select to enable brand relationship eager loading
         $order->load([
             'user:id,first_name,last_name,nickname,mobile',
-            'products:id,title,code,image,url,status,amount,discount',
+            'products:id,title,code,image,url,status,amount,discount,brand_id',
             'products.brand:id,title',
             'discount:id,code'
         ]);
@@ -455,6 +456,12 @@ class OrderResource extends Resource
             'sizes' => $sizes
         ])->render();
 
+        // Ensure temp directory exists for mpdf
+        $tempDir = storage_path('app/tmp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
         // Configure mpdf
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
@@ -466,7 +473,7 @@ class OrderResource extends Resource
             'margin_bottom' => 10,
             'default_font' => 'dejavusans',
             'directionality' => 'rtl',
-            'tempDir' => storage_path('app/tmp'),
+            'tempDir' => $tempDir,
         ]);
 
         // Write HTML content - use full document mode to parse CSS
