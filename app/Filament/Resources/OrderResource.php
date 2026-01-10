@@ -409,7 +409,7 @@ class OrderResource extends Resource
         // Note: discount_amount may not exist in products table, so we don't eager load it
         $order->load([
             'user:id,first_name,last_name,nickname,mobile',
-            'products:id,title,code,image,url,status,amount',
+            'products:id,title,code,image,url,status,amount,discount',
             'products.brand:id,title',
             'discount:id,code'
         ]);

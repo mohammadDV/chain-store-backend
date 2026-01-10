@@ -254,7 +254,7 @@
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>
                 <span class="text-bold">نام کامل:</span>
-                <span>{{ $order->fullname ?? ($order->user->first_name . ' ' . $order->user->last_name) }}</span>
+                <span>{{ $order->fullname ?? ($order->user?->first_name . ' ' . $order->user?->last_name) ?? '-' }}</span>
             </div>
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>
@@ -269,7 +269,7 @@
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>
                 <span class="text-bold">تلفن:</span>
-                <span class="text-number">{{ $order->user->mobile ?? '-' }}</span>
+                <span class="text-number">{{ $order->user?->mobile ?? '-' }}</span>
             </div>
             <div class="customer-info-row">
                 <span class="customer-info-icon"></span>
@@ -329,7 +329,7 @@
                         if ($product->image) {
                             if (str_starts_with($product->image, 'http')) {
                                 $productImage = $product->image;
-                            } elseif (config('filesystems.default') === 's3' || config('filesystems.disks.s3')) {
+                            } elseif (config('filesystems.default') === 's3') {
                                 try {
                                     $productImage = \Storage::disk('s3')->url($product->image);
                                 } catch (\Exception $e) {

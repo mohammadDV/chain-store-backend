@@ -109,7 +109,7 @@ class HelperClass
 
     /**
      * Convert number to Persian words
-     * 
+     *
      * @param float $number
      * @return string
      */
@@ -122,20 +122,68 @@ class HelperClass
 
         // Remove decimals
         $number = (int) floor($number);
-        
+
         if ($number == 0) {
             return 'صفر';
         }
 
         $result = '';
-        
-        // Millions
+
+        // Billions (handle separately to avoid index out of bounds)
+        if ($number >= 1000000000) {
+            $billions = (int) floor($number / 1000000000);
+            // Handle billions up to 999 billion
+            if ($billions >= 1000) {
+                // Split into thousands of billions and remaining billions
+                $billionsThousands = (int) floor($billions / 1000);
+                $billionsRemainder = $billions % 1000;
+
+                if ($billionsThousands == 1) {
+                    $result .= 'یک هزار';
+                } else {
+                    $result .= self::convertHundreds($billionsThousands, $ones, $teens, $tens, $hundreds) . ' هزار';
+                }
+
+                if ($billionsRemainder > 0) {
+                    $result .= ' و ' . self::convertHundreds($billionsRemainder, $ones, $teens, $tens, $hundreds);
+                }
+                $result .= ' میلیارد ';
+            } else {
+                $result .= self::convertHundreds($billions, $ones, $teens, $tens, $hundreds) . ' میلیارد ';
+            }
+            $number = $number % 1000000000;
+        }
+
+        // Millions (ensure we only process if less than 1000 to avoid index issues)
         if ($number >= 1000000) {
             $millions = (int) floor($number / 1000000);
-            $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون ';
+            // Ensure millions is less than 1000 to avoid array index issues
+            if ($millions < 1000) {
+                if ($millions == 1) {
+                    $result .= 'یک میلیون ';
+                } else {
+                    $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون ';
+                }
+            } else {
+                // Handle millions >= 1000 (e.g., 1500 million = 1.5 billion)
+                // This should not happen in normal cases, but handle it safely
+                $millionsThousands = (int) floor($millions / 1000);
+                $millionsRemainder = $millions % 1000;
+
+                if ($millionsThousands == 1) {
+                    $result .= 'یک هزار';
+                } else {
+                    $result .= self::convertHundreds($millionsThousands, $ones, $teens, $tens, $hundreds) . ' هزار';
+                }
+
+                if ($millionsRemainder > 0) {
+                    $result .= ' و ' . self::convertHundreds($millionsRemainder, $ones, $teens, $tens, $hundreds);
+                }
+                $result .= ' میلیون ';
+            }
             $number = $number % 1000000;
         }
-        
+
         // Thousands
         if ($number >= 1000) {
             $thousands = (int) floor($number / 1000);
@@ -146,19 +194,19 @@ class HelperClass
             }
             $number = $number % 1000;
         }
-        
+
         // Hundreds, tens, ones
         if ($number > 0) {
             $result .= self::convertHundreds($number, $ones, $teens, $tens, $hundreds);
         }
-        
+
         return trim($result) . ' تومان';
     }
 
     /**
      * Convert a three-digit number to Persian words
-     * 
-     * @param int $number
+     *
+     * @param int $number (must be less than 1000)
      * @param array $ones
      * @param array $teens
      * @param array $tens
@@ -171,15 +219,21 @@ class HelperClass
             return '';
         }
 
+        // Safety check: ensure number is less than 1000 to avoid array index issues
+        $number = $number % 1000;
+
         $result = '';
-        
+
         // Hundreds
         if ($number >= 100) {
             $hundred = (int) floor($number / 100);
-            $result .= $hundreds[$hundred] . ' ';
+            // Safety check: ensure index exists in array
+            if (isset($hundreds[$hundred])) {
+                $result .= $hundreds[$hundred] . ' ';
+            }
             $number = $number % 100;
         }
-        
+
         // Tens and ones
         if ($number >= 20) {
             $ten = (int) floor($number / 10);
@@ -193,7 +247,7 @@ class HelperClass
         } elseif ($number > 0) {
             $result .= $ones[$number];
         }
-        
+
         return trim($result);
     }
 }
