@@ -106,4 +106,94 @@ class HelperClass
 
         return $tokenRecord ? $tokenRecord->tokenable_id : null;
     }
+
+    /**
+     * Convert number to Persian words
+     * 
+     * @param float $number
+     * @return string
+     */
+    public static function numberToPersianWords(float $number): string
+    {
+        $ones = ['', 'یک', 'دو', 'سه', 'چهار', 'پنج', 'شش', 'هفت', 'هشت', 'نه'];
+        $teens = ['ده', 'یازده', 'دوازده', 'سیزده', 'چهارده', 'پانزده', 'شانزده', 'هفده', 'هجده', 'نوزده'];
+        $tens = ['', '', 'بیست', 'سی', 'چهل', 'پنجاه', 'شصت', 'هفتاد', 'هشتاد', 'نود'];
+        $hundreds = ['', 'یکصد', 'دویست', 'سیصد', 'چهارصد', 'پانصد', 'ششصد', 'هفتصد', 'هشتصد', 'نهصد'];
+
+        // Remove decimals
+        $number = (int) floor($number);
+        
+        if ($number == 0) {
+            return 'صفر';
+        }
+
+        $result = '';
+        
+        // Millions
+        if ($number >= 1000000) {
+            $millions = (int) floor($number / 1000000);
+            $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون ';
+            $number = $number % 1000000;
+        }
+        
+        // Thousands
+        if ($number >= 1000) {
+            $thousands = (int) floor($number / 1000);
+            if ($thousands == 1) {
+                $result .= 'هزار ';
+            } else {
+                $result .= self::convertHundreds($thousands, $ones, $teens, $tens, $hundreds) . ' هزار ';
+            }
+            $number = $number % 1000;
+        }
+        
+        // Hundreds, tens, ones
+        if ($number > 0) {
+            $result .= self::convertHundreds($number, $ones, $teens, $tens, $hundreds);
+        }
+        
+        return trim($result) . ' تومان';
+    }
+
+    /**
+     * Convert a three-digit number to Persian words
+     * 
+     * @param int $number
+     * @param array $ones
+     * @param array $teens
+     * @param array $tens
+     * @param array $hundreds
+     * @return string
+     */
+    private static function convertHundreds(int $number, array $ones, array $teens, array $tens, array $hundreds): string
+    {
+        if ($number == 0) {
+            return '';
+        }
+
+        $result = '';
+        
+        // Hundreds
+        if ($number >= 100) {
+            $hundred = (int) floor($number / 100);
+            $result .= $hundreds[$hundred] . ' ';
+            $number = $number % 100;
+        }
+        
+        // Tens and ones
+        if ($number >= 20) {
+            $ten = (int) floor($number / 10);
+            $result .= $tens[$ten];
+            $one = $number % 10;
+            if ($one > 0) {
+                $result .= ' و ' . $ones[$one];
+            }
+        } elseif ($number >= 10) {
+            $result .= $teens[$number - 10];
+        } elseif ($number > 0) {
+            $result .= $ones[$number];
+        }
+        
+        return trim($result);
+    }
 }
