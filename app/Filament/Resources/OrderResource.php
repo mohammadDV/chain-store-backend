@@ -414,13 +414,45 @@ class OrderResource extends Resource
             'discount:id,code'
         ]);
 
+        // Collect all unique color_id and size_id from pivot to avoid N+1 queries
+        $colorIds = [];
+        $sizeIds = [];
+        foreach ($order->products as $product) {
+            if ($product->pivot->color_id) {
+                $colorIds[] = $product->pivot->color_id;
+            }
+            if ($product->pivot->size_id) {
+                $sizeIds[] = $product->pivot->size_id;
+            }
+        }
+
+        // Fetch all colors and sizes in bulk
+        $colors = [];
+        $sizes = [];
+
+        if (!empty($colorIds)) {
+            $colorModels = \Domain\Product\Models\Color::whereIn('id', array_unique($colorIds))->get(['id', 'title']);
+            foreach ($colorModels as $color) {
+                $colors[$color->id] = $color->title;
+            }
+        }
+
+        if (!empty($sizeIds)) {
+            $sizeModels = \Domain\Product\Models\Size::whereIn('id', array_unique($sizeIds))->get(['id', 'title']);
+            foreach ($sizeModels as $size) {
+                $sizes[$size->id] = $size->title;
+            }
+        }
+
         // Convert amount to Persian words
         $amountInWords = HelperClass::numberToPersianWords((float) ($order->amount ?? 0));
 
         // Render the view
         $html = View::make('pdf.invoice', [
             'order' => $order,
-            'amountInWords' => $amountInWords
+            'amountInWords' => $amountInWords,
+            'colors' => $colors,
+            'sizes' => $sizes
         ])->render();
 
         // Configure mpdf

@@ -147,11 +147,15 @@ class HelperClass
                 if ($billionsRemainder > 0) {
                     $result .= ' و ' . self::convertHundreds($billionsRemainder, $ones, $teens, $tens, $hundreds);
                 }
-                $result .= ' میلیارد ';
+                $result .= ' میلیارد';
             } else {
-                $result .= self::convertHundreds($billions, $ones, $teens, $tens, $hundreds) . ' میلیارد ';
+                $result .= self::convertHundreds($billions, $ones, $teens, $tens, $hundreds) . ' میلیارد';
             }
             $number = $number % 1000000000;
+            // Add connector if there are remaining parts
+            if ($number > 0) {
+                $result .= ' و ';
+            }
         }
 
         // Millions (ensure we only process if less than 1000 to avoid index issues)
@@ -160,9 +164,9 @@ class HelperClass
             // Ensure millions is less than 1000 to avoid array index issues
             if ($millions < 1000) {
                 if ($millions == 1) {
-                    $result .= 'یک میلیون ';
+                    $result .= 'یک میلیون';
                 } else {
-                    $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون ';
+                    $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون';
                 }
             } else {
                 // Handle millions >= 1000 (e.g., 1500 million = 1.5 billion)
@@ -179,20 +183,28 @@ class HelperClass
                 if ($millionsRemainder > 0) {
                     $result .= ' و ' . self::convertHundreds($millionsRemainder, $ones, $teens, $tens, $hundreds);
                 }
-                $result .= ' میلیون ';
+                $result .= ' میلیون';
             }
             $number = $number % 1000000;
+            // Add connector if there are remaining parts
+            if ($number > 0) {
+                $result .= ' و ';
+            }
         }
 
         // Thousands
         if ($number >= 1000) {
             $thousands = (int) floor($number / 1000);
             if ($thousands == 1) {
-                $result .= 'هزار ';
+                $result .= 'هزار';
             } else {
-                $result .= self::convertHundreds($thousands, $ones, $teens, $tens, $hundreds) . ' هزار ';
+                $result .= self::convertHundreds($thousands, $ones, $teens, $tens, $hundreds) . ' هزار';
             }
             $number = $number % 1000;
+            // Add connector if there are remaining parts
+            if ($number > 0) {
+                $result .= ' و ';
+            }
         }
 
         // Hundreds, tens, ones
@@ -229,9 +241,13 @@ class HelperClass
             $hundred = (int) floor($number / 100);
             // Safety check: ensure index exists in array
             if (isset($hundreds[$hundred])) {
-                $result .= $hundreds[$hundred] . ' ';
+                $result .= $hundreds[$hundred];
             }
             $number = $number % 100;
+            // Add connector if there are tens or ones remaining
+            if ($number > 0) {
+                $result .= ' و ';
+            }
         }
 
         // Tens and ones

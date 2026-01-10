@@ -297,31 +297,21 @@
                     @php
                         $pivot = $product->pivot;
                         $productPrice = $product->amount ?? 0;
-                        // Check if discount_amount exists in the model attributes (column may not exist in DB)
-                        $discountAmount = isset($product->attributes['discount_amount']) ? ($product->discount_amount ?? 0) : 0;
-                        // If not in attributes, try to access directly (may fail silently)
-                        if (!isset($product->attributes['discount_amount']) && isset($product->discount_amount)) {
-                            $discountAmount = $product->discount_amount;
-                        }
+
                         $unitPrice = $pivot->amount ?? $productPrice;
                         $quantity = $pivot->count ?? 1;
                         $itemTotal = $unitPrice * $quantity;
                         $itemDiscount = 0;
-                        if ($discountAmount > 0 && $productPrice > 0) {
-                            $itemDiscount = ($discountAmount / $productPrice) * $unitPrice * $quantity;
-                        }
                         $finalItemTotal = $itemTotal - $itemDiscount;
 
-                        // Get color and size
+                        // Get color and size from pre-loaded arrays to avoid N+1 queries
                         $colorName = '';
                         $sizeName = '';
-                        if ($pivot->color_id) {
-                            $color = \Domain\Product\Models\Color::find($pivot->color_id);
-                            $colorName = $color ? $color->title : '';
+                        if ($pivot->color_id && isset($colors[$pivot->color_id])) {
+                            $colorName = $colors[$pivot->color_id];
                         }
-                        if ($pivot->size_id) {
-                            $size = \Domain\Product\Models\Size::find($pivot->size_id);
-                            $sizeName = $size ? $size->title : '';
+                        if ($pivot->size_id && isset($sizes[$pivot->size_id])) {
+                            $sizeName = $sizes[$pivot->size_id];
                         }
 
                         // Product image - handle S3 or local storage
