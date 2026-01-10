@@ -24,6 +24,9 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
+use Core\Helpers\HelperClass;
+use Mpdf\Mpdf;
+use Illuminate\Support\Facades\View;
 
 class OrderResource extends Resource
 {
@@ -269,6 +272,13 @@ class OrderResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('download_pdf')
+                    ->label(__('site.download_invoice'))
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->action(function ($record) {
+                        return static::generateInvoicePdf($record);
+                    }),
                 Tables\Actions\Action::make('change_status')
                     ->label(__('site.change_status'))
                     ->icon('heroicon-o-arrow-path')
@@ -385,5 +395,96 @@ class OrderResource extends Resource
     {
         return parent::getEloquentQuery()
             ->with(['user:id,nickname,first_name,last_name', 'products:id,title,code,image,url,status']);
+    }
+
+    /**
+     * Generate and download invoice PDF
+     *
+     * @param Order $order
+     * @return \Illuminate\Http\Response
+     */
+    public static function generateInvoicePdf($order)
+    {
+        // Load order with necessary relationships
+        // Note: discount_amount may not exist in products table, so we don't eager load it
+        // Include brand_id in products select to enable brand relationship eager loading
+        $order->load([
+            'user:id,first_name,last_name,nickname,mobile',
+            'products:id,title,code,image,url,status,amount,discount,brand_id',
+            'products.brand:id,title',
+            'discount:id,code'
+        ]);
+
+        // Collect all unique color_id and size_id from pivot to avoid N+1 queries
+        $colorIds = [];
+        $sizeIds = [];
+        foreach ($order->products as $product) {
+            if ($product->pivot->color_id) {
+                $colorIds[] = $product->pivot->color_id;
+            }
+            if ($product->pivot->size_id) {
+                $sizeIds[] = $product->pivot->size_id;
+            }
+        }
+
+        // Fetch all colors and sizes in bulk
+        $colors = [];
+        $sizes = [];
+
+        if (!empty($colorIds)) {
+            $colorModels = \Domain\Product\Models\Color::whereIn('id', array_unique($colorIds))->get(['id', 'title']);
+            foreach ($colorModels as $color) {
+                $colors[$color->id] = $color->title;
+            }
+        }
+
+        if (!empty($sizeIds)) {
+            $sizeModels = \Domain\Product\Models\Size::whereIn('id', array_unique($sizeIds))->get(['id', 'title']);
+            foreach ($sizeModels as $size) {
+                $sizes[$size->id] = $size->title;
+            }
+        }
+
+        // Convert amount to Persian words
+        $amountInWords = HelperClass::numberToPersianWords((float) ($order->amount ?? 0));
+
+        // Render the view
+        $html = View::make('pdf.invoice', [
+            'order' => $order,
+            'amountInWords' => $amountInWords,
+            'colors' => $colors,
+            'sizes' => $sizes
+        ])->render();
+
+        // Ensure temp directory exists for mpdf
+        $tempDir = storage_path('app/tmp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        // Configure mpdf
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'default_font' => 'dejavusans',
+            'directionality' => 'rtl',
+            'tempDir' => $tempDir,
+        ]);
+
+        // Write HTML content - use full document mode to parse CSS
+        $mpdf->WriteHTML($html);
+
+        // Output PDF
+        $filename = 'invoice-' . $order->code . '.pdf';
+        return response()->streamDownload(function () use ($mpdf) {
+            echo $mpdf->Output('', 'S');
+        }, $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

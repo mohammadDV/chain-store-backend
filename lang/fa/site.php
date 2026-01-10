@@ -1407,6 +1407,7 @@ return array(
     'order_information' => 'اطلاعات سفارش',
     'shipping_information' => 'اطلاعات ارسال',
     'order_code' => 'کد سفارش',
+    'download_invoice' => 'دانلود فاکتور',
     'count' => 'تعداد',
     'product_count' => 'تعداد محصول',
     'total_amount' => 'مبلغ کل',

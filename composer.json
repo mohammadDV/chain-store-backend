@@ -20,6 +20,7 @@
         "laravel/tinker": "^2.10.1",
         "league/flysystem-aws-s3-v3": "^3.29",
         "morilog/jalali": "^3.4",
+        "mpdf/mpdf": "^8.2",
         "spatie/laravel-permission": "^6.18",
         "symfony/http-foundation": "^7.3.7"
     },
