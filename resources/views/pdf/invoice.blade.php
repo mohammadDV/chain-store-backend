@@ -308,9 +308,8 @@
 
                         $unitPrice = $pivot->amount ?? $productPrice;
                         $quantity = $pivot->count ?? 1;
-                        $itemTotal = $unitPrice * $quantity;
-                        $itemDiscount = 0;
-                        $finalItemTotal = $itemTotal - $itemDiscount;
+                        $finalItemTotal = $unitPrice * $quantity;
+
 
                         // Get color and size from pre-loaded arrays to avoid N+1 queries
                         $colorName = '';
