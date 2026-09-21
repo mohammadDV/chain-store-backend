@@ -41,6 +41,11 @@ class ProductResource extends Resource
 
     protected static ?int $navigationSort = 11;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('site.product_management');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('site.products');

@@ -24,6 +24,11 @@ class ColorResource extends Resource
 
     protected static ?int $navigationSort = 12;
 
+    public static function getNavigationGroup(): ?string
+    {
+        return __('site.product_management');
+    }
+
     public static function getNavigationLabel(): string
     {
         return __('site.colors');

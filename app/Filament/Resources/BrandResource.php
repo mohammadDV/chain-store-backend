@@ -26,7 +26,12 @@ class BrandResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
 
-    protected static ?int $navigationSort = 12;
+    protected static ?int $navigationSort = 1;
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('site.product_management');
+    }
 
     public static function getNavigationLabel(): string
     {
