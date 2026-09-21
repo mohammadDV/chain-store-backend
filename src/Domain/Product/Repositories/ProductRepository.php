@@ -54,6 +54,10 @@ class ProductRepository implements IProductRepository
                 ->active()
                 ->first();
 
+        if (!$product) {
+            abort(404);
+        }
+
         $reviews = $this->getReviewsByRate($product->id);
 
         $relatedProducts = json_decode($product->related_products, true);
