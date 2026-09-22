@@ -1,9 +1,5 @@
 <?php
 
-if (PHP_VERSION_ID >= 80500) {
-    error_reporting(E_ALL & ~E_DEPRECATED);
-}
-
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 

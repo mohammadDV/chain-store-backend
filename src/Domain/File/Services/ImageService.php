@@ -5,10 +5,16 @@ namespace Domain\File\Services;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
 
 class ImageService extends ImageToolsService
 {
+    private function manager(): ImageManager
+    {
+        return Config::get('image.driver') === 'imagick'
+            ? ImageManager::imagick()
+            : ImageManager::gd();
+    }
 
     public function save($image, $thumb = 0)
     {
@@ -39,12 +45,12 @@ class ImageService extends ImageToolsService
 
                 if (!empty($thumb)) {
                     $fileName = '/thumbnails/' . basename($path);
-                    $resizedImage = Image::make($image)->resize(150, 100)->encode('jpg');
+                    $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(150, 100)->toJpeg();
                     // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
                     Storage::disk('s3')->put($this->getFinalImageDirectory() . $fileName, $resizedImage, 'public');
 
                     $fileName = '/slides/' . basename($path);
-                    $resizedImage = Image::make($image)->resize(455, 303)->encode('jpg');
+                    $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(455, 303)->toJpeg();
                     // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
                     Storage::disk('s3')->put($this->getFinalImageDirectory() . $fileName, $resizedImage, 'public');
                 }
@@ -68,7 +74,10 @@ class ImageService extends ImageToolsService
          //execute provider
          $this->provider();
          //save image
-         $result = Image::make($image->getRealPath())->fit($width, $height)->save(public_path($this->getImageAddress()), null, $this->getImageFormat());
+         $result = $this->manager()->read($image->getRealPath())
+            ->cover($width, $height)
+            ->save(public_path($this->getImageAddress()));
+
          return $result ? $this->getImageAddress() : false;
     }
 
@@ -100,7 +109,9 @@ class ImageService extends ImageToolsService
                 $this->provider();
 
                 //save image
-                $result = Image::make($image->getRealPath())->fit($imageSize['width'], $imageSize['height'])->save(public_path($this->getImageAddress()), null, $this->getImageFormat());
+                $result = $this->manager()->read($image->getRealPath())
+                    ->cover($imageSize['width'], $imageSize['height'])
+                    ->save(public_path($this->getImageAddress()));
                     if($result)
                         $indexArray[$sizeAlias] = $this->getImageAddress();
                     else

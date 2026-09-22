@@ -5,33 +5,39 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/evryn/laravel-toman"
+        }
+    ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "aws/aws-sdk-php": "^3.368.0",
-        "cviebrock/eloquent-sluggable": "^12.0",
-        "evryn/laravel-toman": "^4.1",
-        "filament/filament": "^3.3.30",
+        "cviebrock/eloquent-sluggable": "^13.0",
+        "evryn/laravel-toman": "dev-master#1ce7e22eb8951a86e51ac5fac42e973e48c3fa91",
+        "filament/filament": "^3.3.55",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
-        "irazasyed/telegram-bot-sdk": "^3.15",
-        "laravel/framework": "^12.0",
-        "laravel/sanctum": "^4.1",
-        "laravel/tinker": "^2.10.1",
+        "irazasyed/telegram-bot-sdk": "^3.16",
+        "laravel/framework": "^13.0",
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.29",
         "morilog/jalali": "^3.4",
         "mpdf/mpdf": "^8.2",
-        "spatie/laravel-permission": "^6.18",
-        "symfony/http-foundation": "^7.3.7"
+        "spatie/laravel-permission": "^6.25",
+        "symfony/http-foundation": "^7.4 || ^8.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.2.2",
-        "laravel/pint": "^1.13",
-        "laravel/sail": "^1.41",
+        "laravel/pail": "^1.2.7",
+        "laravel/pint": "^1.32",
+        "laravel/sail": "^1.67",
         "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^11.5.3"
+        "nunomaduro/collision": "^8.9.5",
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-4": {
