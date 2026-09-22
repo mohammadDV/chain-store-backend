@@ -25,8 +25,11 @@ class ProductSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'mobile' => '09123456789',
                 'role_id' => 1,
+                'level' => 3,
                 'status' => 1,
+                'email_verified_at' => now(),
             ]);
+            $user->assignRole('admin');
         }
 
         $products = [
@@ -42,14 +45,13 @@ class ProductSeeder extends Seeder
                 'points' => 100,
                 'rate' => 5,
                 'amount' => 4500000,
-                'discount' => 10,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 1,
                 'priority' => 1,
-                'color_id' => 1, // مشکی
-                'category_id' => 11, // کفش ورزشی نایک
-                'brand_id' => 3, // نایک
+                'color_id' => 1,
+                'category_id' => 1,
+                'brand_id' => 1,
                 'user_id' => $user->id,
                 'order_count' => 25,
                 'view_count' => 150,
@@ -66,14 +68,13 @@ class ProductSeeder extends Seeder
                 'points' => 50,
                 'rate' => 4,
                 'amount' => 850000,
-                'discount' => 5,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 0,
                 'priority' => 2,
-                'color_id' => 4, // آبی
-                'category_id' => 13, // لباس ورزشی آدیداس
-                'brand_id' => 4, // آدیداس
+                'color_id' => 4,
+                'category_id' => 2,
+                'brand_id' => 2,
                 'user_id' => $user->id,
                 'order_count' => 45,
                 'view_count' => 200,
@@ -90,14 +91,13 @@ class ProductSeeder extends Seeder
                 'points' => 500,
                 'rate' => 5,
                 'amount' => 35000000,
-                'discount' => 8,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 1,
                 'priority' => 1,
-                'color_id' => 1, // مشکی
-                'category_id' => 14, // گوشی موبایل سامسونگ
-                'brand_id' => 5, // سامسونگ
+                'color_id' => 1,
+                'category_id' => 3,
+                'brand_id' => 3,
                 'user_id' => $user->id,
                 'order_count' => 15,
                 'view_count' => 300,
@@ -114,14 +114,13 @@ class ProductSeeder extends Seeder
                 'points' => 800,
                 'rate' => 5,
                 'amount' => 68000000,
-                'discount' => 0,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 1,
                 'priority' => 1,
-                'color_id' => 10, // خاکستری
-                'category_id' => 16, // آیفون
-                'brand_id' => 6, // اپل
+                'color_id' => 10,
+                'category_id' => 5,
+                'brand_id' => 4,
                 'user_id' => $user->id,
                 'order_count' => 8,
                 'view_count' => 450,
@@ -138,14 +137,13 @@ class ProductSeeder extends Seeder
                 'points' => 300,
                 'rate' => 4,
                 'amount' => 25000000,
-                'discount' => 12,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 0,
                 'priority' => 3,
-                'color_id' => 1, // مشکی
-                'category_id' => 15, // تلویزیون
-                'brand_id' => 5, // سامسونگ
+                'color_id' => 1,
+                'category_id' => 4,
+                'brand_id' => 3,
                 'user_id' => $user->id,
                 'order_count' => 12,
                 'view_count' => 180,
@@ -162,14 +160,13 @@ class ProductSeeder extends Seeder
                 'points' => 600,
                 'rate' => 5,
                 'amount' => 95000000,
-                'discount' => 0,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 1,
                 'priority' => 1,
-                'color_id' => 10, // خاکستری
-                'category_id' => 17, // مک بوک
-                'brand_id' => 6, // اپل
+                'color_id' => 10,
+                'category_id' => 6,
+                'brand_id' => 4,
                 'user_id' => $user->id,
                 'order_count' => 5,
                 'view_count' => 250,
@@ -186,14 +183,13 @@ class ProductSeeder extends Seeder
                 'points' => 40,
                 'rate' => 4,
                 'amount' => 1200000,
-                'discount' => 15,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 0,
                 'priority' => 4,
-                'color_id' => 2, // سفید
-                'category_id' => 18, // لباس مردانه
-                'brand_id' => 7, // زارا
+                'color_id' => 2,
+                'category_id' => 7,
+                'brand_id' => 5,
                 'user_id' => $user->id,
                 'order_count' => 35,
                 'view_count' => 120,
@@ -210,14 +206,13 @@ class ProductSeeder extends Seeder
                 'points' => 45,
                 'rate' => 5,
                 'amount' => 1800000,
-                'discount' => 20,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 0,
                 'priority' => 3,
-                'color_id' => 1, // مشکی
-                'category_id' => 19, // لباس زنانه
-                'brand_id' => 7, // زارا
+                'color_id' => 1,
+                'category_id' => 8,
+                'brand_id' => 5,
                 'user_id' => $user->id,
                 'order_count' => 40,
                 'view_count' => 220,
@@ -234,14 +229,13 @@ class ProductSeeder extends Seeder
                 'points' => 90,
                 'rate' => 5,
                 'amount' => 5200000,
-                'discount' => 8,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 1,
                 'priority' => 2,
-                'color_id' => 2, // سفید
-                'category_id' => 12, // کفش ورزشی آدیداس
-                'brand_id' => 4, // آدیداس
+                'color_id' => 2,
+                'category_id' => 1,
+                'brand_id' => 2,
                 'user_id' => $user->id,
                 'order_count' => 30,
                 'view_count' => 280,
@@ -258,14 +252,13 @@ class ProductSeeder extends Seeder
                 'points' => 35,
                 'rate' => 4,
                 'amount' => 950000,
-                'discount' => 10,
                 'active' => 1,
                 'status' => 'completed',
                 'vip' => 0,
                 'priority' => 5,
-                'color_id' => 1, // مشکی
-                'category_id' => 11, // لباس ورزشی نایک
-                'brand_id' => 3, // نایک
+                'color_id' => 1,
+                'category_id' => 2,
+                'brand_id' => 1,
                 'user_id' => $user->id,
                 'order_count' => 50,
                 'view_count' => 160,
@@ -273,7 +266,22 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            Product::create($product);
+            $categoryId = $product['category_id'] ?? null;
+            unset($product['category_id']);
+
+            $created = Product::create($product);
+
+            if ($categoryId) {
+                $created->categories()->attach($categoryId);
+            }
+
+            $created->sizes()->create([
+                'title' => 'Default',
+                'code' => 'default',
+                'stock' => $created->stock ?: 10,
+                'status' => 1,
+                'priority' => 1,
+            ]);
         }
     }
 }
