@@ -17,7 +17,7 @@ class SettingService
      */
     public function getProfitRate(): float
     {
-        return (float) $this->getSettings()->profit_rate;
+        return (float) $this->getSettings()['profit_rate'];
     }
 
     /**
@@ -27,18 +27,21 @@ class SettingService
      */
     public function getExchangeRate(): float
     {
-        return (float) $this->getSettings()->exchange_rate;
+        return (float) $this->getSettings()['exchange_rate'];
     }
 
     /**
      * Get all settings with caching.
      *
-     * @return Setting
+     * Only plain values are cached so the cache store never has to unserialize
+     * PHP objects, which Laravel forbids by default since version 13.
+     *
+     * @return array{profit_rate: string, exchange_rate: string}
      */
-    public function getSettings(): Setting
+    public function getSettings(): array
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
-            return Setting::getInstance();
+            return Setting::getInstance()->only(['profit_rate', 'exchange_rate']);
         });
     }
 
