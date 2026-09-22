@@ -12,7 +12,7 @@
         }
     ],
     "require": {
-        "php": "^8.3",
+        "php": "^8.5",
         "aws/aws-sdk-php": "^3.368.0",
         "cviebrock/eloquent-sluggable": "^13.0",
         "evryn/laravel-toman": "dev-master#1ce7e22eb8951a86e51ac5fac42e973e48c3fa91",
