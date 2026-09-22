@@ -369,6 +369,7 @@ class AdidasBrandService implements BrandServiceInterface
             'brand_id' => $brandId,
             'user_id' => 1,
             'related_products' => !empty($productData['related_products']) ? json_encode($productData['related_products']) : null,
+            'updated_at' => now(),
         ]);
 
         // Sync categories using the many-to-many relationship
@@ -483,6 +484,7 @@ class AdidasBrandService implements BrandServiceInterface
         $product->update([
             'amount' => $productData['price'],
             'discount' => $productData['discount'],
+            'updated_at' => now(),
         ]);
 
         $size->update([

@@ -381,6 +381,7 @@ class DecathlonBrandService implements BrandServiceInterface
             'brand_id' => $brandId,
             'user_id' => 1,
             'related_products' => !empty($relatedProducts) ? json_encode($relatedProducts) : null,
+            'updated_at' => now(),
         ]);
 
         // Sync categories using the many-to-many relationship
