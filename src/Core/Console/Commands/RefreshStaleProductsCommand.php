@@ -1,0 +1,50 @@
+<?php
+
+namespace Core\Console\Commands;
+
+use Domain\Product\Jobs\RefreshStaleProductsJob;
+use Domain\Product\Services\StaleProductRefreshService;
+use Illuminate\Console\Command;
+
+class RefreshStaleProductsCommand extends Command
+{
+    protected $signature = 'products:refresh-stale
+                            {--limit= : Max products to refresh}
+                            {--days= : Treat products older than this many days as stale}
+                            {--queue : Dispatch to Horizon instead of running inline}';
+
+    protected $description = 'Refresh the oldest stale active products via the product-scraper code endpoint';
+
+    public function handle(StaleProductRefreshService $service): int
+    {
+        $limit = $this->option('limit') !== null ? (int) $this->option('limit') : null;
+        $days = $this->option('days') !== null ? (int) $this->option('days') : null;
+
+        if ($this->option('queue')) {
+            RefreshStaleProductsJob::dispatch($limit, $days);
+            $this->info('RefreshStaleProductsJob queued.');
+
+            return self::SUCCESS;
+        }
+
+        $result = $service->refresh($limit, $days);
+
+        $this->info($result->message);
+        $this->table(
+            ['product_id', 'code', 'brand_id', 'status', 'reason', 'action'],
+            array_map(
+                static fn (array $row) => [
+                    $row['product_id'],
+                    $row['code'] ?? '',
+                    $row['brand_id'] ?? '',
+                    $row['status'],
+                    $row['reason'] ?? '',
+                    $row['action'] ?? '',
+                ],
+                $result->toArray()['outcomes'],
+            ),
+        );
+
+        return self::SUCCESS;
+    }
+}

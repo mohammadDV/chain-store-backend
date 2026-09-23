@@ -12,6 +12,7 @@ use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Product extends Model
 {
@@ -124,5 +125,19 @@ class Product extends Model
             })
             ->where('status', self::COMPLETED)
             ->where('is_failed', 0);
+    }
+
+    /**
+     * Active completed products whose updated_at is older than the given threshold.
+     */
+    public function scopeStaleForRefresh(Builder $builder, Carbon|\DateTimeInterface|string $staleBefore): Builder
+    {
+        return $builder
+            ->where('active', 1)
+            ->where('status', self::COMPLETED)
+            ->where('updated_at', '<', $staleBefore)
+            ->whereNotNull('code')
+            ->where('code', '!=', '')
+            ->whereNotNull('brand_id');
     }
 }
