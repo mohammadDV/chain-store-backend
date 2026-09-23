@@ -30,7 +30,7 @@ class ChangePasswordTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->patchJson("/api/profile/users/{$user->id}/change-password", [
+        $response = $this->patchJson("/api/profile/users/change-password", [
             'current_password' => 'Oldpassword123!',
             'password' => 'Newpassword123!',
             'password_confirmation' => 'Newpassword123!'
@@ -64,7 +64,7 @@ class ChangePasswordTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->patchJson("/api/profile/users/{$user->id}/change-password", [
+        $response = $this->patchJson("/api/profile/users/change-password", [
             'current_password' => 'wrongpassword',
             'password' => 'Newpassword123!',
             'password_confirmation' => 'Newpassword123!'
@@ -95,7 +95,7 @@ class ChangePasswordTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->patchJson("/api/profile/users/{$user->id}/change-password", [
+        $response = $this->patchJson("/api/profile/users/change-password", [
             'current_password' => 'Oldpassword123!',
             'password' => 'Newpassword123!',
             'password_confirmation' => 'differentpassword'
@@ -104,42 +104,12 @@ class ChangePasswordTest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_user_cannot_change_another_users_password()
+    public function test_guest_cannot_change_password()
     {
-        $user1 = User::create([
-            'first_name' => 'Alice',
-            'last_name' => 'Johnson',
-            'nickname' => 'alicejohnson',
-            'customer_number' => User::generateCustumerNumber(),
-            'role_id' => 2,
-            'status' => 1,
-            'email' => 'alice@example.com',
-            'mobile' => '09123456786',
-            'password' => Hash::make('Password123!'),
-            'profile_photo_path' => config('image.default-profile-image'),
-            'bg_photo_path' => config('image.default-background-image'),
-        ]);
-
-        $user2 = User::create([
-            'first_name' => 'Charlie',
-            'last_name' => 'Brown',
-            'nickname' => 'charliebrown',
-            'customer_number' => User::generateCustumerNumber(),
-            'role_id' => 2,
-            'status' => 1,
-            'email' => 'charlie@example.com',
-            'mobile' => '09123456785',
-            'password' => Hash::make('Password123!'),
-            'profile_photo_path' => config('image.default-profile-image'),
-            'bg_photo_path' => config('image.default-background-image'),
-        ]);
-
-        Sanctum::actingAs($user1);
-
-        $response = $this->patchJson("/api/profile/users/{$user2->id}/change-password", [
+        $response = $this->patchJson('/api/profile/users/change-password', [
             'current_password' => 'Password123!',
             'password' => 'Newpassword123!',
-            'password_confirmation' => 'Newpassword123!'
+            'password_confirmation' => 'Newpassword123!',
         ]);
 
         $response->assertStatus(401);
@@ -163,7 +133,7 @@ class ChangePasswordTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->patchJson("/api/profile/users/{$user->id}/change-password", [
+        $response = $this->patchJson("/api/profile/users/change-password", [
             'current_password' => 'Oldpassword123!',
             'password' => 'newpassword123!',
             'password_confirmation' => 'newpassword123!'
@@ -190,7 +160,7 @@ class ChangePasswordTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->patchJson("/api/profile/users/{$user->id}/change-password", [
+        $response = $this->patchJson("/api/profile/users/change-password", [
             'current_password' => 'Oldpassword123!',
             'password' => 'Newpassword123',
             'password_confirmation' => 'Newpassword123'
