@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 class ProductSizeCommand extends Command
 {
     use RequestTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -25,14 +26,13 @@ class ProductSizeCommand extends Command
      */
     protected $description = 'update product sizes when the products does not have sizes and for compleleting the product sizes';
 
-
     /**
      * Execute the console command.
      */
     public function handle()
     {
 
-        $oxylabsService = new OxylabsService();
+        $oxylabsService = new OxylabsService;
 
         $limit = (int) $this->option('limit');
         $isFailed = (int) $this->option('failed');
@@ -47,10 +47,10 @@ class ProductSizeCommand extends Command
             ->with('brand')
             ->where('brand_id', 1)
             ->whereNotNull('url')
-            ->where(function($query) use ($isFailed) {
+            ->where(function ($query) use ($isFailed) {
                 $query->where('is_failed', $isFailed);
             })
-            ->when($isAll == 0, function($query) {
+            ->when($isAll == 0, function ($query) {
                 $query->whereDoesntHave('sizes');
             })
             ->orderBy('updated_at', 'asc')
@@ -58,48 +58,51 @@ class ProductSizeCommand extends Command
             ->get();
 
         $count = 0;
-        foreach($endpoints as $endpoint) {
+        foreach ($endpoints as $endpoint) {
 
             $filters = $this->retryRequest($oxylabsService, 'adidas_product_size', $endpoint->url, 1, $endpoint?->brand?->domain);
-            if(!empty($filters['status']) && in_array($filters['status'], [4, 2])) {
+            if (! empty($filters['status']) && in_array($filters['status'], [4, 2])) {
                 continue;
             }
 
             $productData = $this->cleanProductData($filters);
 
-            if(!empty($productData['status']) && $productData['status'] == 2) {
+            if (! empty($productData['status']) && $productData['status'] == 2) {
                 continue;
             }
 
-            if(!empty($productData['status']) && $productData['status'] == 3) {
+            if (! empty($productData['status']) && $productData['status'] == 3) {
 
                 $endpoint->update([
                     'is_failed' => 1,
                     'updated_at' => now(),
                 ]);
-                $this->error("Failed to get product sizesssssssssss: " . $endpoint->url);
+                $this->error('Failed to get product sizesssssssssss: '.$endpoint->url);
+
                 continue;
             }
 
-            if(empty($productData['price'])) {
-                $this->error("Price not found: " . $endpoint->id . " - " . $endpoint->url);
+            if (empty($productData['price'])) {
+                $this->error('Price not found: '.$endpoint->id.' - '.$endpoint->url);
+
                 continue;
             }
 
             $product = $this->storeProduct($productData, $endpoint);
 
-            if (!empty($product?->id)) {
+            if (! empty($product?->id)) {
                 $count++;
-                $this->info("Products: " . $endpoint->url);
-                $this->info("Products: " . $product->id);
+                $this->info('Products: '.$endpoint->url);
+                $this->info('Products: '.$product->id);
             }
             sleep(2);
         }
 
-        $this->info("Done: " . $count);
+        $this->info('Done: '.$count);
     }
 
-    private function storeProduct(array $productData, Product $product): Product {
+    private function storeProduct(array $productData, Product $product): Product
+    {
 
         $product->update([
             'amount' => $productData['price'],
@@ -126,16 +129,17 @@ class ProductSizeCommand extends Command
     /**
      * Clean and normalize the Kaufland product data
      *
-     * @param   array  $kauflandComProduct The raw product data from API
-     * @param   string $domain The domain of the product
-     * @throws  Exception If required product data is missing
+     * @param  array  $kauflandComProduct  The raw product data from API
+     * @param  string  $domain  The domain of the product
+     *
+     * @throws Exception If required product data is missing
      */
     private function cleanProductData(array $response): array
     {
         // Extract product content from results
         $content = $response['results'][0]['content'] ?? null;
 
-        if (!$content) {
+        if (! $content) {
             return ['status' => 2];
         }
 
@@ -163,11 +167,13 @@ class ProductSizeCommand extends Command
 
         // Pattern matches: <span data-testid="discount-text" class="_discountText_1dnvn_90">-40%<span class="_visuallyHidden_1dnvn_2">&#304;ndirim</span></span>
         preg_match('/<span[^>]*data-testid="discount-text"[^>]*>(-?\d+)%<span/i', $price, $matches);
-        if(!empty($matches[1])) {
+        if (! empty($matches[1])) {
             // Extract the number from the discount percentage (e.g., 40 from "-40%")
             $discountNumber = abs((int) $matches[1]);
+
             return $discountNumber;
         }
+
         return 0;
     }
 
@@ -180,7 +186,7 @@ class ProductSizeCommand extends Command
         // Pattern matches: <span>1.499,00 TL</span> or <span>5.399 TL</span>
         // <span class="_sale-color_1dnvn_101">2.099 TL</span>
         preg_match('/<span[^>]*>([^<]+)<\/span>/i', $price, $matches);
-        if(!empty($matches[1])) {
+        if (! empty($matches[1])) {
             $priceString = $matches[1];
 
             // Remove "TL" text
@@ -197,6 +203,7 @@ class ProductSizeCommand extends Command
             // Convert to integer
             return (int) $priceString;
         }
+
         return 0;
     }
 
@@ -214,7 +221,7 @@ class ProductSizeCommand extends Command
             // Pattern matches:<span>42</span>
             // Also handles: <span class="...">42</span>
             preg_match('/<span[^>]*>([^<]+)<\/span>/i', $item, $matches);
-            if(!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 // Decode HTML entities to properly handle Turkish characters (e.g., Ş from &#350;)
                 $sizeTitle = html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8');
                 $sizes[] = $sizeTitle;
@@ -223,6 +230,4 @@ class ProductSizeCommand extends Command
 
         return $sizes;
     }
-
-
 }

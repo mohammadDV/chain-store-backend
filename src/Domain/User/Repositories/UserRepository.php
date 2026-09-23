@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Hash;
  */
 class UserRepository implements IUserRepository
 {
-
     use GlobalFunc;
 
     /**
@@ -28,17 +27,15 @@ class UserRepository implements IUserRepository
      *
      * @return JsonResponse The seller object
      */
-    public function index() :JsonResponse
+    public function index(): JsonResponse
     {
         return response()->json([]);
     }
 
     /**
      * Get the user info.
-     * @param User $user
-     * @return array
      */
-    public function getUserInfo(User $user) :array
+    public function getUserInfo(User $user): array
     {
         return [
             'user' => new UserResource($user),
@@ -47,9 +44,8 @@ class UserRepository implements IUserRepository
 
     /**
      * Get the user info.
-     * @return array
      */
-    public function show() :array
+    public function show(): array
     {
 
         return [
@@ -65,21 +61,20 @@ class UserRepository implements IUserRepository
                 'bg_photo_path' => Auth::user()->bg_photo_path,
                 'rate' => Auth::user()->rate,
                 'point' => Auth::user()->point,
-            ]
+            ],
         ];
     }
 
     /**
      * Get verification of the user
-     * @return array
      */
-    public function checkVerification() :array
+    public function checkVerification(): array
     {
         return [
-            'verify_email' => !empty(Auth::user()->email_verified_at),
-            'verify_access' => !empty(Auth::user()->verified_at),
+            'verify_email' => ! empty(Auth::user()->email_verified_at),
+            'verify_access' => ! empty(Auth::user()->verified_at),
             'user' => new UserResource(Auth::user()),
-            'customer_number' => Auth::user()->customer_number
+            'customer_number' => Auth::user()->customer_number,
         ];
     }
 
@@ -88,23 +83,22 @@ class UserRepository implements IUserRepository
      *
      * @return array The seller object
      */
-    public function getDashboardInfo() :array
+    public function getDashboardInfo(): array
     {
 
         $ticketCount = Ticket::query()
-                ->where('user_id', Auth::user()->id)
-                ->where('status', Ticket::STATUS_ACTIVE)
-                ->count();
-
+            ->where('user_id', Auth::user()->id)
+            ->where('status', Ticket::STATUS_ACTIVE)
+            ->count();
 
         $orderInProgressCount = Order::query()
             ->where('user_id', Auth::user()->id)
-            ->whereIn('status', [Order::PAID, Order::SHIPPED, ORDER::RETURNED, Order::PENDING])
+            ->whereIn('status', [Order::PAID, Order::SHIPPED, Order::RETURNED, Order::PENDING])
             ->count();
 
         $orderCancelledCount = Order::query()
             ->where('user_id', Auth::user()->id)
-            ->whereIn('status', [Order::CANCELLED, ORDER::FAILED, ORDER::EXPIRED, ORDER::REFUNDED])
+            ->whereIn('status', [Order::CANCELLED, Order::FAILED, Order::EXPIRED, Order::REFUNDED])
             ->count();
 
         $orderDeliveredAmount = Order::query()
@@ -129,32 +123,31 @@ class UserRepository implements IUserRepository
         ];
     }
 
-     /**
+    /**
      * Update the user.
-     * @param UpdateUserRequest $request
-     * @param User $user
-     * @return array
+     *
+     * @param  User  $user
      */
-    public function update(UpdateUserRequest $request) :array
+    public function update(UpdateUserRequest $request): array
     {
 
         $user = Auth::user();
 
-        if (!$this->checkNickname($request->input('nickname'), $user->id)) {
+        if (! $this->checkNickname($request->input('nickname'), $user->id)) {
             return [
                 'status' => 0,
-                'message' => __('site.The Nickname is invalid')
+                'message' => __('site.The Nickname is invalid'),
             ];
         }
 
         $update = $user->update([
-            'first_name'            => $request->input('first_name'),
-            'last_name'             => $request->input('last_name'),
-            'nickname'              => $request->input('nickname'),
-            'mobile'                => $request->input('mobile'),
-            'biography'             => $request->input('biography'),
-            'profile_photo_path'    => $request->input('profile_photo_path', config('image.default-profile-image')),
-            'bg_photo_path'         => $request->input('bg_photo_path', config('image.default-background-image')),
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'nickname' => $request->input('nickname'),
+            'mobile' => $request->input('mobile'),
+            'biography' => $request->input('biography'),
+            'profile_photo_path' => $request->input('profile_photo_path', config('image.default-profile-image')),
+            'bg_photo_path' => $request->input('bg_photo_path', config('image.default-background-image')),
         ]);
 
         if ($update) {
@@ -175,34 +168,33 @@ class UserRepository implements IUserRepository
             return [
                 'status' => 1,
                 'message' => __('site.The data has been updated'),
-                'user' => new UserResource($user)
+                'user' => new UserResource($user),
             ];
         }
 
-        throw new \Exception();
+        throw new \Exception;
     }
 
     /**
      * Change the user password.
-     * @param ChangePasswordRequest $request
-     * @param User $user
-     * @return array
+     *
+     * @param  User  $user
      */
-    public function changePassword(ChangePasswordRequest $request) :array
+    public function changePassword(ChangePasswordRequest $request): array
     {
         $user = Auth::user();
 
         // Verify current password
-        if (!Hash::check($request->input('current_password'), $user->password)) {
+        if (! Hash::check($request->input('current_password'), $user->password)) {
             return [
                 'status' => 0,
-                'message' => __('site.Current password is incorrect')
+                'message' => __('site.Current password is incorrect'),
             ];
         }
 
         // Update password
         $update = $user->update([
-            'password' => Hash::make($request->input('password'))
+            'password' => Hash::make($request->input('password')),
         ]);
 
         NotificationService::create([
@@ -215,10 +207,10 @@ class UserRepository implements IUserRepository
         if ($update) {
             return [
                 'status' => 1,
-                'message' => __('site.Password has been changed successfully')
+                'message' => __('site.Password has been changed successfully'),
             ];
         }
 
-        throw new \Exception();
+        throw new \Exception;
     }
 }

@@ -3,15 +3,15 @@
 namespace App\Filament\Resources\WalletResource\Pages;
 
 use App\Filament\Resources\WalletResource;
+use Domain\Notification\Services\NotificationService;
+use Domain\Wallet\Models\WalletTransaction;
 use Filament\Actions;
-use Filament\Resources\Pages\ViewRecord;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
-use Domain\Wallet\Models\WalletTransaction;
-use Domain\Notification\Services\NotificationService;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewWallet extends ViewRecord
 {
@@ -91,7 +91,7 @@ class ViewWallet extends ViewRecord
 
                     Notification::make()
                         ->title(__('site.balance_adjusted_successfully'))
-                        ->body(__('site.new_balance') . ': ' . number_format($wallet->balance, 2) . ' ' . $wallet->currency)
+                        ->body(__('site.new_balance').': '.number_format($wallet->balance, 2).' '.$wallet->currency)
                         ->success()
                         ->send();
                 })

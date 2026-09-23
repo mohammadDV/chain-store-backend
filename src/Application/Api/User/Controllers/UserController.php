@@ -14,7 +14,7 @@ class UserController extends Controller
     /**
      * Constructor of UserController.
      */
-    public function __construct(protected  IUserRepository $repository)
+    public function __construct(protected IUserRepository $repository)
     {
         //
     }
@@ -27,8 +27,6 @@ class UserController extends Controller
         return response()->json($this->repository->index());
     }
 
-    
-
     /**
      * Get the dashboard info.
      */
@@ -37,11 +35,8 @@ class UserController extends Controller
         return response()->json($this->repository->getDashboardInfo());
     }
 
-
-
     /**
      * Get the user info
-     * @return JsonResponse
      */
     public function show(): JsonResponse
     {
@@ -50,8 +45,6 @@ class UserController extends Controller
 
     /**
      * Get the user info
-     * @param User $user
-     * @return JsonResponse
      */
     public function getUserInfo(User $user): JsonResponse
     {
@@ -60,29 +53,24 @@ class UserController extends Controller
 
     /**
      * Get the user info
-     * @return JsonResponse
      */
     public function checkVerification(): JsonResponse
     {
         return response()->json($this->repository->checkVerification());
     }
 
-     /**
+    /**
      * Update the user.
-     * @param UpdateUserRequest $request
-     * @return JsonResponse
      */
-    public function update(UpdateUserRequest $request) :JsonResponse
+    public function update(UpdateUserRequest $request): JsonResponse
     {
         return response()->json($this->repository->update($request));
     }
 
     /**
      * Change the user password.
-     * @param ChangePasswordRequest $request
-     * @return JsonResponse
      */
-    public function changePassword(ChangePasswordRequest $request) :JsonResponse
+    public function changePassword(ChangePasswordRequest $request): JsonResponse
     {
         return response()->json($this->repository->changePassword($request));
     }

@@ -5,13 +5,14 @@ namespace Application\Api\User\Rules;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Translation\PotentiallyTranslatedString;
 
 class Recaptcha implements ValidationRule
 {
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     * @param  Closure(string): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -22,7 +23,7 @@ class Recaptcha implements ValidationRule
             ['secret' => env('RECAPTCHA_SECRET_KEY'), 'response' => $gResponseToken]
         );
 
-        if (!json_decode($response->body(), true)['success']) {
+        if (! json_decode($response->body(), true)['success']) {
             $fail(trans('site.Invalid recaptcha'));
         }
     }

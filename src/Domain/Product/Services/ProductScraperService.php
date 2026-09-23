@@ -25,11 +25,11 @@ class ProductScraperService
             'brand_id' => $brandId,
         ];
 
-        if (!empty($url)) {
+        if (! empty($url)) {
             $body['url'] = $url;
         }
 
-        if (!empty($code)) {
+        if (! empty($code)) {
             $body['code'] = $code;
         }
 
@@ -53,12 +53,12 @@ class ProductScraperService
             ->asJson();
 
         $token = config('product_scraper.token');
-        if (!empty($token)) {
+        if (! empty($token)) {
             $pending = $pending->withToken($token);
         }
 
         try {
-            $response = $pending->post($baseUrl . $path, $payload);
+            $response = $pending->post($baseUrl.$path, $payload);
         } catch (ConnectionException $exception) {
             Log::error('Product scraper connection error', [
                 'path' => $path,

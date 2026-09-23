@@ -2,14 +2,14 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\OrderFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class OrderProduct extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderFactory> */
+    /** @use HasFactory<OrderFactory> */
     use HasFactory;
-
 
     public function order()
     {
@@ -25,5 +25,4 @@ class OrderProduct extends Model
     {
         return $this->belongsTo(Size::class);
     }
-
 }

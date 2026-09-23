@@ -15,8 +15,9 @@ class AdidasProductSeeder extends Seeder
     {
         // Get the first user
         $user = User::first();
-        if (!$user) {
-            echo "هیچ کاربری یافت نشد. لطفا ابتدا یک کاربر ایجاد کنید." . PHP_EOL;
+        if (! $user) {
+            echo 'هیچ کاربری یافت نشد. لطفا ابتدا یک کاربر ایجاد کنید.'.PHP_EOL;
+
             return;
         }
 
@@ -28,7 +29,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پنبه و پلی‌استر',
                     'سایز' => '6-8 سال',
-                    'رنگ' => 'آبی و سفید'
+                    'رنگ' => 'آبی و سفید',
                 ]),
                 'stock' => 80,
                 'points' => 30,
@@ -52,7 +53,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'مش و EVA',
                     'سایز' => '30-35',
-                    'ویژگی' => 'چسبی'
+                    'ویژگی' => 'چسبی',
                 ]),
                 'stock' => 60,
                 'points' => 40,
@@ -78,7 +79,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'کتان فرانسه',
                     'سایز' => 'XL',
-                    'رنگ' => 'مشکی'
+                    'رنگ' => 'مشکی',
                 ]),
                 'stock' => 45,
                 'points' => 60,
@@ -102,7 +103,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر',
                     'سایز' => 'L',
-                    'ویژگی' => 'ضد آب'
+                    'ویژگی' => 'ضد آب',
                 ]),
                 'stock' => 50,
                 'points' => 55,
@@ -128,7 +129,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'کتان و الاستین',
                     'سایز' => 'L',
-                    'تعداد' => '3 عددی'
+                    'تعداد' => '3 عددی',
                 ]),
                 'stock' => 100,
                 'points' => 25,
@@ -152,7 +153,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر',
                     'سایز' => 'M',
-                    'فناوری' => 'ClimaLite'
+                    'فناوری' => 'ClimaLite',
                 ]),
                 'stock' => 75,
                 'points' => 30,
@@ -178,7 +179,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'چرم مصنوعی پریمیوم',
                     'سایز' => '42',
-                    'نوع' => 'زمین چمن'
+                    'نوع' => 'زمین چمن',
                 ]),
                 'stock' => 35,
                 'points' => 120,
@@ -202,7 +203,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'چرم طبیعی',
                     'سایز' => '43',
-                    'نوع' => 'زمین چمن و مخلوط'
+                    'نوع' => 'زمین چمن و مخلوط',
                 ]),
                 'stock' => 30,
                 'points' => 110,
@@ -226,7 +227,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'مش و PU',
                     'سایز' => '41',
-                    'نوع' => 'سالنی'
+                    'نوع' => 'سالنی',
                 ]),
                 'stock' => 40,
                 'points' => 95,
@@ -252,7 +253,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر و اسپندکس',
                     'سایز' => 'M',
-                    'ساپورت' => 'متوسط'
+                    'ساپورت' => 'متوسط',
                 ]),
                 'stock' => 70,
                 'points' => 45,
@@ -276,7 +277,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'نایلون و اسپندکس',
                     'سایز' => 'L',
-                    'ویژگی' => 'فشرده‌سازی خفیف'
+                    'ویژگی' => 'فشرده‌سازی خفیف',
                 ]),
                 'stock' => 65,
                 'points' => 50,
@@ -300,7 +301,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر',
                     'سایز' => 'M',
-                    'تعداد قطعات' => '2 تکه'
+                    'تعداد قطعات' => '2 تکه',
                 ]),
                 'stock' => 55,
                 'points' => 70,
@@ -326,7 +327,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'چرم مصنوعی',
                     'سایز' => '42',
-                    'مدل' => 'کلاسیک'
+                    'مدل' => 'کلاسیک',
                 ]),
                 'stock' => 50,
                 'points' => 85,
@@ -350,7 +351,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'مش و TPU',
                     'سایز' => '40',
-                    'فناوری' => 'Boost'
+                    'فناوری' => 'Boost',
                 ]),
                 'stock' => 45,
                 'points' => 100,
@@ -374,7 +375,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'چرم مصنوعی',
                     'سایز' => '39',
-                    'رنگ' => 'سفید-سبز'
+                    'رنگ' => 'سفید-سبز',
                 ]),
                 'stock' => 60,
                 'points' => 80,
@@ -400,7 +401,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر ریسایکل',
                     'سایز' => 'L',
-                    'فناوری' => 'Climacool'
+                    'فناوری' => 'Climacool',
                 ]),
                 'stock' => 90,
                 'points' => 35,
@@ -424,7 +425,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر',
                     'سایز' => 'XL',
-                    'جیب' => 'دارد'
+                    'جیب' => 'دارد',
                 ]),
                 'stock' => 75,
                 'points' => 40,
@@ -448,7 +449,7 @@ class AdidasProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'ترکیب پنبه و پلی‌استر',
                     'سایز' => 'L',
-                    'ویژگی' => 'ضد باد'
+                    'ویژگی' => 'ضد باد',
                 ]),
                 'stock' => 40,
                 'points' => 90,
@@ -472,6 +473,6 @@ class AdidasProductSeeder extends Seeder
             Product::create($product);
         }
 
-        echo "تعداد " . count($products) . " محصول برای برند آدیداس با موفقیت اضافه شد." . PHP_EOL;
+        echo 'تعداد '.count($products).' محصول برای برند آدیداس با موفقیت اضافه شد.'.PHP_EOL;
     }
 }

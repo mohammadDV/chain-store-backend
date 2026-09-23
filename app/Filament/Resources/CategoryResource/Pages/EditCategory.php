@@ -31,4 +31,3 @@ class EditCategory extends EditRecord
         ];
     }
 }
-

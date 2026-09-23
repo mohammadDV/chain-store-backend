@@ -25,20 +25,18 @@ class PaymentController extends Controller
         protected IPaymentRepository $repository,
     ) {}
 
-
     /**
      * Get the transaction pagination.
-     * @param TableRequest $request
+     *
      * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :JsonResponse
+    public function index(TableRequest $request): JsonResponse
     {
         return response()->json($this->repository->index($request));
     }
 
     /**
      * Manual payment.
-     * @param ManualPaymentRequest $request
      */
     public function manualPayment(ManualPaymentRequest $request)
     {
@@ -47,7 +45,6 @@ class PaymentController extends Controller
 
     /**
      * Display a listing of the resource.
-     * @param Request $request
      */
     public function payment(Request $request)
     {
@@ -56,7 +53,7 @@ class PaymentController extends Controller
         if ($code != $request->input('sign')) {
             return [
                 'status' => 0,
-                'message' => __("site.invalid_request")
+                'message' => __('site.invalid_request'),
             ];
         }
 
@@ -74,19 +71,19 @@ class PaymentController extends Controller
         if ($tomanRequest->successful()) {
 
             $transaction->update([
-                'bank_transaction_id' => $tomanRequest->transactionId()
+                'bank_transaction_id' => $tomanRequest->transactionId(),
             ]);
 
             return $tomanRequest->pay(); // Redirect to payment URL
         }
 
-        return Redirect::to('http://localhost:3000/payment/result/' . $request->transactionId());
+        return Redirect::to('http://localhost:3000/payment/result/'.$request->transactionId());
 
     }
 
     /**
-    * Handle payment callback
-    */
+     * Handle payment callback
+     */
     public function callback(CallbackRequest $request)
     {
 
@@ -102,7 +99,7 @@ class PaymentController extends Controller
 
                 $transaction->update([
                     'reference' => $referenceId,
-                    'message' => __("site.transaction_successful"),
+                    'message' => __('site.transaction_successful'),
                     'status' => Transaction::COMPLETED,
                 ]);
 
@@ -122,7 +119,7 @@ class PaymentController extends Controller
 
             if ($payment->failed()) {
                 $transaction->update([
-                    'message' => __("site.not_paid"),
+                    'message' => __('site.not_paid'),
                     'status' => Transaction::FAILED,
                     'description' => $payment->message(),
                 ]);
@@ -130,13 +127,13 @@ class PaymentController extends Controller
             }
         }
 
-        return Redirect::to('/payment/result/' . $request->transactionId());
+        return Redirect::to('/payment/result/'.$request->transactionId());
     }
 
     /**
      * Display a listing of the resource.
      */
-    private function processHandling(Transaction $transaction) :void
+    private function processHandling(Transaction $transaction): void
     {
         match ($transaction->model_type) {
             Transaction::WALLET => app(WalletRepository::class)->completeTopUp($transaction->model_id),
@@ -144,14 +141,14 @@ class PaymentController extends Controller
         };
     }
 
-       /**
+    /**
      * Get the transaction result.
-     * @param string $bankTransactionId
+     *
+     * @param  string  $bankTransactionId
      * @return array
      */
-    public function show(string $id) : JsonResponse
+    public function show(string $id): JsonResponse
     {
         return response()->json($this->repository->show($id));
     }
-
 }

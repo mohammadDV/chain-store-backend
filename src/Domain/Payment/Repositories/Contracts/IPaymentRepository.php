@@ -10,22 +10,16 @@ interface IPaymentRepository
 {
     /**
      * Get the transaction pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator;
+    public function index(TableRequest $request): LengthAwarePaginator;
 
     /**
      * Get the transaction result.
-     * @param string $bankTransactionId
-     * @return array
      */
-    public function show(string $bankTransactionId) : array;
+    public function show(string $bankTransactionId): array;
 
     /**
      * Manual payment.
-     * @param ManualPaymentRequest $request
-     * @return array
      */
-    public function manualPayment(ManualPaymentRequest $request) : array;
+    public function manualPayment(ManualPaymentRequest $request): array;
 }

@@ -129,7 +129,7 @@ class DiscountResource extends Resource
                     }),
                 TextColumn::make('value')
                     ->label(__('site.value'))
-                    ->formatStateUsing(fn ($record, $state) => $record->type === Discount::TYPE_PERCENTAGE ? $state . '%' : '$' . $state)
+                    ->formatStateUsing(fn ($record, $state) => $record->type === Discount::TYPE_PERCENTAGE ? $state.'%' : '$'.$state)
                     ->sortable(),
                 TextColumn::make('max_value')
                     ->label(__('site.max_value'))

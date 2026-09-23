@@ -8,12 +8,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 interface IWalletTransactionRepository
 {
-
     /**
      * Get the Wallet pagination.
-     * @param TableRequest $request
-     * @param Wallet $wallet
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request, Wallet $wallet) :LengthAwarePaginator;
+    public function index(TableRequest $request, Wallet $wallet): LengthAwarePaginator;
 }

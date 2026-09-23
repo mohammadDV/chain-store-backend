@@ -5,25 +5,25 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\PostResource\Pages;
 use Domain\Post\Models\Post;
 use Domain\User\Models\User;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Morilog\Jalali\Jalalian;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\Hidden;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Table;
+use Morilog\Jalali\Jalalian;
 
 class PostResource extends Resource
 {
@@ -124,7 +124,7 @@ class PostResource extends Resource
                             ->disk('s3')
                             ->directory('posts/images')
                             ->visibility('public')
-                            ->required()
+                            ->required(),
                     ])->columns(2),
 
                 Section::make(__('site.settings'))

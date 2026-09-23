@@ -26,10 +26,8 @@ class BrandRepository implements IBrandRepository
 
     /**
      * Get the brands collection.
-     * @param TableRequest $request
-     * @return Collection
      */
-    public function index(TableRequest $request) :Collection
+    public function index(TableRequest $request): Collection
     {
         $brands = Brand::query()
             ->with(['banners', 'colors'])
@@ -42,10 +40,10 @@ class BrandRepository implements IBrandRepository
 
     /**
      * Get the brand.
-     * @param Brand $brand
+     *
      * @return array
      */
-    public function show(Brand $brand) :BrandResource
+    public function show(Brand $brand): BrandResource
     {
         return new BrandResource($brand);
 
@@ -53,15 +51,13 @@ class BrandRepository implements IBrandRepository
 
     /**
      * Get the banners.
-     * @param Request $request
-     * @return Collection
      */
-    public function getBanners(Request $request) :Collection
+    public function getBanners(Request $request): Collection
     {
 
         $banners = Banner::query()
             ->where('status', 1)
-            ->when(!empty($request->get('brand')), function ($query) use ($request) {
+            ->when(! empty($request->get('brand')), function ($query) use ($request) {
                 $query->whereHas('brand', function ($query) use ($request) {
                     $query->where('id', $request->get('brand'));
                 });

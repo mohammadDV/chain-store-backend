@@ -17,4 +17,3 @@ class ListSettings extends ListRecords
         $this->redirectRoute('filament.admin.resources.settings.edit', ['record' => $setting->id]);
     }
 }
-

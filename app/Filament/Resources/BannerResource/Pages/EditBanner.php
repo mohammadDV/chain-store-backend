@@ -18,4 +18,3 @@ class EditBanner extends EditRecord
         ];
     }
 }
-

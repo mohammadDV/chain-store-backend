@@ -3,19 +3,20 @@
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
 use Domain\Notification\Services\NotificationService;
-use Domain\Product\Models\Product;
+use Domain\Product\Models\Color;
+use Domain\Product\Models\Size;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
 
 class OrderProductsRelationManager extends RelationManager
@@ -129,9 +130,11 @@ class OrderProductsRelationManager extends RelationManager
                     ->label(__('site.color'))
                     ->state(function ($record) {
                         if ($record->pivot->color_id) {
-                            $color = \Domain\Product\Models\Color::find($record->pivot->color_id);
+                            $color = Color::find($record->pivot->color_id);
+
                             return $color?->title ?? '-';
                         }
+
                         return '-';
                     })
                     ->searchable()
@@ -140,9 +143,11 @@ class OrderProductsRelationManager extends RelationManager
                     ->label(__('site.size'))
                     ->state(function ($record) {
                         if ($record->pivot->size_id) {
-                            $size = \Domain\Product\Models\Size::find($record->pivot->size_id);
+                            $size = Size::find($record->pivot->size_id);
+
                             return $size?->title ?? '-';
                         }
+
                         return '-';
                     })
                     ->searchable(),
@@ -237,6 +242,7 @@ class OrderProductsRelationManager extends RelationManager
                                 ->body(__('site.product_already_refunded'))
                                 ->danger()
                                 ->send();
+
                             return;
                         }
 
@@ -278,7 +284,7 @@ class OrderProductsRelationManager extends RelationManager
                             ->where('status', '!=', 'refunded')
                             ->exists();
 
-                        if (!$exists) {
+                        if (! $exists) {
                             $ownerRecord->update(['status' => 'refunded']);
                         }
 

@@ -2,7 +2,6 @@
 
 namespace Application\Api\Wallet\Controllers;
 
-
 use Application\Api\Wallet\Requests\TopUpRequest;
 use Application\Api\Wallet\Requests\TransferRequest;
 use Application\Api\Wallet\Requests\WithdrawRequest;
@@ -23,8 +22,6 @@ class WalletController extends Controller
 
     /**
      * Get all of wallet with pagination
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function index(TableRequest $request): JsonResponse
     {

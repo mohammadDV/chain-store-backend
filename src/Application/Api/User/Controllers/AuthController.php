@@ -2,39 +2,32 @@
 
 namespace Application\Api\User\Controllers;
 
-use Application\Api\User\Requests\LoginRequest;
-use Application\Api\User\Requests\RegisterRequest;
-use Application\Api\User\Requests\ForgotPasswordRequest;
-use Application\Api\User\Requests\ResetPasswordRequest;
 use Application\Api\User\Mail\PasswordResetMail;
+use Application\Api\User\Requests\ForgotPasswordRequest;
+use Application\Api\User\Requests\LoginRequest;
 use Application\Api\User\Requests\RegisterInformationRequest;
+use Application\Api\User\Requests\RegisterRequest;
+use Application\Api\User\Requests\ResetPasswordRequest;
+use Application\Api\User\Resources\UserResource;
 use Core\Http\Controllers\Controller;
 use Domain\User\Models\User;
 use Domain\User\Services\TelegramNotificationService;
-use Google_Client;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Application\Api\User\Resources\UserResource;
 use Domain\Wallet\Models\Wallet;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-
-    /**
-     * @param TelegramNotificationService $service
-     */
-    public function __construct(protected TelegramNotificationService $service)
-    {
-
-    }
+    public function __construct(protected TelegramNotificationService $service) {}
 
     /**
      * Log in the user.
@@ -44,10 +37,10 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if(!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             return response([
                 'message' => __('site.These credentials do not match our records.'),
-                'status' => 0
+                'status' => 0,
             ], 401);
         }
 
@@ -56,12 +49,12 @@ class AuthController extends Controller
         return response([
             'is_admin' => $user->level == 3,
             'token' => $token,
-            'verify_email' => !empty($user->email_verified_at),
-            'verify_access' => !empty($user->verified_at),
+            'verify_email' => ! empty($user->email_verified_at),
+            'verify_access' => ! empty($user->verified_at),
             'customer_number' => $user->customer_number,
             'user' => new UserResource($user),
             'mesasge' => 'success',
-            'status' => 1
+            'status' => 1,
         ], 200);
     }
 
@@ -76,7 +69,7 @@ class AuthController extends Controller
             'prompt' => 'select_account',
         ]);
 
-        return redirect('https://accounts.google.com/o/oauth2/auth?' . $query);
+        return redirect('https://accounts.google.com/o/oauth2/auth?'.$query);
     }
 
     /**
@@ -87,7 +80,7 @@ class AuthController extends Controller
 
         $code = $request->input('code');
 
-        if (!$code) {
+        if (! $code) {
             return redirect('/auth/check-verification');
         }
 
@@ -112,14 +105,14 @@ class AuthController extends Controller
 
             $user = User::where('email', $payload['email'])->first();
 
-            if (!empty($user->id)) {
+            if (! empty($user->id)) {
                 $user->createToken('chainstoretoken')->plainTextToken;
             } else {
 
                 $nickname = str_replace(' ', '-', $payload['name']);
 
                 $nickname = $this->nicknameCheck($nickname);
-                $password = $nickname . '!@#' . rand(1111, 9999);
+                $password = $nickname.'!@#'.rand(1111, 9999);
 
                 $user = User::create([
                     'customer_number' => User::generateCustumerNumber(),
@@ -139,7 +132,7 @@ class AuthController extends Controller
                     'user_id' => $user->id,
                     'balance' => 0,
                     'currency' => Wallet::IRR,
-                    'status' => 1
+                    'status' => 1,
                 ]);
             }
         }
@@ -150,7 +143,7 @@ class AuthController extends Controller
 
     /**
      * Check the nickname is unique or not
-     * @param string $nickname
+     *
      * @return string $nickname
      */
     public function nicknameCheck(string $nickname): string
@@ -159,7 +152,7 @@ class AuthController extends Controller
             ->where('nickname', $nickname)
             ->first();
 
-        return !empty($user->id) ? $this->nicknameCheck($nickname . rand(111111, 999999)) : $nickname;
+        return ! empty($user->id) ? $this->nicknameCheck($nickname.rand(111111, 999999)) : $nickname;
     }
 
     /**
@@ -179,10 +172,10 @@ class AuthController extends Controller
 
         return response([
             'user' => new UserResource(Auth::user()),
-            'verify_email' => !empty(Auth::user()->email_verified_at),
-            'verify_access' => !empty(Auth::user()->verified_at),
+            'verify_email' => ! empty(Auth::user()->email_verified_at),
+            'verify_access' => ! empty(Auth::user()->verified_at),
             'customer_number' => Auth::user()->customer_number,
-            'status' => 1
+            'status' => 1,
         ], Response::HTTP_CREATED);
     }
 
@@ -208,7 +201,7 @@ class AuthController extends Controller
             'user_id' => $user->id,
             'balance' => 0,
             'currency' => Wallet::IRR,
-            'status' => 1
+            'status' => 1,
         ]);
 
         event(new Registered($user));
@@ -232,10 +225,10 @@ class AuthController extends Controller
         return response([
             'user' => new UserResource($user),
             'token' => $token,
-            'verify_email' => !empty($user->email_verified_at),
-            'verify_access' => !empty($user->verified_at),
+            'verify_email' => ! empty($user->email_verified_at),
+            'verify_access' => ! empty($user->verified_at),
             'customer_number' => $user->customer_number,
-            'status' => 1
+            'status' => 1,
         ], Response::HTTP_CREATED);
     }
 
@@ -246,9 +239,10 @@ class AuthController extends Controller
     {
 
         Auth::user()->tokens()->delete();
+
         return response([
             'mesasge' => 'success',
-            'status' => 1
+            'status' => 1,
         ], 201);
     }
 
@@ -268,7 +262,7 @@ class AuthController extends Controller
         }
 
         $user->markEmailAsVerified();
-        event(new \Illuminate\Auth\Events\Verified($user));
+        event(new Verified($user));
 
         return redirect('/auth/check-verification');
 
@@ -279,7 +273,7 @@ class AuthController extends Controller
         if ($request->user()->hasVerifiedEmail()) {
             return response()->json([
                 'status' => 1,
-                'message' => __('site.Already verified')
+                'message' => __('site.Already verified'),
             ], 400);
         }
 
@@ -287,7 +281,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => 1,
-            'message' => __('site.Verification link sent!')
+            'message' => __('site.Verification link sent!'),
         ]);
     }
 
@@ -298,10 +292,10 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response([
                 'message' => __('site.We could not find a user with that email address.'),
-                'status' => 0
+                'status' => 0,
             ], 404);
         }
 
@@ -314,19 +308,19 @@ class AuthController extends Controller
             [
                 'email' => $request->email,
                 'token' => Hash::make($token),
-                'created_at' => now()
+                'created_at' => now(),
             ]
         );
 
         // Generate reset URL (you can customize this based on your frontend URL)
-        $resetUrl = config('app.frontend_url', 'http://localhost:3000') . '/auth/reset-password?token=' . $token . '&email=' . urlencode($request->email);
+        $resetUrl = config('app.frontend_url', 'http://localhost:3000').'/auth/reset-password?token='.$token.'&email='.urlencode($request->email);
 
         // Send email
         Mail::to($user->email)->send(new PasswordResetMail($user, $resetUrl));
 
         return response([
             'message' => __('site.Password reset link sent to your email.'),
-            'status' => 1
+            'status' => 1,
         ], 200);
     }
 
@@ -337,34 +331,35 @@ class AuthController extends Controller
     {
         $request->validate([
             'token' => 'required|string',
-            'email' => 'required|email|exists:users,email'
+            'email' => 'required|email|exists:users,email',
         ]);
 
         $resetRecord = DB::table('password_reset_tokens')
             ->where('email', $request->email)
             ->first();
 
-        if (!$resetRecord) {
+        if (! $resetRecord) {
             return response([
                 'message' => __('site.Invalid reset token.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
         // Check if token is expired (60 minutes)
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
             return response([
                 'message' => __('site.Reset token has expired.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
         // Verify token
-        if (!Hash::check($request->token, $resetRecord->token)) {
+        if (! Hash::check($request->token, $resetRecord->token)) {
             return response([
                 'message' => __('site.Invalid reset token.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
@@ -374,9 +369,9 @@ class AuthController extends Controller
             'message' => __('site.Token is valid.'),
             'user' => [
                 'email' => $user->email,
-                'name' => $user->first_name . ' ' . $user->last_name
+                'name' => $user->first_name.' '.$user->last_name,
             ],
-            'status' => 1
+            'status' => 1,
         ], 200);
     }
 
@@ -389,34 +384,35 @@ class AuthController extends Controller
             ->where('email', $request->email)
             ->first();
 
-        if (!$resetRecord) {
+        if (! $resetRecord) {
             return response([
                 'message' => __('site.Invalid reset token.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
         // Check if token is expired (60 minutes)
         if (now()->diffInMinutes($resetRecord->created_at) > 60) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
             return response([
                 'message' => __('site.Reset token has expired.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
         // Verify token
-        if (!Hash::check($request->token, $resetRecord->token)) {
+        if (! Hash::check($request->token, $resetRecord->token)) {
             return response([
                 'message' => __('site.Invalid reset token.'),
-                'status' => 0
+                'status' => 0,
             ], 400);
         }
 
         // Update user password
         $user = User::where('email', $request->email)->first();
         $user->update([
-            'password' => Hash::make($request->password)
+            'password' => Hash::make($request->password),
         ]);
 
         // Delete the used token
@@ -424,7 +420,7 @@ class AuthController extends Controller
 
         return response([
             'message' => __('site.Password has been reset successfully.'),
-            'status' => 1
+            'status' => 1,
         ], 200);
     }
 }

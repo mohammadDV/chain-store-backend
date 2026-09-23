@@ -17,4 +17,3 @@ class ListBanners extends ListRecords
         ];
     }
 }
-

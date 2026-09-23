@@ -3,19 +3,18 @@
 namespace Application\Api\Product\Resources;
 
 use Application\Api\Brand\Resources\BrandResource;
-use Application\Api\Product\Resources\CategoryResource;
-use Application\Api\Product\Resources\FileResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Application\Api\User\Resources\UserResource;
 use Core\Helpers\HelperClass;
 use Domain\Product\Models\Favorite;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)

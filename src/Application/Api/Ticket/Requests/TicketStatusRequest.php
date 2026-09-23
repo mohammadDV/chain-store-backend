@@ -3,6 +3,7 @@
 namespace Application\Api\Ticket\Requests;
 
 use Core\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class TicketStatusRequest extends BaseRequest
 {
@@ -17,12 +18,12 @@ class TicketStatusRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'status' => ['required','in:active,closed'],
+            'status' => ['required', 'in:active,closed'],
         ];
     }
 }

@@ -63,6 +63,7 @@ class SettingResource extends Resource
                             ->rules([
                                 function () {
                                     $securityCode = config('setting.security_code');
+
                                     return function (string $attribute, $value, \Closure $fail) use ($securityCode) {
                                         if ($value !== $securityCode) {
                                             $fail(__('site.invalid_security_code'));

@@ -2,13 +2,14 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\LikeFactory;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Like extends Model
 {
-    /** @use HasFactory<\Database\Factories\LikeFactory> */
+    /** @use HasFactory<LikeFactory> */
     use HasFactory;
 
     protected $guarded = [];

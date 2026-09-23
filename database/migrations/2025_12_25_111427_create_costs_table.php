@@ -14,13 +14,13 @@ return new class extends Migration
         Schema::create('costs', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('amount')->unsigned();
-            $table->string('image',2048)->nullable();
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->string('image', 2048)->nullable();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('description')->nullable();
             $table->bigInteger('category_id')->unsigned()->index();
             $table->foreign('category_id')->references('id')->on('cost_categories')->onDelete('cascade');
-            $table->enum('status',['pending', 'paid']);
+            $table->enum('status', ['pending', 'paid']);
             $table->timestamps();
         });
     }

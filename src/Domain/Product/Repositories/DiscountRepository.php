@@ -18,10 +18,10 @@ class DiscountRepository implements IDiscountRepository
 
     /**
      * Get the Category.
-     * @param Discount $discount
-     * @return JsonResponse
+     *
+     * @param  Discount  $discount
      */
-    public function getActiveDiscount() :JsonResponse
+    public function getActiveDiscount(): JsonResponse
     {
 
         $discount = Discount::query()
@@ -33,16 +33,17 @@ class DiscountRepository implements IDiscountRepository
             })
             ->first();
 
-        if (!$discount) {
+        if (! $discount) {
             return response()->json([
                 'status' => 0,
-                'message' => __('site.Discount not found')
+                'message' => __('site.Discount not found'),
             ], Response::HTTP_NOT_FOUND);
         }
+
         return response()->json([
             'status' => 1,
             'data' => new DiscountResource($discount),
-            'message' => __('site.The operation has been successfully')
+            'message' => __('site.The operation has been successfully'),
         ], Response::HTTP_OK);
     }
 }

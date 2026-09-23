@@ -4,9 +4,11 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderProductsRelationManager;
+use Core\Helpers\HelperClass;
 use Domain\Notification\Services\NotificationService;
+use Domain\Product\Models\Color;
 use Domain\Product\Models\Order;
-use Domain\User\Models\User;
+use Domain\Product\Models\Size;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Forms\Components\Grid;
@@ -16,17 +18,18 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Core\Helpers\HelperClass;
-use Mpdf\Mpdf;
 use Illuminate\Support\Facades\View;
+use Mpdf\Mpdf;
 
 class OrderResource extends Resource
 {
@@ -314,6 +317,7 @@ class OrderResource extends Resource
                                 ->body(__('site.one_of_the_products_already_refunded'))
                                 ->danger()
                                 ->send();
+
                             return;
                         }
 
@@ -323,6 +327,7 @@ class OrderResource extends Resource
                                 ->body(__('site.product_already_refunded'))
                                 ->danger()
                                 ->send();
+
                             return;
                         }
 
@@ -391,7 +396,7 @@ class OrderResource extends Resource
         return static::getModel()::count();
     }
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->with(['user:id,nickname,first_name,last_name', 'products:id,title,code,image,url,status']);
@@ -400,8 +405,8 @@ class OrderResource extends Resource
     /**
      * Generate and download invoice PDF
      *
-     * @param Order $order
-     * @return \Illuminate\Http\Response
+     * @param  Order  $order
+     * @return Response
      */
     public static function generateInvoicePdf($order)
     {
@@ -412,7 +417,7 @@ class OrderResource extends Resource
             'user:id,first_name,last_name,nickname,mobile',
             'products:id,title,code,image,url,status,amount,discount,brand_id',
             'products.brand:id,title',
-            'discount:id,code'
+            'discount:id,code',
         ]);
 
         // Collect all unique color_id and size_id from pivot to avoid N+1 queries
@@ -431,15 +436,15 @@ class OrderResource extends Resource
         $colors = [];
         $sizes = [];
 
-        if (!empty($colorIds)) {
-            $colorModels = \Domain\Product\Models\Color::whereIn('id', array_unique($colorIds))->get(['id', 'title']);
+        if (! empty($colorIds)) {
+            $colorModels = Color::whereIn('id', array_unique($colorIds))->get(['id', 'title']);
             foreach ($colorModels as $color) {
                 $colors[$color->id] = $color->title;
             }
         }
 
-        if (!empty($sizeIds)) {
-            $sizeModels = \Domain\Product\Models\Size::whereIn('id', array_unique($sizeIds))->get(['id', 'title']);
+        if (! empty($sizeIds)) {
+            $sizeModels = Size::whereIn('id', array_unique($sizeIds))->get(['id', 'title']);
             foreach ($sizeModels as $size) {
                 $sizes[$size->id] = $size->title;
             }
@@ -453,12 +458,12 @@ class OrderResource extends Resource
             'order' => $order,
             'amountInWords' => $amountInWords,
             'colors' => $colors,
-            'sizes' => $sizes
+            'sizes' => $sizes,
         ])->render();
 
         // Ensure temp directory exists for mpdf
         $tempDir = storage_path('app/tmp');
-        if (!file_exists($tempDir)) {
+        if (! file_exists($tempDir)) {
             mkdir($tempDir, 0755, true);
         }
 
@@ -480,7 +485,8 @@ class OrderResource extends Resource
         $mpdf->WriteHTML($html);
 
         // Output PDF
-        $filename = 'invoice-' . $order->code . '.pdf';
+        $filename = 'invoice-'.$order->code.'.pdf';
+
         return response()->streamDownload(function () use ($mpdf) {
             echo $mpdf->Output('', 'S');
         }, $filename, [

@@ -42,16 +42,16 @@ class ExpirePendingOrdersJob implements ShouldQueue
     public function handle(IOrderRepository $orderRepository): void
     {
         $startTime = microtime(true);
-        
+
         Log::info('ExpirePendingOrdersJob: Started', [
             'timestamp' => now()->toDateTimeString(),
         ]);
 
         try {
             $expiredCount = $orderRepository->expirePendingOrders();
-            
+
             $executionTime = round(microtime(true) - $startTime, 2);
-            
+
             Log::info('ExpirePendingOrdersJob: Completed successfully', [
                 'expired_count' => $expiredCount,
                 'execution_time_seconds' => $executionTime,
@@ -59,7 +59,7 @@ class ExpirePendingOrdersJob implements ShouldQueue
             ]);
         } catch (\Exception $e) {
             $executionTime = round(microtime(true) - $startTime, 2);
-            
+
             Log::error('ExpirePendingOrdersJob: Failed', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -82,4 +82,3 @@ class ExpirePendingOrdersJob implements ShouldQueue
         ]);
     }
 }
-

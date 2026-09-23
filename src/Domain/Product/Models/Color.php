@@ -2,13 +2,14 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\ColorFactory;
 use Domain\Brand\Models\Brand;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Color extends Model
 {
-    /** @use HasFactory<\Database\Factories\ColorFactory> */
+    /** @use HasFactory<ColorFactory> */
     use HasFactory;
 
     protected $guarded = [];

@@ -15,7 +15,7 @@ class ProductSeeder extends Seeder
     {
         // Make sure we have a user for products
         $user = User::first();
-        if (!$user) {
+        if (! $user) {
             $user = User::create([
                 'first_name' => 'مدیر',
                 'last_name' => 'سیستم',
@@ -39,7 +39,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'مش و چرم مصنوعی',
                     'کشور سازنده' => 'ویتنام',
-                    'گارانتی' => '6 ماه'
+                    'گارانتی' => '6 ماه',
                 ]),
                 'stock' => 50,
                 'points' => 100,
@@ -62,7 +62,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر',
                     'سایز' => 'L',
-                    'رنگ' => 'آبی'
+                    'رنگ' => 'آبی',
                 ]),
                 'stock' => 100,
                 'points' => 50,
@@ -85,7 +85,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'حافظه داخلی' => '256 گیگابایت',
                     'رم' => '8 گیگابایت',
-                    'دوربین' => '50 مگاپیکسل'
+                    'دوربین' => '50 مگاپیکسل',
                 ]),
                 'stock' => 30,
                 'points' => 500,
@@ -108,7 +108,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'حافظه' => '512 گیگابایت',
                     'رنگ' => 'تیتانیوم طبیعی',
-                    'گارانتی' => '18 ماه'
+                    'گارانتی' => '18 ماه',
                 ]),
                 'stock' => 20,
                 'points' => 800,
@@ -131,7 +131,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'سایز' => '55 اینچ',
                     'کیفیت' => '4K UHD',
-                    'فناوری' => 'QLED'
+                    'فناوری' => 'QLED',
                 ]),
                 'stock' => 15,
                 'points' => 300,
@@ -154,7 +154,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'پردازنده' => 'M3 Pro',
                     'رم' => '16 گیگابایت',
-                    'حافظه' => '512 گیگابایت SSD'
+                    'حافظه' => '512 گیگابایت SSD',
                 ]),
                 'stock' => 10,
                 'points' => 600,
@@ -177,7 +177,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پنبه',
                     'سایز' => 'XL',
-                    'رنگ' => 'سفید'
+                    'رنگ' => 'سفید',
                 ]),
                 'stock' => 80,
                 'points' => 40,
@@ -200,7 +200,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'ویسکوز',
                     'سایز' => 'M',
-                    'طرح' => 'ساده'
+                    'طرح' => 'ساده',
                 ]),
                 'stock' => 60,
                 'points' => 45,
@@ -223,7 +223,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس کفی' => 'Boost',
                     'وزن' => '310 گرم',
-                    'مناسب برای' => 'دویدن'
+                    'مناسب برای' => 'دویدن',
                 ]),
                 'stock' => 40,
                 'points' => 90,
@@ -246,7 +246,7 @@ class ProductSeeder extends Seeder
                 'details' => json_encode([
                     'جنس' => 'پلی‌استر و اسپندکس',
                     'سایز' => 'L',
-                    'جیب' => 'دارد'
+                    'جیب' => 'دارد',
                 ]),
                 'stock' => 70,
                 'points' => 35,

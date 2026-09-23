@@ -15,27 +15,23 @@ interface INotificationRepository
 {
     /**
      * Get the notifications pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator;
+    public function index(TableRequest $request): LengthAwarePaginator;
 
     /**
      * Get the unread notifications
-     * @return Collection
      */
-    public function unread() :Collection;
+    public function unread(): Collection;
 
     /**
      * Get the unread notifications
-     * @return array
      */
-    public function readAll() :array;
+    public function readAll(): array;
 
     /**
      * Get the notification.
-     * @param Notification $notification
+     *
      * @return Plan
      */
-    public function show(Notification $notification) :Notification;
+    public function show(Notification $notification): Notification;
 }

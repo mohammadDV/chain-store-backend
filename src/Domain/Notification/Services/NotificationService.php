@@ -2,28 +2,32 @@
 
 namespace Domain\Notification\Services;
 
+use Application\Api\User\Notifications\EmailNotification;
 use Domain\Notification\Models\Notification;
 use Domain\User\Models\User;
-use Application\Api\User\Notifications\EmailNotification;
 
 class NotificationService
 {
     const PROFILE = 'profile';
+
     const CHAT = 'chat';
+
     const TICKET = 'ticket';
+
     const PRODUCT = 'product';
+
     const ORDER = 'order';
+
     const REVIEW = 'review';
+
     const WALLET = 'wallet';
 
     /**
      * Create and send notification
-     * @param array $info
-     * @param User $user
-     * @param bool $hasEmail
+     *
      * @return LengthAwarePaginator
      */
-    static public function create(array $info, User $user, bool $hasEmail = true)
+    public static function create(array $info, User $user, bool $hasEmail = true)
     {
 
         Notification::create([
@@ -35,12 +39,10 @@ class NotificationService
             'model_type' => $info['type'] ?? NotificationService::PROFILE,
         ]);
 
-
         if ($hasEmail) {
             $actionUrl = $info['action_url'] ?? null;
             $user->notify(new EmailNotification($info['title'], $info['content'], $actionUrl));
         }
 
     }
-
 }

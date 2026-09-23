@@ -2,19 +2,16 @@
 
 namespace Application\Api\Post\Controllers;
 
-use Application\Api\Post\Requests\PostRequest;
-use Application\Api\Post\Requests\PostUpdateRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Domain\Post\Models\Post;
 use Domain\Post\Repositories\Contracts\IPostRepository;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Response;
 
 class PostController extends Controller
 {
-/**
+    /**
      * Constructor of PostController.
      */
     public function __construct(protected IPostRepository $repository)

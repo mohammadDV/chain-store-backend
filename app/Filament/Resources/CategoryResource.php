@@ -14,8 +14,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TagsColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 

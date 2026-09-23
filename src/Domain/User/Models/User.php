@@ -2,24 +2,25 @@
 
 namespace Domain\User\Models;
 
+use Application\Api\User\Notifications\CustomEmailVerificationNotification;
 use Database\Factories\UserFactory;
+use Domain\Notification\Models\Notification;
 use Domain\Post\Models\Post;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
+use Filament\Panel;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 
-
-
-class User extends Authenticatable implements MustVerifyEmail, HasName, FilamentUser
+class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    /** @use HasFactory<UserFactory> */
+    use HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -81,10 +82,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
      *
      * @var array
      */
-
-
     protected $visible = [
-        'id', 'first_name', 'level', 'last_name', 'customer_number','nickname','biography','profile_photo_path','bg_photo_path','point','rate','role_id', 'is_private', 'is_report', 'email', 'mobile', 'status', 'created_at','verified_at', 'email_verified_at'
+        'id', 'first_name', 'level', 'last_name', 'customer_number', 'nickname', 'biography', 'profile_photo_path', 'bg_photo_path', 'point', 'rate', 'role_id', 'is_private', 'is_report', 'email', 'mobile', 'status', 'created_at', 'verified_at', 'email_verified_at',
     ];
 
     /**
@@ -119,7 +118,8 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
 
     /**
      * Get the user's posts.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     * @return HasMany
      */
     public function posts()
     {
@@ -128,11 +128,12 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
 
     /**
      * Get the user's notifications.
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     *
+     * @return HasMany
      */
     public function notifications()
     {
-        return $this->hasMany(\Domain\Notification\Models\Notification::class);
+        return $this->hasMany(Notification::class);
     }
 
     public function getStatusNameAttribute()
@@ -149,13 +150,11 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
                 ->exists();
         } while ($exists);
 
-        return (string)$number;
+        return (string) $number;
     }
 
     /**
      * Get the user's display name for Filament.
-     *
-     * @return string
      */
     public function getUserName(): string
     {
@@ -164,32 +163,30 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
 
     /**
      * Get the user's display name for Filament.
-     *
-     * @return string
      */
     public function getFilamentName(): string
     {
-        if (!empty($this->first_name) && !empty($this->last_name)) {
-            return trim($this->first_name . ' ' . $this->last_name);
+        if (! empty($this->first_name) && ! empty($this->last_name)) {
+            return trim($this->first_name.' '.$this->last_name);
         }
 
-        if (!empty($this->first_name)) {
+        if (! empty($this->first_name)) {
             return $this->first_name;
         }
 
-        if (!empty($this->last_name)) {
+        if (! empty($this->last_name)) {
             return $this->last_name;
         }
 
-        if (!empty($this->nickname)) {
+        if (! empty($this->nickname)) {
             return $this->nickname;
         }
 
-        if (!empty($this->email)) {
+        if (! empty($this->email)) {
             return $this->email;
         }
 
-        return 'User #' . $this->id;
+        return 'User #'.$this->id;
     }
 
     /**
@@ -199,7 +196,7 @@ class User extends Authenticatable implements MustVerifyEmail, HasName, Filament
      */
     public function sendEmailVerificationNotification()
     {
-        $this->notify(new \Application\Api\User\Notifications\CustomEmailVerificationNotification());
+        $this->notify(new CustomEmailVerificationNotification);
     }
 
     /**

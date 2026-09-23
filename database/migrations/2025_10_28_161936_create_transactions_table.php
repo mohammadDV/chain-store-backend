@@ -16,15 +16,15 @@ return new class extends Migration
             $table->bigInteger('amount')->unsigned();
             $table->string('reference')->nullable();
             $table->string('bank_transaction_id')->nullable();
-            $table->string('image',2048)->nullable();
+            $table->string('image', 2048)->nullable();
             $table->tinyInteger('manual')->default(0);
             $table->string('model_type')->nullable();
-            $table->bigInteger("model_id")->nullable();
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('model_id')->nullable();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('description')->nullable();
             $table->string('message')->nullable();
-            $table->enum('status',['pending', 'completed', 'failed', 'cancelled']);
+            $table->enum('status', ['pending', 'completed', 'failed', 'cancelled']);
             $table->timestamps();
         });
     }

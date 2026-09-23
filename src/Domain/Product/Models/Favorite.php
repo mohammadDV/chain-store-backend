@@ -2,13 +2,14 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\FavoriteFactory;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Favorite extends Model
 {
-    /** @use HasFactory<\Database\Factories\FavoriteFactory> */
+    /** @use HasFactory<FavoriteFactory> */
     use HasFactory;
 
     protected $guarded = [];

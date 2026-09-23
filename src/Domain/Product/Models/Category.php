@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\CategoryFactory;
 use Domain\Brand\Models\Brand;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    /** @use HasFactory<\Database\Factories\CategoryFactory> */
+    /** @use HasFactory<CategoryFactory> */
     use HasFactory;
 
     protected $guarded = [];
@@ -80,7 +81,6 @@ class Category extends Model
 
     /**
      * Get the full category path (breadcrumb)
-     * @return array
      */
     public function getPath(): array
     {
@@ -100,7 +100,6 @@ class Category extends Model
 
     /**
      * Check if this category has children
-     * @return bool
      */
     public function hasChildren(): bool
     {
@@ -109,7 +108,6 @@ class Category extends Model
 
     /**
      * Check if this category is a root category
-     * @return bool
      */
     public function isRoot(): bool
     {
@@ -118,7 +116,6 @@ class Category extends Model
 
     /**
      * Get the depth level of this category
-     * @return int
      */
     public function getDepth(): int
     {

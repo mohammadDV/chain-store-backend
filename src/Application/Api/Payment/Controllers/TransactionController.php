@@ -2,9 +2,9 @@
 
 namespace Application\Api\Payment\Controllers;
 
+use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transaction\Repositories\ITransactionRepository;
 use App\Domain\Wallet\Repositories\IWalletRepository;
-use App\Domain\Transaction\Models\Transaction;
 use Core\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

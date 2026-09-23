@@ -18,119 +18,115 @@ class ImageService extends ImageToolsService
 
     public function save($image, $thumb = 0)
     {
-        //set image
+        // set image
         $this->setImage($image);
-        //execute provider
+        // execute provider
         $this->provider();
 
         // Save image
         // if($image->getClientOriginalExtension()=='gif'){
 
-            // if(env('APP_ENV') == "production") {
-                // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
-                // $S3Path = Storage::disk('liara')->url($result);
-            // }else{
-            //     $result = $image->move(public_path($this->getFinalImageDirectory()),$this->getImageName() . "." . $this->getImageFormat());
-            // }
+        // if(env('APP_ENV') == "production") {
+        // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
+        // $S3Path = Storage::disk('liara')->url($result);
         // }else{
-            // if(env('APP_ENV') == "production") {
-                // $result = Image::make($image->getRealPath())->encode($this->getImageFormat());
+        //     $result = $image->move(public_path($this->getFinalImageDirectory()),$this->getImageName() . "." . $this->getImageFormat());
+        // }
+        // }else{
+        // if(env('APP_ENV') == "production") {
+        // $result = Image::make($image->getRealPath())->encode($this->getImageFormat());
 
-                // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
-                $result = Storage::disk('s3')->put($this->getFinalImageDirectory(), $image, 'public');
+        // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
+        $result = Storage::disk('s3')->put($this->getFinalImageDirectory(), $image, 'public');
 
+        $url = Storage::disk('s3')->url($result);
+        $path = parse_url($url, PHP_URL_PATH);
 
-                $url = Storage::disk('s3')->url($result);
-                $path = parse_url($url, PHP_URL_PATH);
+        if (! empty($thumb)) {
+            $fileName = '/thumbnails/'.basename($path);
+            $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(150, 100)->toJpeg();
+            // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
+            Storage::disk('s3')->put($this->getFinalImageDirectory().$fileName, $resizedImage, 'public');
 
-                if (!empty($thumb)) {
-                    $fileName = '/thumbnails/' . basename($path);
-                    $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(150, 100)->toJpeg();
-                    // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
-                    Storage::disk('s3')->put($this->getFinalImageDirectory() . $fileName, $resizedImage, 'public');
+            $fileName = '/slides/'.basename($path);
+            $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(455, 303)->toJpeg();
+            // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
+            Storage::disk('s3')->put($this->getFinalImageDirectory().$fileName, $resizedImage, 'public');
+        }
 
-                    $fileName = '/slides/' . basename($path);
-                    $resizedImage = (string) $this->manager()->read($image->getRealPath())->resize(455, 303)->toJpeg();
-                    // Storage::disk('liara')->put($this->getFinalImageDirectory() . $fileName, $resizedImage);
-                    Storage::disk('s3')->put($this->getFinalImageDirectory() . $fileName, $resizedImage, 'public');
-                }
-
-                // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
-            // return  $S3Path = str_replace('https://storage.iran.liara.space', 'https://cdn.varzeshpod.com/' , Storage::disk('liara')->url($result));
-        return  $result;
-            // }else{
-            //     $result = Image::make($image->getRealPath())->save(public_path($this->getImageAddress()), null, $this->getImageFormat());
-            // }
+        // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
+        // return  $S3Path = str_replace('https://storage.iran.liara.space', 'https://cdn.varzeshpod.com/' , Storage::disk('liara')->url($result));
+        return $result;
+        // }else{
+        //     $result = Image::make($image->getRealPath())->save(public_path($this->getImageAddress()), null, $this->getImageFormat());
+        // }
         // }
 
         // return explode(config('filesystems.disks.s3.bucket') . "/",$S3Path)[1];
-        return env('APP_ENV') == "production" ? explode(config('filesystems.disks.s3.bucket') . "/",$S3Path)[1] :  $this->getImageAddress();
+        return env('APP_ENV') == 'production' ? explode(config('filesystems.disks.s3.bucket').'/', $S3Path)[1] : $this->getImageAddress();
     }
 
     public function fitAndSave($image, $width, $height)
     {
-         //set image
-         $this->setImage($image);
-         //execute provider
-         $this->provider();
-         //save image
-         $result = $this->manager()->read($image->getRealPath())
+        // set image
+        $this->setImage($image);
+        // execute provider
+        $this->provider();
+        // save image
+        $result = $this->manager()->read($image->getRealPath())
             ->cover($width, $height)
             ->save(public_path($this->getImageAddress()));
 
-         return $result ? $this->getImageAddress() : false;
+        return $result ? $this->getImageAddress() : false;
     }
 
     public function createIndexAndSave($image)
     {
-            //get data from config
-            $imageSizes = Config::get('image.index-image-sizes');
+        // get data from config
+        $imageSizes = Config::get('image.index-image-sizes');
 
-            //set image
-            $this->setImage($image);
+        // set image
+        $this->setImage($image);
 
-            //set directory
-            $this->getImageDirectory() ?? $this->setImageDirectory(date("Y") . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d'));
-            $this->setImageDirectory($this->getImageDirectory() . DIRECTORY_SEPARATOR . time(). rand(1111,99999));
+        // set directory
+        $this->getImageDirectory() ?? $this->setImageDirectory(date('Y').DIRECTORY_SEPARATOR.date('m').DIRECTORY_SEPARATOR.date('d'));
+        $this->setImageDirectory($this->getImageDirectory().DIRECTORY_SEPARATOR.time().rand(1111, 99999));
 
-            //set name
-            $this->getImageName() ?? $this->setImageName(Str::uuid());
-            $imageName = $this->getImageName();
+        // set name
+        $this->getImageName() ?? $this->setImageName(Str::uuid());
+        $imageName = $this->getImageName();
 
-            $indexArray = [];
-            foreach($imageSizes as $sizeAlias => $imageSize)
-            {
+        $indexArray = [];
+        foreach ($imageSizes as $sizeAlias => $imageSize) {
 
-                //create and set this size name
-                $currentImageName = $imageName . '_' . $sizeAlias;
-                $this->setImageName($currentImageName);
+            // create and set this size name
+            $currentImageName = $imageName.'_'.$sizeAlias;
+            $this->setImageName($currentImageName);
 
-                //execute provider
-                $this->provider();
+            // execute provider
+            $this->provider();
 
-                //save image
-                $result = $this->manager()->read($image->getRealPath())
-                    ->cover($imageSize['width'], $imageSize['height'])
-                    ->save(public_path($this->getImageAddress()));
-                    if($result)
-                        $indexArray[$sizeAlias] = $this->getImageAddress();
-                    else
-                    {
-                        return false;
-                    }
-
+            // save image
+            $result = $this->manager()->read($image->getRealPath())
+                ->cover($imageSize['width'], $imageSize['height'])
+                ->save(public_path($this->getImageAddress()));
+            if ($result) {
+                $indexArray[$sizeAlias] = $this->getImageAddress();
+            } else {
+                return false;
             }
-            $images['indexArray'] = $indexArray;
-            $images['directory'] = $this->getFinalImageDirectory();
-            $images['currentImage'] = Config::get('image.default-current-index-image');
 
-            return $images;
+        }
+        $images['indexArray'] = $indexArray;
+        $images['directory'] = $this->getFinalImageDirectory();
+        $images['currentImage'] = Config::get('image.default-current-index-image');
+
+        return $images;
     }
 
     public function deleteImage($imagePath)
     {
-        if(file_exists($imagePath))
-        {
+        if (file_exists($imagePath)) {
             unlink($imagePath);
         }
     }
@@ -143,26 +139,21 @@ class ImageService extends ImageToolsService
 
     public function deleteDirectoryAndFiles($directory)
     {
-        if(!is_dir($directory))
-        {
+        if (! is_dir($directory)) {
             return false;
         }
 
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*', GLOB_MARK);
-        foreach($files as $file)
-        {
-            if(is_dir($file))
-            {
+        $files = glob($directory.DIRECTORY_SEPARATOR.'*', GLOB_MARK);
+        foreach ($files as $file) {
+            if (is_dir($file)) {
                 $this->deleteDirectoryAndFiles($file);
-            }
-            else{
+            } else {
                 unlink($file);
             }
         }
 
         $result = rmdir($directory);
+
         return $result;
     }
-
-
 }

@@ -8,23 +8,15 @@ use Application\Api\File\Requests\VideoRequest;
 use Domain\File\Repositories\Contracts\IFileRepository;
 use Domain\File\Services\FileService;
 use Domain\File\Services\ImageService;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 
-class FileRepository implements IFileRepository {
-
-    /**
-     * @param ImageService $imageService
-     * @param FileService $fileService
-     */
-    public function __construct(protected ImageService $imageService, protected FileService $fileService)
-    {
-
-    }
+class FileRepository implements IFileRepository
+{
+    public function __construct(protected ImageService $imageService, protected FileService $fileService) {}
 
     /**
      * Upload the image
-     * @param ImageRequest $request
+     *
      * @return array
      */
     public function uploadImage(ImageRequest $request)
@@ -38,31 +30,31 @@ class FileRepository implements IFileRepository {
         }
 
         if ($request->hasFile('image')) {
-            $this->imageService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
-                $imageResult = $this->imageService->save($request->file('image'),
-                !empty($request->input('thumb')) ? 1 : 0
+            $this->imageService->setExclusiveDirectory('boofstore'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.$request->input('dir', 'default'));
+            $imageResult = $this->imageService->save($request->file('image'),
+                ! empty($request->input('thumb')) ? 1 : 0
             );
 
-            if (!$imageResult){
+            if (! $imageResult) {
                 throw new \Exception(__('site.Error in save data'));
             }
 
             return [
-                'status' => !empty($imageResult) ? 1 : 0,
-                'url' => $imageResult
+                'status' => ! empty($imageResult) ? 1 : 0,
+                'url' => $imageResult,
             ];
         }
 
         return [
             'status' => 0,
-            'url' => ''
+            'url' => '',
         ];
 
     }
 
     /**
      * Upload the video
-     * @param VideoRequest $request
+     *
      * @return array
      */
     public function uploadVideo(VideoRequest $request)
@@ -74,32 +66,31 @@ class FileRepository implements IFileRepository {
             ];
         }
 
-
         if ($request->hasFile('video')) {
 
-            $this->fileService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'videos' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
+            $this->fileService->setExclusiveDirectory('boofstore'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'videos'.DIRECTORY_SEPARATOR.$request->input('dir', 'default'));
             $videoResult = $this->fileService->moveToStorage($request->file('video'));
 
-            if (!$videoResult){
+            if (! $videoResult) {
                 throw new \Exception(__('site.Error in save data'));
             }
 
             return [
-                'status' => !empty($videoResult) ? 1 : 0,
-                'url' => $videoResult
+                'status' => ! empty($videoResult) ? 1 : 0,
+                'url' => $videoResult,
             ];
         }
 
         return [
             'status' => 0,
-            'url' => ''
+            'url' => '',
         ];
 
     }
 
     /**
      * Upload the video
-     * @param FileRequest $request
+     *
      * @return array
      */
     public function uploadFile(FileRequest $request)
@@ -113,22 +104,22 @@ class FileRepository implements IFileRepository {
 
         if ($request->hasFile('file')) {
 
-            $this->fileService->setExclusiveDirectory('boofstore' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'files' . DIRECTORY_SEPARATOR . $request->input('dir', 'default'));
+            $this->fileService->setExclusiveDirectory('boofstore'.DIRECTORY_SEPARATOR.'uploads'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR.$request->input('dir', 'default'));
             $fileResult = $this->fileService->moveToStorage($request->file('file'));
 
-            if (!$fileResult){
+            if (! $fileResult) {
                 throw new \Exception(__('site.Error in save data'));
             }
 
             return [
-                'status' => !empty($fileResult) ? 1 : 0,
-                'url' => $fileResult
+                'status' => ! empty($fileResult) ? 1 : 0,
+                'url' => $fileResult,
             ];
         }
 
         return [
             'status' => 0,
-            'url' => ''
+            'url' => '',
         ];
 
     }

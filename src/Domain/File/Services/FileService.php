@@ -6,65 +6,57 @@ use Illuminate\Support\Facades\Storage;
 
 class FileService extends FileToolsService
 {
-
     public function moveToPublic($file)
     {
-        //set File
+        // set File
         $this->setFile($file);
-        //execute provider
+        // execute provider
         $this->provider();
-        //save File
+        // save File
         $result = $file->move(public_path($this->getFinalFileDirectory()), $this->getFinalFileName());
+
         return $result ? $this->getFileAddress() : false;
     }
 
-
-  public function moveToStorage($file)
+    public function moveToStorage($file)
     {
-        //set File
+        // set File
         $this->setFile($file);
-        //execute provider
+        // execute provider
         $this->provider();
-        //save File
+        // save File
         // $result = Storage::disk('liara')->put($this->getFinalFileDirectory(), $file);
         $result = Storage::disk('s3')->put($this->getFinalFileDirectory(), $file, 'public');
-        return  $result;
+
+        return $result;
 
         // $result = $file->move(storage_path($this->getFinalFileDirectory()), $this->getFinalFileName());
         // return $result ? $this->getFileAddress() : false;
     }
 
-
     public function deleteFile($filePath)
     {
-        if(file_exists($filePath))
-        {
+        if (file_exists($filePath)) {
             unlink($filePath);
         }
     }
 
-
     public function deleteDirectoryAndFiles($directory)
     {
-        if(!is_dir($directory))
-        {
+        if (! is_dir($directory)) {
             return false;
         }
 
-        $files = glob($directory . DIRECTORY_SEPARATOR . '*', GLOB_MARK);
-        foreach($files as $file)
-        {
-            if(is_dir($file))
-            {
+        $files = glob($directory.DIRECTORY_SEPARATOR.'*', GLOB_MARK);
+        foreach ($files as $file) {
+            if (is_dir($file)) {
                 $this->deleteDirectoryAndFiles($file);
-            }
-            else{
+            } else {
                 unlink($file);
             }
         }
         $result = rmdir($directory);
+
         return $result;
     }
-
-
 }

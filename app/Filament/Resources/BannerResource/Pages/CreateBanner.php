@@ -9,4 +9,3 @@ class CreateBanner extends CreateRecord
 {
     protected static string $resource = BannerResource::class;
 }
-

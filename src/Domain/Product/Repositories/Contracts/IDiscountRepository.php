@@ -9,11 +9,8 @@ use Illuminate\Http\JsonResponse;
  */
 interface IDiscountRepository
 {
-
     /**
      * Get the Active Discount.
-     * @return JsonResponse
      */
-    public function getActiveDiscount() :JsonResponse;
-
+    public function getActiveDiscount(): JsonResponse;
 }

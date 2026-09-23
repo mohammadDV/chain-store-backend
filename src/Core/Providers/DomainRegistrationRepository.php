@@ -14,8 +14,8 @@ use Illuminate\Support\ServiceProvider;
 class DomainRegistrationRepository extends ServiceProvider
 {
     private array $basePaths = [
-        "Repositories",
-        "Services",
+        'Repositories',
+        'Services',
     ];
 
     /**
@@ -29,7 +29,7 @@ class DomainRegistrationRepository extends ServiceProvider
 
         // get the relative path of each directory
         return array_map(function ($directory) use ($domainPath) {
-            return str_replace($domainPath . '/', '', $directory);
+            return str_replace($domainPath.'/', '', $directory);
         }, $directories);
     }
 
@@ -40,11 +40,10 @@ class DomainRegistrationRepository extends ServiceProvider
             foreach ($this->basePaths as $basePath) {
                 $contractPath = base_path("src/Domain/{$domainPath}/{$basePath}/Contracts");
                 // if the contracts directory does not exist, skip
-                if (!File::exists($contractPath)) {
+                if (! File::exists($contractPath)) {
                     continue;
                 }
                 $contractFiles = File::allFiles($contractPath);
-
 
                 foreach ($contractFiles as $contractFile) {
                     $contractClass = $this->getContractClassname($domainPath, $basePath, $contractFile);
@@ -54,24 +53,20 @@ class DomainRegistrationRepository extends ServiceProvider
             }
         }
     }
+
     /**
      * Get the fully qualified contract class name from a file.
-     *
-     * @param \SplFileInfo $file
-     * @return string
      */
     protected function getContractClassname(string $domainPath, string $basePath, \SplFileInfo $file): string
     {
         $namespace = "Domain\\{$domainPath}\\{$basePath}\\Contracts";
         $className = str_replace('.php', '', $file->getFilename());
+
         return "$namespace\\$className";
     }
 
     /**
      * Get the fully qualified contract class name from a file.
-     *
-     * @param \SplFileInfo $file
-     * @return string
      */
     protected function getImplementationClassname(string $domainPath, string $basePath, \SplFileInfo $file): string
     {
@@ -80,6 +75,7 @@ class DomainRegistrationRepository extends ServiceProvider
         if (str_starts_with($className, 'I')) {
             $className = substr($className, 1);
         }
+
         return "$namespace\\$className";
     }
 

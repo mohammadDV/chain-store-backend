@@ -2,11 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use Carbon\Carbon;
 use Domain\Product\Models\Order;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\DB;
 
 class OrderExpirationMonitor extends BaseWidget
 {
@@ -54,7 +52,7 @@ class OrderExpirationMonitor extends BaseWidget
                 ->color('info'),
 
             Stat::make(__('site.Expired Today'), $expiredToday)
-                ->description(__('site.Expired in last 24 hours') . ': ' . $expiredLast24h)
+                ->description(__('site.Expired in last 24 hours').': '.$expiredLast24h)
                 ->descriptionIcon('heroicon-m-x-circle')
                 ->color('danger')
                 ->chart($this->getExpiredChartData()),
@@ -76,6 +74,7 @@ class OrderExpirationMonitor extends BaseWidget
                 ->count();
             $data[] = $count;
         }
+
         return $data;
     }
 
@@ -93,6 +92,7 @@ class OrderExpirationMonitor extends BaseWidget
                 ->count();
             $data[] = $count;
         }
+
         return $data;
     }
 }

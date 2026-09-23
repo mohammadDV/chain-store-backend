@@ -18,6 +18,7 @@ class BannerSeeder extends Seeder
 
         if ($brands->isEmpty()) {
             $this->command->warn('No brands found. Please seed brands first.');
+
             return;
         }
 

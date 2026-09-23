@@ -15,38 +15,33 @@ use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Domain\Wallet\Models\WithdrawalTransaction;
 use Domain\Wallet\Repositories\Contracts\IWalletRepository;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Response;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class WalletRepository implements IWalletRepository
 {
-
     use GlobalFunc;
 
-    public function __construct(protected TelegramNotificationService $service)
-    {
-        
-    }
+    public function __construct(protected TelegramNotificationService $service) {}
 
     /**
      * Get the Wallet pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         $search = $request->get('query');
+
         return Wallet::query()
             ->when(Auth::user()->level != 3, function ($query) {
                 return $query->where('user_id', Auth::user()->id);
             })
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('currency', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('currency', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -54,7 +49,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * TopUp the balance
-     * @param TopUpRequest $request
      */
     public function topUp(TopUpRequest $request)
     {
@@ -101,7 +95,7 @@ class WalletRepository implements IWalletRepository
         if ($transaction) {
             return [
                 'status' => 1,
-                'url' => route('user.payment') . '?transaction=' . $transaction->id . '&sign=' . $code
+                'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
             ];
         }
 
@@ -114,10 +108,8 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Complete the topup
-     * @param int $walletTransactionId
-     * @return void
      */
-    public function completeTopUp(int $walletTransactionId) :void
+    public function completeTopUp(int $walletTransactionId): void
     {
         DB::beginTransaction();
         try {
@@ -141,11 +133,11 @@ class WalletRepository implements IWalletRepository
 
             $this->service->sendNotification(
                 config('telegram.chat_id'),
-                'افزایش موجودی حساب' . PHP_EOL .
-                'id ' . $walletTransaction->wallet->id . PHP_EOL .
-                'nickname ' . $walletTransaction->wallet->user->nickname . PHP_EOL .
-                'amount ' . $walletTransaction->amount . PHP_EOL .
-                'time ' . now()
+                'افزایش موجودی حساب'.PHP_EOL.
+                'id '.$walletTransaction->wallet->id.PHP_EOL.
+                'nickname '.$walletTransaction->wallet->user->nickname.PHP_EOL.
+                'amount '.$walletTransaction->amount.PHP_EOL.
+                'time '.now()
             );
 
         } catch (\Exception $e) {
@@ -155,9 +147,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Transfer the balance to a wallet.
-     *
-     * @param TransferRequest $request
-     * @return JsonResponse
      */
     public function transfer(TransferRequest $request): JsonResponse
     {
@@ -172,7 +161,7 @@ class WalletRepository implements IWalletRepository
 
             $recipientWallet = $this->findByUserId($recipient->id);
 
-            if (!$senderWallet->canWithdraw($request->input('amount'))) {
+            if (! $senderWallet->canWithdraw($request->input('amount'))) {
                 return response()->json([
                     'status' => 0,
                     'message' => __('site.Insufficient funds'),
@@ -217,7 +206,7 @@ class WalletRepository implements IWalletRepository
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Wallet transfer failed: ' . $e->getMessage());
+            Log::error('Wallet transfer failed: '.$e->getMessage());
 
             return response()->json([
                 'status' => 0,
@@ -228,24 +217,22 @@ class WalletRepository implements IWalletRepository
 
     /**
      * find the wallet By User Id
-     * @param int $user_id
-     * @param $currency = 'IRR'
-     * @return Wallet
+     *
+     * @param  $currency  = 'IRR'
      */
     public function findByUserId(?int $user_id, $currency = 'IRR'): Wallet
     {
         return Wallet::query()
-                ->where('user_id', $user_id)
-                ->where('currency', $currency)
-                ->where('status', 1)
-                ->firstOrFail();
+            ->where('user_id', $user_id)
+            ->where('currency', $currency)
+            ->where('status', 1)
+            ->firstOrFail();
     }
 
     /**
      * Update the model with the given data.
-     * @param Model $model
-     * @param array $data
-     * @return bool
+     *
+     * @param  Model  $model
      */
     public function update($model, array $data): bool
     {
@@ -254,9 +241,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Increment the balance
-     * @param Wallet $wallet
-     * @param float $amount
-     * @return bool
      */
     public function incrementBalance(Wallet $wallet, float $amount): bool
     {
@@ -265,9 +249,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Decrement the balance
-     * @param Wallet $wallet
-     * @param float $amount
-     * @return bool
      */
     public function decrementBalance(Wallet $wallet, float $amount): bool
     {
@@ -276,8 +257,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Decrement the balance
-     * @param Wallet $wallet
-     * @return float
      */
     public function getAvailableBalance(Wallet $wallet): float
     {
@@ -286,8 +265,6 @@ class WalletRepository implements IWalletRepository
 
     /**
      * Withdraw from the wallet.
-     * @param WithdrawRequest $request
-     * @return JsonResponse
      */
     public function withdraw(WithdrawRequest $request): JsonResponse
     {
@@ -298,7 +275,7 @@ class WalletRepository implements IWalletRepository
             $amount = $request->amount;
             $description = $request->description ?? 'Wallet withdrawal';
 
-            if (!$wallet->canWithdraw($amount)) {
+            if (! $wallet->canWithdraw($amount)) {
                 return response()->json([
                     'status' => 0,
                     'message' => __('site.Insufficient funds'),
@@ -338,7 +315,7 @@ class WalletRepository implements IWalletRepository
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Wallet withdrawal failed: ' . $e->getMessage());
+            Log::error('Wallet withdrawal failed: '.$e->getMessage());
 
             return response()->json([
                 'status' => 0,

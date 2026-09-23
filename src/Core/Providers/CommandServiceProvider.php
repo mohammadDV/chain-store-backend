@@ -7,6 +7,7 @@ use Core\Console\Commands\ExpirePendingOrdersCommand;
 use Core\Console\Commands\ProductCommand;
 use Core\Console\Commands\ProductListCommand;
 use Core\Console\Commands\ProductSizeCommand;
+use Core\Console\Commands\RefreshStaleProductsCommand;
 use Core\Console\Commands\UpdateSizeAndStockCommand;
 use Core\Console\Commands\UpdateStockCommand;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +27,7 @@ class CommandServiceProvider extends ServiceProvider
             ProductSizeCommand::class,
             ExpirePendingOrdersCommand::class,
             UpdateSizeAndStockCommand::class,
+            RefreshStaleProductsCommand::class,
         ]);
     }
 

@@ -2,13 +2,14 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\CategoryEndpointFactory;
 use Domain\Brand\Models\Brand;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CategoryEndpoint extends Model
 {
-    /** @use HasFactory<\Database\Factories\CategoryEndpointFactory> */
+    /** @use HasFactory<CategoryEndpointFactory> */
     use HasFactory;
 
     protected $guarded = [];

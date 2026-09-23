@@ -3,7 +3,7 @@
 namespace Application\Api\Product\Requests;
 
 use Core\Http\Requests\BaseRequest;
-use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class SearchProductRequest extends BaseRequest
 {
@@ -18,7 +18,7 @@ class SearchProductRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -34,8 +34,8 @@ class SearchProductRequest extends BaseRequest
             'query' => ['nullable', 'string', 'min:1', 'max:50'],
             'column' => ['nullable', 'string', 'min:2', 'max:50'],
             'sort' => ['nullable', 'string', 'in:desc,asc'],
-            'page' => ['nullable','integer'],
-            'count' => ['nullable','integer', 'min:5','max:200']
+            'page' => ['nullable', 'integer'],
+            'count' => ['nullable', 'integer', 'min:5', 'max:200'],
         ];
     }
 }

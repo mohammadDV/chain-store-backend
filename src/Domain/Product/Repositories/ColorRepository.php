@@ -8,7 +8,6 @@ use Core\Http\traits\GlobalFunc;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
 use Domain\Product\Repositories\Contracts\IColorRepository;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -20,15 +19,13 @@ class ColorRepository implements IColorRepository
 
     /**
      * Get the colors pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         $search = $request->get('query');
         $colors = Color::query()
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('title', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -38,7 +35,6 @@ class ColorRepository implements IColorRepository
 
     /**
      * Get the colors.
-     * @param Brand|null $brand
      */
     public function activeColors(?Brand $brand = null)
     {
@@ -54,16 +50,13 @@ class ColorRepository implements IColorRepository
             ->orderBy('priority', 'desc')
             ->get();
 
-
         return ColorResource::collection($colors);
     }
 
     /**
      * Get the Color.
-     * @param Color $color
-     * @return ColorResource
      */
-    public function show(Color $color) :ColorResource
+    public function show(Color $color): ColorResource
     {
         return new ColorResource($color);
     }

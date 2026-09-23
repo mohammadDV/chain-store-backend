@@ -15,8 +15,9 @@ class BrandServiceFactory
     /**
      * Get the appropriate brand service for the given brand
      *
-     * @param Brand $brand The brand model
+     * @param  Brand  $brand  The brand model
      * @return BrandServiceInterface The brand service instance
+     *
      * @throws \Exception If no service is found for the brand
      */
     public static function getService(Brand $brand): BrandServiceInterface
@@ -31,18 +32,19 @@ class BrandServiceFactory
 
         $serviceClass = $brandEnum->getServiceClass();
 
-        if (!class_exists($serviceClass)) {
+        if (! class_exists($serviceClass)) {
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass();
+        return new $serviceClass;
     }
 
     /**
      * Get the appropriate brand service by brand slug
      *
-     * @param string $slug The brand slug
+     * @param  string  $slug  The brand slug
      * @return BrandServiceInterface The brand service instance
+     *
      * @throws \Exception If no service is found for the slug
      */
     public static function getServiceBySlug(string $slug): BrandServiceInterface
@@ -55,28 +57,29 @@ class BrandServiceFactory
 
         $serviceClass = $brandEnum->getServiceClass();
 
-        if (!class_exists($serviceClass)) {
+        if (! class_exists($serviceClass)) {
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass();
+        return new $serviceClass;
     }
 
     /**
      * Get the appropriate brand service by BrandEnum
      *
-     * @param BrandEnum $brandEnum The brand enum
+     * @param  BrandEnum  $brandEnum  The brand enum
      * @return BrandServiceInterface The brand service instance
+     *
      * @throws \Exception If the service class does not exist
      */
     public static function getServiceByEnum(BrandEnum $brandEnum): BrandServiceInterface
     {
         $serviceClass = $brandEnum->getServiceClass();
 
-        if (!class_exists($serviceClass)) {
+        if (! class_exists($serviceClass)) {
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass();
+        return new $serviceClass;
     }
 }

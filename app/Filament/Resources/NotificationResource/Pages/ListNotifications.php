@@ -3,9 +3,8 @@
 namespace App\Filament\Resources\NotificationResource\Pages;
 
 use App\Filament\Resources\NotificationResource;
-use Domain\User\Models\User;
 use Domain\Notification\Services\NotificationService;
-use Filament\Actions;
+use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
@@ -85,6 +84,7 @@ class ListNotifications extends ListRecords
                             ->title(__('site.no_users_found'))
                             ->warning()
                             ->send();
+
                         return;
                     }
 
@@ -100,7 +100,7 @@ class ListNotifications extends ListRecords
                             $sentCount++;
                         } catch (\Exception $e) {
                             // Log error but continue with other users
-                            Log::error('Failed to send notification to user ' . $user->id . ': ' . $e->getMessage());
+                            Log::error('Failed to send notification to user '.$user->id.': '.$e->getMessage());
                         }
                     }
 

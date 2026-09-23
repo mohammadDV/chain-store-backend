@@ -8,14 +8,14 @@ use Domain\Ticket\Models\TicketMessage;
 use Filament\Actions;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Notifications\Notification;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\RepeatableEntry;
+use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ViewTicket extends ViewRecord
@@ -89,7 +89,7 @@ class ViewTicket extends ViewRecord
                             ->disabled($isTicketClosed),
                     ])
                     ->columns(1)
-                    ->visible(!$isTicketClosed),
+                    ->visible(! $isTicketClosed),
             ]);
     }
 
@@ -167,6 +167,7 @@ class ViewTicket extends ViewRecord
                 ->body(__('site.cannot_send_message_to_closed_ticket'))
                 ->danger()
                 ->send();
+
             return;
         }
 
@@ -176,6 +177,7 @@ class ViewTicket extends ViewRecord
                 ->body(__('site.message_required'))
                 ->danger()
                 ->send();
+
             return;
         }
 

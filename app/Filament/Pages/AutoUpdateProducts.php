@@ -143,6 +143,7 @@ class AutoUpdateProducts extends Page implements HasForms
                 ->title(__('site.scraper_preview_required'))
                 ->warning()
                 ->send();
+
             return;
         }
 
@@ -189,6 +190,7 @@ class AutoUpdateProducts extends Page implements HasForms
     protected function fingerprint(array $payload): string
     {
         ksort($payload);
+
         return hash('sha256', json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
     }
 

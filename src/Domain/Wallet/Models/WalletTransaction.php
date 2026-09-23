@@ -5,19 +5,24 @@ namespace Domain\Wallet\Models;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WalletTransaction extends Model
 {
+    const PENDING = 'pending';
 
-    const PENDING = "pending";
-    const COMPLETED = "completed";
-    const FAILED = "failed";
-    const DEPOSITE = "deposit";
-    const WITHDRAWAL = "withdrawal";
-    const REFUND = "refund";
-    const TRANSFER = "transfer";
-    const PURCHASE = "purchase";
+    const COMPLETED = 'completed';
+
+    const FAILED = 'failed';
+
+    const DEPOSITE = 'deposit';
+
+    const WITHDRAWAL = 'withdrawal';
+
+    const REFUND = 'refund';
+
+    const TRANSFER = 'transfer';
+
+    const PURCHASE = 'purchase';
 
     protected $guarded = [];
 
@@ -33,13 +38,6 @@ class WalletTransaction extends Model
 
     /**
      * Create a new transaction and update wallet balance.
-     *
-     * @param Wallet $wallet
-     * @param float $amount
-     * @param string $type
-     * @param string $description
-     * @param string $status
-     * @return WalletTransaction
      */
     public static function createTransaction(
         Wallet $wallet,
@@ -74,6 +72,6 @@ class WalletTransaction extends Model
                 ->exists();
         } while ($exists);
 
-        return (string)$reference;
+        return (string) $reference;
     }
 }

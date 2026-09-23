@@ -1,0 +1,2299 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Access to an undefined property App\\Filament\\Pages\\AutoUpdateProducts\:\:\$form\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Pages/AutoUpdateProducts.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 3
+			path: app/Filament/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$products\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/OrderResource.php
+
+		-
+			message: '#^Method App\\Filament\\Resources\\OrderResource\:\:generateInvoicePdf\(\) should return Illuminate\\Http\\Response but returns Symfony\\Component\\HttpFoundation\\StreamedResponse\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Filament/Resources/OrderResource.php
+
+		-
+			message: '#^Relation ''discount'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Resources/OrderResource.php
+
+		-
+			message: '#^Relation ''products'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Resources/OrderResource.php
+
+		-
+			message: '#^Relation ''user'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/OrderResource/RelationManagers/OrderProductsRelationManager.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/OrderResource/RelationManagers/OrderProductsRelationManager.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/OrderResource/RelationManagers/OrderProductsRelationManager.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>title" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: app/Filament/Resources/OrderResource/RelationManagers/OrderProductsRelationManager.php
+
+		-
+			message: '#^Cannot access property \$view on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/PostResource/Pages/EditPost.php
+
+		-
+			message: '#^Offset ''image_upload'' on non\-empty\-array\<string, mixed\> in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Filament/Resources/ProductResource/Pages/CreateProduct.php
+
+		-
+			message: '#^Offset ''image_upload'' on non\-empty\-array\<string, mixed\> in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
+			count: 1
+			path: app/Filament/Resources/ProductResource/Pages/EditProduct.php
+
+		-
+			message: '#^Method Filament\\Forms\\Components\\FileUpload\:\:image\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: app/Filament/Resources/ProductResource/RelationManagers/FilesRelationManager.php
+
+		-
+			message: '#^Cannot access property \$id on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
+			identifier: property.nonObject
+			count: 1
+			path: app/Filament/Resources/SettingResource/Pages/EditSetting.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Resources/TicketMessageResource.php
+
+		-
+			message: '#^Relation ''subject'' is not found in Domain\\Ticket\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Resources/TicketMessageResource.php
+
+		-
+			message: '#^Called ''pluck'' on Laravel collection, but could have been retrieved as a query\.$#'
+			identifier: larastan.noUnnecessaryCollectionCall
+			count: 1
+			path: app/Filament/Resources/TicketResource.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Resources/TicketResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$messages\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:messages\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 4
+			path: app/Filament/Resources/TicketResource/Pages/ViewTicket.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Resources/TicketSubjectResource.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Resources/WalletResource.php
+
+		-
+			message: '#^Parameter \#1 \$num of function number_format expects float, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/WalletResource.php
+
+		-
+			message: '#^Parameter \#2 \$user of static method Domain\\Notification\\Services\\NotificationService\:\:create\(\) expects Domain\\User\\Models\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/WalletResource.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$balance\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WalletResource/Pages/ViewWallet.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$currency\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Filament/Resources/WalletResource/Pages/ViewWallet.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WalletResource/Pages/ViewWallet.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Filament/Resources/WalletResource/Pages/ViewWallet.php
+
+		-
+			message: '#^Parameter \$wallet of static method Domain\\Wallet\\Models\\WalletTransaction\:\:createTransaction\(\) expects Domain\\Wallet\\Models\\Wallet, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/WalletResource/Pages/ViewWallet.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Resources/WalletTransactionResource/RelationManagers/WalletRelationManager.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Filament/Resources/WithdrawalTransactionResource.php
+
+		-
+			message: '#^Access to undefined constant Domain\\Notification\\Services\\NotificationService\:\:WITHDRAWAL\.$#'
+			identifier: classConstant.notFound
+			count: 2
+			path: app/Filament/Resources/WithdrawalTransactionResource.php
+
+		-
+			message: '#^Parameter \$wallet of static method Domain\\Wallet\\Models\\WalletTransaction\:\:createTransaction\(\) expects Domain\\Wallet\\Models\\Wallet, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Filament/Resources/WithdrawalTransactionResource.php
+
+		-
+			message: '#^Match expression does not handle remaining value\: string$#'
+			identifier: match.unhandled
+			count: 2
+			path: app/Filament/Widgets/LatestTickets.php
+
+		-
+			message: '#^Relation ''subject'' is not found in Domain\\Ticket\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Widgets/LatestTickets.php
+
+		-
+			message: '#^Relation ''user'' is not found in Domain\\Ticket\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Filament/Widgets/LatestTickets.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\Authentication\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/AuthenticationFactory.php
+
+		-
+			message: '#^Type App\\Authentication in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Authentication\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/AuthenticationFactory.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\Endpoint\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/EndpointFactory.php
+
+		-
+			message: '#^Type App\\Endpoint in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Endpoint\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/EndpointFactory.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\Notification\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/NotificationFactory.php
+
+		-
+			message: '#^Type App\\Notification in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Notification\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/NotificationFactory.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\Ticket\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/TicketFactory.php
+
+		-
+			message: '#^Type App\\Ticket in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Ticket\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/TicketFactory.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\TicketMessage\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/TicketMessageFactory.php
+
+		-
+			message: '#^Type App\\TicketMessage in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\TicketMessage\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/TicketMessageFactory.php
+
+		-
+			message: '#^PHPDoc tag @extends has invalid type App\\TicketSubject\.$#'
+			identifier: class.notFound
+			count: 1
+			path: database/factories/TicketSubjectFactory.php
+
+		-
+			message: '#^Type App\\TicketSubject in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\TicketSubject\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: database/factories/TicketSubjectFactory.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Schema\\ColumnDefinition\:\:\$nullable\.$#'
+			identifier: property.notFound
+			count: 2
+			path: database/migrations/2025_07_20_081634_create_notifications_table.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: database/seeders/ProductSeeder.php
+
+		-
+			message: '#^Offset ''category_id'' on array\{title\: ''آیفون 15 پرو مکس'', description\: ''جدیدترین آیفون اپل…'', details\: non\-empty\-string\|false, stock\: 20, points\: 800, rate\: 5, amount\: 68000000, active\: 1, \.\.\.\}\|array\{title\: ''تلویزیون سامسونگ 55…'', description\: ''تلویزیون هوشمند 4K…'', details\: non\-empty\-string\|false, stock\: 15, points\: 300, rate\: 4, amount\: 25000000, active\: 1, \.\.\.\}\|array\{title\: ''تی‌شرت ورزشی آدیداس'', description\: ''تی‌شرت ورزشی با…'', details\: non\-empty\-string\|false, stock\: 100, points\: 50, rate\: 4, amount\: 850000, active\: 1, \.\.\.\}\|array\{title\: ''شلوار ورزشی نایک'', description\: ''شلوار ورزشی راحت با…'', details\: non\-empty\-string\|false, stock\: 70, points\: 35, rate\: 4, amount\: 950000, active\: 1, \.\.\.\}\|array\{title\: ''مانتو زنانه زارا'', description\: ''مانتو زنانه شیک و…'', details\: non\-empty\-string\|false, stock\: 60, points\: 45, rate\: 5, amount\: 1800000, active\: 1, \.\.\.\}\|array\{title\: ''مک‌بوک پرو 14 اینچ'', description\: ''لپ‌تاپ حرفه‌ای اپل…'', details\: non\-empty\-string\|false, stock\: 10, points\: 600, rate\: 5, amount\: 95000000, active\: 1, \.\.\.\}\|array\{title\: ''پیراهن مردانه زارا'', description\: ''پیراهن مردانه رسمی…'', details\: non\-empty\-string\|false, stock\: 80, points\: 40, rate\: 4, amount\: 1200000, active\: 1, \.\.\.\}\|array\{title\: ''کفش ورزشی آدیداس…'', description\: ''کفش دویدن با فناوری…'', details\: non\-empty\-string\|false, stock\: 40, points\: 90, rate\: 5, amount\: 5200000, active\: 1, \.\.\.\}\|array\{title\: ''کفش ورزشی نایک ایر…'', description\: ''کفش ورزشی با کیفیت…'', details\: non\-empty\-string\|false, stock\: 50, points\: 100, rate\: 5, amount\: 4500000, active\: 1, \.\.\.\}\|array\{title\: ''گوشی سامسونگ گلکسی…'', description\: ''گوشی هوشمند سامسونگ…'', details\: non\-empty\-string\|false, stock\: 30, points\: 500, rate\: 5, amount\: 35000000, active\: 1, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: database/seeders/ProductSeeder.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BannerResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BannerResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BannerResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BannerResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BannerResource\:\:\$link\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BannerResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BannerResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BannerResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BrandResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BrandResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BrandResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BrandResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BrandResource\:\:\$logo\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BrandResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\BrandResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/BrandResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\ColorResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\ColorResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Brand\\Resources\\ColorResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Brand/Resources/ColorResource.php
+
+		-
+			message: '#^Method Application\\Api\\Notification\\Controllers\\NotificationController\:\:index\(\) has invalid return type Application\\Api\\Notification\\Controllers\\LengthAwarePaginator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Notification/Controllers/NotificationController.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$bankTransactionId$#'
+			identifier: parameter.notFound
+			count: 3
+			path: src/Application/Api/Notification/Controllers/NotificationController.php
+
+		-
+			message: '#^PHPDoc tag @return with type Application\\Api\\Notification\\Controllers\\LengthAwarePaginator is not subtype of native type Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Application/Api/Notification/Controllers/NotificationController.php
+
+		-
+			message: '#^PHPDoc tag @return with type array is incompatible with native type Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.phpDocType
+			count: 3
+			path: src/Application/Api/Notification/Controllers/NotificationController.php
+
+		-
+			message: '#^Binary operation "\." between ''/payment/result/'' and Evryn\\LaravelToman\\PendingRequest results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^Call to an undefined method Illuminate\\Http\\Request\:\:transactionId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^Match expression does not handle remaining values\: string\|null$#'
+			identifier: match.unhandled
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^Method Application\\Api\\Payment\\Controllers\\PaymentController\:\:index\(\) has invalid return type Application\\Api\\Payment\\Controllers\\LengthAwarePaginator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$bankTransactionId$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^PHPDoc tag @return with type Application\\Api\\Payment\\Controllers\\LengthAwarePaginator is not subtype of native type Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^PHPDoc tag @return with type array is incompatible with native type Illuminate\\Http\\JsonResponse\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Application/Api/Payment/Controllers/PaymentController.php
+
+		-
+			message: '#^Access to property \$wallet_id on an unknown class App\\Domain\\Transaction\\Models\\Transaction\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Call to method findByUserId\(\) on an unknown class App\\Domain\\Wallet\\Repositories\\IWalletRepository\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Call to method findByWalletId\(\) on an unknown class App\\Domain\\Transaction\\Repositories\\ITransactionRepository\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Call to method load\(\) on an unknown class App\\Domain\\Transaction\\Models\\Transaction\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Parameter \$transaction of method Application\\Api\\Payment\\Controllers\\TransactionController\:\:show\(\) has invalid type App\\Domain\\Transaction\\Models\\Transaction\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Parameter \$transactionRepository of method Application\\Api\\Payment\\Controllers\\TransactionController\:\:__construct\(\) has invalid type App\\Domain\\Transaction\\Repositories\\ITransactionRepository\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Parameter \$walletRepository of method Application\\Api\\Payment\\Controllers\\TransactionController\:\:__construct\(\) has invalid type App\\Domain\\Wallet\\Repositories\\IWalletRepository\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Property Application\\Api\\Payment\\Controllers\\TransactionController\:\:\$transactionRepository has unknown class App\\Domain\\Transaction\\Repositories\\ITransactionRepository as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Property Application\\Api\\Payment\\Controllers\\TransactionController\:\:\$walletRepository has unknown class App\\Domain\\Wallet\\Repositories\\IWalletRepository as its type\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Application/Api/Payment/Controllers/TransactionController.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$bank_transaction_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$message\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$model_type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$reference\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Payment\\Resources\\TransactionsResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Payment/Resources/TransactionsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$pre_title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$special\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$summary\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$video\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Post\\Resources\\PostResource\:\:\$view\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Post/Resources/PostResource.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$discount$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Application/Api/Product/Controllers/DiscountController.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryResource\:\:\$parent_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$parent\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$parent_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\CategoryWithParentsResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/CategoryWithParentsResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ColorResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ColorResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ColorResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ColorResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$expire_date\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$max_value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\DiscountResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/DiscountResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\FileResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/FileResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\FileResource\:\:\$path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/FileResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\FileResource\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/FileResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$address\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$delivery_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$discount_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$fullname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$postal_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$product_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$products\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$total_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\OrderResource\:\:\$vip\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/OrderResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductAttributeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductAttributeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductAttributeResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductAttributeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductAttributeResource\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductAttributeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$discount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductBoxResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductBoxResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$discount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductFavoriteResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductFavoriteResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$color_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$details\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$discount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$image\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\ProductResource\:\:\$vip\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Call to an undefined method Application\\Api\\Product\\Resources\\ProductResource\:\:reviews\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/ProductResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/SizeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$stock\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/SizeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Product/Resources/SizeResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$comment\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$likes_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$product_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\Review\\Resources\\ReviewResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/Review/Resources/ReviewResource.php
+
+		-
+			message: '#^Method Domain\\Ticket\\Repositories\\Contracts\\ITicketSubjectRepository\:\:activeSubjects\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Application/Api/Ticket/Controllers/TicketSubjectController.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$subject$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Application/Api/Ticket/Controllers/TicketSubjectController.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 5
+			path: src/Application/Api/User/Controllers/AuthController.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$bg_photo_path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$biography\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$nickname\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$point\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$profile_photo_path\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Access to an undefined property Application\\Api\\User\\Resources\\UserResource\:\:\$rate\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Array has 2 duplicate keys with value ''biography'' \(''biography'', ''biography''\)\.$#'
+			identifier: array.duplicateKey
+			count: 1
+			path: src/Application/Api/User/Resources/UserResource.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: src/Application/Api/User/Rules/Recaptcha.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Endpoint\:\:\$brand\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductCommand.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Endpoint model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Core/Console/Commands/ProductCommand.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" in empty\(\) is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Core/Console/Commands/ProductCommand.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\CategoryEndpoint\:\:\$brand\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductListCommand.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\CategoryEndpoint\:\:\$category\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductListCommand.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\CategoryEndpoint model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Core/Console/Commands/ProductListCommand.php
+
+		-
+			message: '#^Relation ''category'' is not found in Domain\\Product\\Models\\CategoryEndpoint model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Core/Console/Commands/ProductListCommand.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$brand\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Method Core\\Console\\Commands\\ProductSizeCommand\:\:retryRequest\(\) invoked with 5 parameters, 3\-4 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$domain$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$kauflandComProduct$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^PHPDoc tag @throws with type Core\\Console\\Commands\\Exception is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" in empty\(\) is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type Domain\\Product\\Models\\Product\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Core/Console/Commands/ProductSizeCommand.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$brand\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Undefined variable\: \$endpoints$#'
+			identifier: variable.undefined
+			count: 1
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" in empty\(\) is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type Domain\\Product\\Models\\Product\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 2
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Size\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 4
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Method Illuminate\\Console\\Command\:\:option\(\) invoked with 2 parameters, 0\-1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Eloquent\\Builder\<Domain\\Product\\Models\\Size\>\:\:limit\(\) expects int, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Relation ''product'' is not found in Domain\\Product\\Models\\Size model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>id" in empty\(\) is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type Domain\\Product\\Models\\Size\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 4
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\BrandFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Brand/Models/Brand.php
+
+		-
+			message: '#^Type Database\\Factories\\BrandFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\BrandFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Brand/Models/Brand.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Brand/Repositories/BrandRepository.php
+
+		-
+			message: '#^PHPDoc tag @return with type array is incompatible with native type Application\\Api\\Brand\\Resources\\BrandResource\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Domain/Brand/Repositories/BrandRepository.php
+
+		-
+			message: '#^Relation ''banners'' is not found in Domain\\Brand\\Models\\Brand model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Brand/Repositories/BrandRepository.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Brand\\Models\\Banner model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Brand/Repositories/BrandRepository.php
+
+		-
+			message: '#^Relation ''colors'' is not found in Domain\\Brand\\Models\\Brand model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Brand/Repositories/BrandRepository.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ClaimFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Cost/Models/Cost.php
+
+		-
+			message: '#^Type Database\\Factories\\ClaimFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ClaimFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Cost/Models/Cost.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ClaimFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Cost/Models/CostCategory.php
+
+		-
+			message: '#^Type Database\\Factories\\ClaimFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ClaimFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Cost/Models/CostCategory.php
+
+		-
+			message: '#^Variable \$fileResult in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Domain/File/Repositories/FileRepository.php
+
+		-
+			message: '#^Variable \$imageResult in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Domain/File/Repositories/FileRepository.php
+
+		-
+			message: '#^Variable \$videoResult in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: src/Domain/File/Repositories/FileRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Domain/File/Services/ImageService.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: src/Domain/File/Services/ImageService.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/File/Services/ImageService.php
+
+		-
+			message: '#^Method Domain\\Notification\\Repositories\\Contracts\\INotificationRepository\:\:show\(\) has invalid return type Domain\\Plan\\Models\\Plan\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Notification/Repositories/Contracts/INotificationRepository.php
+
+		-
+			message: '#^PHPDoc tag @return with type Domain\\Plan\\Models\\Plan is not subtype of native type Domain\\Notification\\Models\\Notification\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Domain/Notification/Repositories/Contracts/INotificationRepository.php
+
+		-
+			message: '#^Method Domain\\Notification\\Repositories\\NotificationRepository\:\:show\(\) has invalid return type Domain\\Notification\\Repositories\\Plan\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Notification/Repositories/NotificationRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Notification/Repositories/NotificationRepository.php
+
+		-
+			message: '#^PHPDoc tag @return with type Domain\\Notification\\Repositories\\Plan is not subtype of native type Domain\\Notification\\Models\\Notification\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Domain/Notification/Repositories/NotificationRepository.php
+
+		-
+			message: '#^Method Domain\\Notification\\Services\\NotificationService\:\:create\(\) has invalid return type Domain\\Notification\\Services\\LengthAwarePaginator\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Notification/Services/NotificationService.php
+
+		-
+			message: '#^Method Domain\\Notification\\Services\\NotificationService\:\:create\(\) should return Domain\\Notification\\Services\\LengthAwarePaginator but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/Domain/Notification/Services/NotificationService.php
+
+		-
+			message: '#^Access to constant INPROGRESS on an unknown class Domain\\IdentityRecord\\Models\\IdentityRecord\.$#'
+			identifier: class.notFound
+			count: 2
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Access to constant PENDING on an unknown class Domain\\IdentityRecord\\Models\\IdentityRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Access to undefined constant Domain\\Payment\\Models\\Transaction\:\:IDENTITY\.$#'
+			identifier: classConstant.notFound
+			count: 2
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Call to static method find\(\) on an unknown class Domain\\Plan\\Models\\Plan\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Call to static method where\(\) on an unknown class Domain\\IdentityRecord\\Models\\IdentityRecord\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$identityRecord$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^Variable \$identityRecord might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: src/Domain/Payment/Repositories/PaymentRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\CategoryFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Category.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between int\<1, max\> and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Domain/Product/Models/Category.php
+
+		-
+			message: '#^Type Database\\Factories\\CategoryFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\CategoryFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Category.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\CategoryEndpointFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/CategoryEndpoint.php
+
+		-
+			message: '#^Type Database\\Factories\\CategoryEndpointFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\CategoryEndpointFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/CategoryEndpoint.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ColorFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Color.php
+
+		-
+			message: '#^Type Database\\Factories\\ColorFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ColorFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Color.php
+
+		-
+			message: '#^Method Domain\\Product\\Models\\Discount\:\:calculateDiscount\(\) should return float but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Product/Models/Discount.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\DiscountFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Discount.php
+
+		-
+			message: '#^Type Database\\Factories\\DiscountFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\DiscountFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Discount.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\FavoriteFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Favorite.php
+
+		-
+			message: '#^Type Database\\Factories\\FavoriteFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\FavoriteFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Favorite.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\FileFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/File.php
+
+		-
+			message: '#^Type Database\\Factories\\FileFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\FileFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/File.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\LikeFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Like.php
+
+		-
+			message: '#^Type Database\\Factories\\LikeFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\LikeFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Like.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\OrderFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Order.php
+
+		-
+			message: '#^Type Database\\Factories\\OrderFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\OrderFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Order.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\OrderFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/OrderProduct.php
+
+		-
+			message: '#^Type Database\\Factories\\OrderFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\OrderFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/OrderProduct.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ProductFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Product/Models/Product.php
+
+		-
+			message: '#^Type Database\\Factories\\ProductFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ProductFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Product/Models/Product.php
+
+		-
+			message: '#^Method Domain\\Product\\Repositories\\CategoryRepository\:\:activeProductCategories\(\) should return Illuminate\\Database\\Eloquent\\Collection but returns Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Method Domain\\Product\\Repositories\\CategoryRepository\:\:allCategories\(\) should return Illuminate\\Database\\Eloquent\\Collection but returns Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$brand$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Relation ''brands'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Relation ''childrenRecursive'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Relation ''parentRecursive'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^Relation ''products'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/CategoryRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/ColorRepository.php
+
+		-
+			message: '#^Relation ''brands'' is not found in Domain\\Product\\Models\\Color model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ColorRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/DiscountRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$discount$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/DiscountRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$delivery_amount\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$products\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Domain\\Product\\Models\\Product\>\:\:\$sizes\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Parameter \#1 \$id of static method Domain\\Payment\\Models\\Transaction\:\:generateHash\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Relation ''discount'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Relation ''order'' is not found in Domain\\Product\\Models\\OrderProduct model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Relation ''products'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 5
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Relation ''transactions'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Relation ''user'' is not found in Domain\\Product\\Models\\Order model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Using nullsafe property access "\?\-\>color_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Domain/Product/Repositories/OrderRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$categories\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Review\\Models\\Review\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Domain\\Review\\Models\\Review\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, array\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''attributes'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''categories'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 4
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''color'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''favorites'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''files'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''parentRecursive'' is not found in Domain\\Product\\Models\\Category model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''reviews'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Database\\Eloquent\\Builder\<Domain\\Product\\Models\\Category\>\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Using nullsafe method call on non\-nullable type Illuminate\\Support\\Collection\<\(int\|string\), mixed\>\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: src/Domain/Product/Repositories/ProductRepository.php
+
+		-
+			message: '#^Offset ''images'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Domain/Product/Services/Brands/AdidasBrandService.php
+
+		-
+			message: '#^Offset ''size'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Domain/Product/Services/Brands/AdidasBrandService.php
+
+		-
+			message: '#^Offset ''images'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^Offset ''size'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 2
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^Offset 2 on array\{non\-falsy\-string, non\-falsy\-string, non\-falsy\-string\} in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.offset
+			count: 1
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$array$#'
+			identifier: parameter.notFound
+			count: 1
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
+
+		-
+			message: '#^Method Domain\\Product\\Services\\OxylabsService\:\:buildParams\(\) never returns null so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Domain/Product/Services/OxylabsService.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$host$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Services/OxylabsService.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$identifier$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Services/OxylabsService.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$marketplace$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Product/Services/OxylabsService.php
+
+		-
+			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Domain/Product/Services/StaleProductRefreshService.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between int\<0, max\> and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/Domain/Product/Services/StaleProductRefreshService.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between int\<0, max\> and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/Domain/Product/Services/StaleProductRefreshService.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ReviewFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Review/Models/Review.php
+
+		-
+			message: '#^Type Database\\Factories\\ReviewFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ReviewFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Review/Models/Review.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Review\\Models\\Review\:\:\$product\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^Relation ''likes'' is not found in Domain\\Review\\Models\\Review model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^Relation ''product'' is not found in Domain\\Review\\Models\\Review model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^Relation ''user'' is not found in Domain\\Review\\Models\\Review model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/Review/Repositories/ReviewRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/Domain/Ticket/Repositories/TicketRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Ticket/Repositories/TicketRepository.php
+
+		-
+			message: '#^Relation ''messages'' is not found in Domain\\Ticket\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: src/Domain/Ticket/Repositories/TicketRepository.php
+
+		-
+			message: '#^Relation ''subject'' is not found in Domain\\Ticket\\Models\\Ticket model\.$#'
+			identifier: larastan.relationExistence
+			count: 2
+			path: src/Domain/Ticket/Repositories/TicketRepository.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Domain/Ticket/Repositories/TicketRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Ticket/Repositories/TicketSubjectRepository.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(Domain\\User\\Models\\User\) and ''roles'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Domain/User/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property Domain\\User\\Models\\User\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Domain/User/Models/User.php
+
+		-
+			message: '#^PHPDoc type array of property Domain\\User\\Models\\User\:\:\$visible is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$visible\.$#'
+			identifier: property.phpDocType
+			count: 1
+			path: src/Domain/User/Models/User.php
+
+		-
+			message: '#^Property ''profile_photo_url'' does not exist in model\.$#'
+			identifier: rules.modelAppends
+			count: 1
+			path: src/Domain/User/Models/User.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/User/Repositories/UserRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$user$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/User/Repositories/UserRepository.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 1
+			path: src/Domain/User/Services/TelegramNotificationService.php
+
+		-
+			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\WithdrawalTransactionFactory\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/Domain/Wallet/Models/WithdrawalTransaction.php
+
+		-
+			message: '#^Type Database\\Factories\\WithdrawalTransactionFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\WithdrawalTransactionFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
+			identifier: generics.notSubtype
+			count: 1
+			path: src/Domain/Wallet/Models/WithdrawalTransaction.php
+
+		-
+			message: '#^Access to an undefined property Domain\\Wallet\\Models\\Wallet\:\:\$customer_number\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Method Domain\\Wallet\\Repositories\\WalletRepository\:\:decrementBalance\(\) should return bool but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Method Domain\\Wallet\\Repositories\\WalletRepository\:\:getAvailableBalance\(\) should return float but returns string\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Method Domain\\Wallet\\Repositories\\WalletRepository\:\:incrementBalance\(\) should return bool but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Parameter \#1 \$id of static method Domain\\Payment\\Models\\Transaction\:\:generateHash\(\) expects string, int\<0, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Parameter \#1 \$wallet of method Domain\\Wallet\\Repositories\\WalletRepository\:\:incrementBalance\(\) expects Domain\\Wallet\\Models\\Wallet, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^Variable \$description on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: src/Domain/Wallet/Repositories/WalletRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Wallet/Repositories/WalletTransactionRepository.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Wallet/Repositories/WithdrawalTransactionRepository.php
+
+		-
+			message: '#^Access to undefined constant Domain\\Notification\\Services\\NotificationService\:\:WITHDRAWAL\.$#'
+			identifier: classConstant.notFound
+			count: 1
+			path: src/Domain/Wallet/Repositories/WithdrawalTransactionRepository.php
+
+		-
+			message: '#^PHPDoc tag @param for parameter \$request with type Application\\Api\\Wallet\\Requests\\WithdrawRequest is incompatible with native type Application\\Api\\Wallet\\Requests\\WithdrawalStatusRequest\.$#'
+			identifier: parameter.phpDocType
+			count: 1
+			path: src/Domain/Wallet/Repositories/WithdrawalTransactionRepository.php
+
+		-
+			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
+			identifier: parameter.notFound
+			count: 2
+			path: src/Domain/Wallet/Repositories/WithdrawalTransactionRepository.php
+
+		-
+			message: '#^Parameter \$wallet of static method Domain\\Wallet\\Models\\WalletTransaction\:\:createTransaction\(\) expects Domain\\Wallet\\Models\\Wallet, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Domain/Wallet/Repositories/WithdrawalTransactionRepository.php

@@ -6,14 +6,20 @@ use Illuminate\Support\Facades\Auth;
 
 class FileToolsService
 {
-
     protected $file;
+
     protected $exclusiveDirectory;
+
     protected $fileDirectory;
+
     protected $fileName;
+
     protected $fileFormat;
+
     protected $finalFileDirectory;
+
     protected $finalFileName;
+
     protected $fileSize;
 
     public function setFile($file)
@@ -35,6 +41,7 @@ class FileToolsService
     {
         return $this->fileDirectory;
     }
+
     public function setFileDirectory($fileDirectory)
     {
         $this->fileDirectory = trim($fileDirectory, '/\\');
@@ -44,6 +51,7 @@ class FileToolsService
     {
         return $this->fileSize;
     }
+
     public function setFileSize($file)
     {
         $this->fileSize = $file->getSize();
@@ -54,15 +62,15 @@ class FileToolsService
         return $this->fileName;
     }
 
-     public function setFileName($fileName)
+    public function setFileName($fileName)
     {
         $this->fileName = $fileName;
     }
 
     public function setCurrentFileName()
     {
-            return !empty($this->file) ? $this->setFileName(pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME)) : false;
-            // $_FILES['file']['name']
+        return ! empty($this->file) ? $this->setFileName(pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME)) : false;
+        // $_FILES['file']['name']
     }
 
     public function getFileFormat()
@@ -70,7 +78,7 @@ class FileToolsService
         return $this->fileFormat;
     }
 
-   public function setFileFormat($fileFormat)
+    public function setFileFormat($fileFormat)
     {
         $this->fileFormat = $fileFormat;
     }
@@ -85,7 +93,7 @@ class FileToolsService
         $this->finalFileDirectory = $finalFileDirectory;
     }
 
-   public function getFinalFileName()
+    public function getFinalFileName()
     {
         return $this->finalFileName;
     }
@@ -97,47 +105,33 @@ class FileToolsService
 
     protected function checkDirectory($fileDirectory)
     {
-        if(!file_exists($fileDirectory))
-        {
+        if (! file_exists($fileDirectory)) {
             mkdir($fileDirectory, 0755, true);
         }
     }
 
     public function getFileAddress()
     {
-        return $this->finalFileDirectory . DIRECTORY_SEPARATOR . $this->finalFileName;
+        return $this->finalFileDirectory.DIRECTORY_SEPARATOR.$this->finalFileName;
     }
 
     protected function provider()
     {
-        //set properties
+        // set properties
         $this->getFileDirectory() ?? $this->setFileDirectory(Auth::check() ?
-        'user-' . Auth::user()->id . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d') :
-        'common' . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d'));
+        'user-'.Auth::user()->id.DIRECTORY_SEPARATOR.date('Y').DIRECTORY_SEPARATOR.date('m').DIRECTORY_SEPARATOR.date('d') :
+        'common'.DIRECTORY_SEPARATOR.date('Y').DIRECTORY_SEPARATOR.date('m').DIRECTORY_SEPARATOR.date('d'));
         $this->getFileName() ?? $this->setFileName(time());
         $this->setFileFormat(pathinfo($this->file->getClientOriginalName(), PATHINFO_EXTENSION));
 
-
-        //set final File Directory
-        $finalFileDirectory = empty($this->getExclusiveDirectory()) ? $this->getFileDirectory() : $this->getExclusiveDirectory() . DIRECTORY_SEPARATOR . $this->getFileDirectory();
+        // set final File Directory
+        $finalFileDirectory = empty($this->getExclusiveDirectory()) ? $this->getFileDirectory() : $this->getExclusiveDirectory().DIRECTORY_SEPARATOR.$this->getFileDirectory();
         $this->setFinalFileDirectory($finalFileDirectory);
 
+        // set final File name
+        $this->setFinalFileName($this->getFileName().'.'.$this->getFileFormat());
 
-        //set final File name
-        $this->setFinalFileName($this->getFileName() . '.' . $this->getFileFormat());
-
-
-        //check adn create final File directory
+        // check adn create final File directory
         // $this->checkDirectory($this->getFinalFileDirectory());
     }
-
-
-
-
-
-
-
-
-
-
 }

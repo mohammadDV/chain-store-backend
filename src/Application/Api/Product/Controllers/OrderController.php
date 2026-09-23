@@ -13,7 +13,6 @@ use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
-
 class OrderController extends Controller
 {
     /**
@@ -26,8 +25,6 @@ class OrderController extends Controller
 
     /**
      * Get all orders with pagination.
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function index(TableRequest $request): JsonResponse
     {
@@ -36,8 +33,6 @@ class OrderController extends Controller
 
     /**
      * Get the order details.
-     * @param Order $order
-     * @return JsonResponse
      */
     public function show(Order $order): JsonResponse
     {
@@ -46,8 +41,6 @@ class OrderController extends Controller
 
     /**
      * Store a new order.
-     * @param OrderRequest $request
-     * @return JsonResponse
      */
     public function store(OrderRequest $request): JsonResponse
     {
@@ -56,8 +49,6 @@ class OrderController extends Controller
 
     /**
      * Check the order status.
-     * @param CheckOrderCodeRequest $request
-     * @return JsonResponse
      */
     public function checkOrderStatus(CheckOrderCodeRequest $request): JsonResponse
     {
@@ -66,8 +57,6 @@ class OrderController extends Controller
 
     /**
      * Check the discount.
-     * @param Order $order
-     * @return JsonResponse
      */
     public function checkDiscount(Order $order, CheckDiscountCodeRequest $request): JsonResponse
     {
@@ -76,9 +65,6 @@ class OrderController extends Controller
 
     /**
      * Pay the order.
-     * @param Order $order
-     * @param PaymentRequest $request
-     * @return JsonResponse
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse
     {

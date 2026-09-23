@@ -2,7 +2,7 @@
 
 namespace Application\Api\Product\Resources;
 
-use Domain\Product\Models\File;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FileResource extends JsonResource
@@ -10,7 +10,7 @@ class FileResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)

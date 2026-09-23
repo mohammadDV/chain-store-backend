@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Endpoint;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Endpoint>
+ * @extends Factory<Endpoint>
  */
 class EndpointFactory extends Factory
 {

@@ -6,16 +6,15 @@ use App\Filament\Resources\UserResource\Pages;
 use Domain\User\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Morilog\Jalali\Jalalian;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Cache;
+use Morilog\Jalali\Jalalian;
 
 class UserResource extends Resource
 {
@@ -187,7 +186,7 @@ class UserResource extends Resource
                         3 => 'green',
                         default => 'gray',
                     })
-                    ->formatStateUsing(fn (int $state): string => match($state) {
+                    ->formatStateUsing(fn (int $state): string => match ($state) {
                         1 => __('site.user_level_1'),
                         2 => __('site.user_level_2'),
                         3 => __('site.user_level_3'),
@@ -295,7 +294,7 @@ class UserResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn ($record) => !$record->email_verified_at),
+                    ->visible(fn ($record) => ! $record->email_verified_at),
                 Tables\Actions\Action::make('verify_identity')
                     ->label(__('site.verify_identity'))
                     ->icon('heroicon-o-identification')
@@ -316,7 +315,7 @@ class UserResource extends Resource
                             ->success()
                             ->send();
                     })
-                    ->visible(fn ($record) => $record->email_verified_at && !$record->verified_at),
+                    ->visible(fn ($record) => $record->email_verified_at && ! $record->verified_at),
             ])
             ->bulkActions([
                 // Delete actions removed to disable user deletion

@@ -19,13 +19,9 @@ class WalletTransactionController extends Controller
 
     /**
      * Get all of wallet transaction with pagination
-     * @param TableRequest $request
-     * @param Wallet $wallet
-     * @return JsonResponse
      */
     public function index(TableRequest $request, Wallet $wallet): JsonResponse
     {
         return response()->json($this->repository->index($request, $wallet), Response::HTTP_OK);
     }
-
 }

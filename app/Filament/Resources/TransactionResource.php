@@ -5,14 +5,13 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\TransactionResource\Pages;
 use Domain\Payment\Models\Transaction;
 use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
-use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
 
@@ -82,11 +81,9 @@ class TransactionResource extends Resource
                             ])
                             ->required(),
                         Forms\Components\TextInput::make('reference')
-                            ->label(__('site.reference'))
-                            ,
+                            ->label(__('site.reference')),
                         Forms\Components\TextInput::make('bank_transaction_id')
-                            ->label(__('site.bank_transaction_id'))
-                            ,
+                            ->label(__('site.bank_transaction_id')),
                         Forms\Components\Textarea::make('description')
                             ->label(__('site.description'))
                             ->rows(3),
@@ -209,7 +206,7 @@ class TransactionResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\Action::make('total_revenue')
-                    ->label(fn ($livewire) => __('site.total_revenue') . ': ' . number_format($livewire->getFilteredTableQuery()->where('status', Transaction::COMPLETED)->get()->sum('revenue')) . ' تومان')
+                    ->label(fn ($livewire) => __('site.total_revenue').': '.number_format($livewire->getFilteredTableQuery()->where('status', Transaction::COMPLETED)->get()->sum('revenue')).' تومان')
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->disabled()

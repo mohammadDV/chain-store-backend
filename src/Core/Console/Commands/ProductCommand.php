@@ -4,13 +4,14 @@ namespace Core\Console\Commands;
 
 use Core\Console\Commands\Traits\RequestTrait;
 use Domain\Product\Models\Endpoint;
-use Domain\Product\Services\OxylabsService;
 use Domain\Product\Services\Brands\BrandServiceFactory;
+use Domain\Product\Services\OxylabsService;
 use Illuminate\Console\Command;
 
 class ProductCommand extends Command
 {
     use RequestTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -25,14 +26,13 @@ class ProductCommand extends Command
      */
     protected $description = 'Fetch product from Oxylabs';
 
-
     /**
      * Execute the console command.
      */
     public function handle()
     {
 
-        $oxylabsService = new OxylabsService();
+        $oxylabsService = new OxylabsService;
 
         $limit = (int) $this->option('limit');
 
@@ -48,10 +48,11 @@ class ProductCommand extends Command
         // $this->url = 'https://www.adidas.com.tr/tr/almanya-25-kadin-takimi-deplasman-formasi/JF2605.html';
 
         $count = 0;
-        foreach($endpoints as $endpoint) {
+        foreach ($endpoints as $endpoint) {
             // Skip if brand is missing
-            if (!$endpoint->brand) {
+            if (! $endpoint->brand) {
                 $this->error("Endpoint {$endpoint->id} has no brand assigned");
+
                 continue;
             }
 
@@ -62,47 +63,48 @@ class ProductCommand extends Command
 
                 $filters = $this->retryRequest($oxylabsService, $parsingKey, $endpoint->url, 1);
 
-                if(!empty($filters['status']) && $filters['status'] == 4) {
+                if (! empty($filters['status']) && $filters['status'] == 4) {
                     continue;
                 }
 
-                if(!empty($filters['status']) && $filters['status'] == 2) {
+                if (! empty($filters['status']) && $filters['status'] == 2) {
                     continue;
                 }
 
                 // Use brand service to clean product data
                 $productData = $brandService->cleanProductData($filters, $endpoint->brand->domain);
 
-                if(!empty($productData['status']) && $productData['status'] == 2) {
+                if (! empty($productData['status']) && $productData['status'] == 2) {
                     continue;
                 }
 
-                if(!empty($productData['status']) && $productData['status'] == 3) {
+                if (! empty($productData['status']) && $productData['status'] == 3) {
 
-                    $this->error("Failed to get product sizesssssssssss: " . $endpoint->url);
+                    $this->error('Failed to get product sizesssssssssss: '.$endpoint->url);
+
                     continue;
                 }
-
 
                 $product = $brandService->storeProduct($productData, $endpoint->category_id, $endpoint->url, $endpoint->brand->id);
 
-                if (!empty($product?->id)) {
+                if (! empty($product?->id)) {
                     $endpoint->update([
                         'status' => 1,
                     ]);
                     $count++;
-                    $this->info("Products: " . $endpoint->url);
-                    $this->info("Products: " . $product->id);
-                    $this->info("count: " . $count . " / " . $endpoints->count());
-                    $this->info("************************************************");
+                    $this->info('Products: '.$endpoint->url);
+                    $this->info('Products: '.$product->id);
+                    $this->info('count: '.$count.' / '.$endpoints->count());
+                    $this->info('************************************************');
                 }
             } catch (\Exception $e) {
-                $this->error("Error processing endpoint {$endpoint->id}: " . $e->getMessage());
+                $this->error("Error processing endpoint {$endpoint->id}: ".$e->getMessage());
+
                 continue;
             }
             sleep(2);
         }
 
-        $this->info("Done: " . $count);
+        $this->info('Done: '.$count);
     }
 }

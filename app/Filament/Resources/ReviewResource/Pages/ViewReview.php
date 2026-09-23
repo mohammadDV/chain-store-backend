@@ -18,4 +18,3 @@ class ViewReview extends ViewRecord
         ];
     }
 }
-

@@ -61,7 +61,7 @@ enum BrandEnum: string
     /**
      * Get the brand enum from a slug string
      *
-     * @param string $slug The brand slug
+     * @param  string  $slug  The brand slug
      * @return self|null The brand enum or null if not found
      */
     public static function fromSlug(string $slug): ?self
@@ -74,8 +74,9 @@ enum BrandEnum: string
     /**
      * Get the brand enum from a slug string or throw exception
      *
-     * @param string $slug The brand slug
+     * @param  string  $slug  The brand slug
      * @return self The brand enum
+     *
      * @throws \ValueError If the slug doesn't match any brand
      */
     public static function fromSlugOrFail(string $slug): self
@@ -88,7 +89,7 @@ enum BrandEnum: string
     /**
      * Check if a slug is a valid brand
      *
-     * @param string $slug The brand slug
+     * @param  string  $slug  The brand slug
      * @return bool True if the slug matches a brand
      */
     public static function isValidSlug(string $slug): bool

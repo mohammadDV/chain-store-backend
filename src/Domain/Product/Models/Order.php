@@ -2,6 +2,7 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\OrderFactory;
 use Domain\Payment\Models\Transaction;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,18 +10,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    /** @use HasFactory<\Database\Factories\OrderFactory> */
+    /** @use HasFactory<OrderFactory> */
     use HasFactory;
 
-    const PENDING = "pending";
-    const PAID = "paid";
-    const CANCELLED = "cancelled";
-    const SHIPPED = "shipped";
-    const DELIVERED = "delivered";
-    const RETURNED = "returned";
-    const REFUNDED = "refunded";
-    const FAILED = "failed";
-    const EXPIRED = "expired";
+    const PENDING = 'pending';
+
+    const PAID = 'paid';
+
+    const CANCELLED = 'cancelled';
+
+    const SHIPPED = 'shipped';
+
+    const DELIVERED = 'delivered';
+
+    const RETURNED = 'returned';
+
+    const REFUNDED = 'refunded';
+
+    const FAILED = 'failed';
+
+    const EXPIRED = 'expired';
 
     protected $guarded = [];
 
@@ -52,12 +61,11 @@ class Order extends Model
                 ->exists();
         } while ($exists);
 
-        return (string)$code;
+        return (string) $code;
     }
 
     public function transactions()
     {
         return $this->hasMany(Transaction::class, 'model_id', 'id')->where('model_type', Transaction::ORDER);
     }
-
 }

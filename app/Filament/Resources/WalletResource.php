@@ -3,23 +3,23 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WalletResource\Pages;
+use App\Filament\Resources\WalletResource\RelationManagers\WalletTransactionsRelationManager;
+use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
-use Domain\Notification\Services\NotificationService;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
-use Illuminate\Database\Eloquent\Builder;
-use Morilog\Jalali\Jalalian;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Morilog\Jalali\Jalalian;
 
 class WalletResource extends Resource
 {
@@ -57,24 +57,24 @@ class WalletResource extends Resource
             ->schema([
                 Forms\Components\Section::make(__('site.wallet_information'))
                     ->schema([
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->label(__('site.user'))
                             ->relationship('user', 'first_name')
                             ->searchable()
                             ->preload()
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('balance')
+                        TextInput::make('balance')
                             ->label(__('site.balance'))
                             ->numeric()
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('currency')
+                        TextInput::make('currency')
                             ->label(__('site.currency'))
                             ->disabled()
                             ->required()
                             ->maxLength(3),
-                        Forms\Components\Toggle::make('status')
+                        Toggle::make('status')
                             ->label(__('site.status'))
                             ->disabled()
                             ->default(true),
@@ -206,7 +206,7 @@ class WalletResource extends Resource
 
                         Notification::make()
                             ->title(__('site.balance_adjusted_successfully'))
-                            ->body(__('site.new_balance') . ': ' . number_format($wallet->balance, 2) . ' ' . $wallet->currency)
+                            ->body(__('site.new_balance').': '.number_format($wallet->balance, 2).' '.$wallet->currency)
                             ->success()
                             ->send();
                     })
@@ -225,7 +225,7 @@ class WalletResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Resources\WalletResource\RelationManagers\WalletTransactionsRelationManager::class,
+            WalletTransactionsRelationManager::class,
         ];
     }
 

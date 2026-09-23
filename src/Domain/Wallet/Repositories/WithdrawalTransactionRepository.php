@@ -24,10 +24,8 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
 
     /**
      * Get the WalletTransaction pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         $search = $request->get('query');
         $status = $request->get('status');
@@ -41,14 +39,14 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             ->when(Auth::user()->level != 3, function ($query) use ($wallet) {
                 return $query->where('wallet_id', $wallet->id);
             })
-            ->when(!empty($status), function ($query) use ($status) {
+            ->when(! empty($status), function ($query) use ($status) {
                 return $query->where('status', $status);
             })
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('description', 'like', '%' . $search . '%')
-                    ->orWhere('card','like','%' . $search . '%')
-                    ->orWhere('sheba','like','%' . $search . '%')
-                    ->orWhere('reference','like','%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('description', 'like', '%'.$search.'%')
+                    ->orWhere('card', 'like', '%'.$search.'%')
+                    ->orWhere('sheba', 'like', '%'.$search.'%')
+                    ->orWhere('reference', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -56,8 +54,6 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
 
     /**
      * Withdraw from the wallet.
-     * @param WithdrawRequest $request
-     * @return JsonResponse
      */
     public function store(WithdrawRequest $request): JsonResponse
     {
@@ -79,15 +75,15 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
         try {
 
             $wallet = Wallet::query()
-                    ->where('user_id', Auth::id())
-                    ->where('currency', Wallet::IRR)
-                    ->where('status', 1)
-                    ->firstOrFail();
+                ->where('user_id', Auth::id())
+                ->where('currency', Wallet::IRR)
+                ->where('status', 1)
+                ->firstOrFail();
 
             $amount = $request->amount;
             $description = $request->description ?? __('site.wallet_transaction_wallet_withdrawal');
 
-            if (!$wallet->canWithdraw($amount)) {
+            if (! $wallet->canWithdraw($amount)) {
                 return response()->json([
                     'status' => 0,
                     'message' => __('site.Insufficient funds'),
@@ -127,7 +123,7 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Wallet withdrawal failed: ' . $e->getMessage());
+            Log::error('Wallet withdrawal failed: '.$e->getMessage());
 
             return response()->json([
                 'status' => 0,
@@ -138,8 +134,8 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
 
     /**
      * Withdraw from the wallet.
-     * @param WithdrawRequest $request
-     * @return JsonResponse
+     *
+     * @param  WithdrawRequest  $request
      */
     public function updateStatus(WithdrawalTransaction $withdrawalTransaction, WithdrawalStatusRequest $request): JsonResponse
     {
@@ -147,7 +143,7 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             Auth::user()->level != 3 ||
             $withdrawalTransaction->status != WithdrawalTransaction::PENDING
         ) {
-            throw New \Exception('Unauthorized', 403);
+            throw new \Exception('Unauthorized', 403);
         }
 
         $data = [
@@ -193,7 +189,7 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Wallet withdrawal failed: ' . $e->getMessage());
+            Log::error('Wallet withdrawal failed: '.$e->getMessage());
 
             return response()->json([
                 'status' => 0,

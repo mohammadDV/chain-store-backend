@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\Cache;
 class SettingService
 {
     private const CACHE_KEY = 'app_settings';
+
     private const CACHE_TTL = 3600; // 1 hour
 
     /**
      * Get profit rate with caching.
-     *
-     * @return float
      */
     public function getProfitRate(): float
     {
@@ -22,8 +21,6 @@ class SettingService
 
     /**
      * Get amount rate (money rate) with caching.
-     *
-     * @return float
      */
     public function getExchangeRate(): float
     {
@@ -47,9 +44,6 @@ class SettingService
 
     /**
      * Update settings and clear cache.
-     *
-     * @param array $data
-     * @return Setting
      */
     public function updateSettings(array $data): Setting
     {
@@ -63,8 +57,6 @@ class SettingService
 
     /**
      * Clear settings cache.
-     *
-     * @return void
      */
     public function clearCache(): void
     {
@@ -73,8 +65,6 @@ class SettingService
 
     /**
      * Get profit rate with fallback to config.
-     *
-     * @return float
      */
     public function getProfitRateWithFallback(): float
     {
@@ -87,8 +77,6 @@ class SettingService
 
     /**
      * Get amount rate with fallback to config.
-     *
-     * @return float
      */
     public function getExchangeRateWithFallback(): float
     {

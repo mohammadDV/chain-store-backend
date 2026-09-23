@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Authentication;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Authentication>
+ * @extends Factory<Authentication>
  */
 class AuthenticationFactory extends Factory
 {

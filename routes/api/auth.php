@@ -11,39 +11,37 @@ Route::post('/email/verification-notification', [AuthController::class, 'resendV
     ->middleware(['auth:sanctum', 'throttle:6,1'])
     ->name('verification.send');
 
-
 Route::post('/register', [AuthController::class, 'register'])
-                ->middleware('guest')
-                ->name('register');
+    ->middleware('guest')
+    ->name('register');
 
 Route::post('/login', [AuthController::class, 'login'])
-                ->middleware('guest')
-                ->name('login');
+    ->middleware('guest')
+    ->name('login');
 
 Route::post('/google/verify', [AuthController::class, 'verify'])
-                ->middleware('guest')
-                ->name('verify');
+    ->middleware('guest')
+    ->name('verify');
 
 Route::post('/complete-register', [AuthController::class, 'completeRegister'])
-                ->middleware('auth:sanctum')
-                ->name('complete-register');
+    ->middleware('auth:sanctum')
+    ->name('complete-register');
 
 Route::middleware(['auth:sanctum'])->get('/logout', [AuthController::class, 'logout'])
-                ->middleware('auth')
-                ->name('logout');
+    ->middleware('auth')
+    ->name('logout');
 
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
-                ->middleware('guest')
-                ->name('password.email');
+    ->middleware('guest')
+    ->name('password.email');
 
 Route::post('/verify-reset-token', [AuthController::class, 'verifyResetToken'])
-                ->middleware('guest')
-                ->name('password.verify');
+    ->middleware('guest')
+    ->name('password.verify');
 
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])
-                ->middleware('guest')
-                ->name('password.reset');
-
+    ->middleware('guest')
+    ->name('password.reset');
 
 Route::get('auth/google', [AuthController::class, 'redirectToGoogle'])->name('google.redirect');
 Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback']);

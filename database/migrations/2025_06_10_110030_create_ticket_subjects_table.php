@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('ticket_subjects', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

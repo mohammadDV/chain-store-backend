@@ -4,8 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CostResource\Pages;
 use Domain\Cost\Models\Cost;
-use Domain\Cost\Models\CostCategory;
-use Domain\User\Models\User;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -15,7 +14,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -195,7 +193,7 @@ class CostResource extends Resource
             ])
             ->headerActions([
                 Tables\Actions\Action::make('total_amount')
-                    ->label(fn ($livewire) => __('site.total_amount') . ': ' . number_format($livewire->getFilteredTableQuery()->sum('amount'), 0) . ' ' . __('site.currency'))
+                    ->label(fn ($livewire) => __('site.total_amount').': '.number_format($livewire->getFilteredTableQuery()->sum('amount'), 0).' '.__('site.currency'))
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->disabled()

@@ -10,17 +10,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    /** @use HasFactory<\Database\Factories\PostFactory> */
+    /** @use HasFactory<PostFactory> */
     use HasFactory, Sluggable;
 
     protected $guarded = [];
 
-    public function sluggable() : array
+    public function sluggable(): array
     {
         return [
-          'slug' => [
-              'source' => 'title'
-          ]
+            'slug' => [
+                'source' => 'title',
+            ],
         ];
     }
 
@@ -31,7 +31,7 @@ class Post extends Model
 
     public function getTypeNameAttribute()
     {
-        return __('site.' . Config('custom.POST_TYPE')[$this->type]);
+        return __('site.'.Config('custom.POST_TYPE')[$this->type]);
     }
 
     public function getStatusNameAttribute()

@@ -86,8 +86,7 @@ class FilesRelationManager extends RelationManager
                     ->visibility('public')
                     ->extraImgAttributes(['loading' => 'lazy'])
                     ->size(60)
-                    ->circular(false)
-                    ,
+                    ->circular(false),
                 ViewColumn::make('path')
                     ->label(__('site.file_path'))
                     ->view('filament.components.image-with-popup')

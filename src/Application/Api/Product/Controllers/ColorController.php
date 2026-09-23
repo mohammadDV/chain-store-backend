@@ -7,25 +7,15 @@ use Core\Http\Requests\TableRequest;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
 use Domain\Product\Repositories\Contracts\IColorRepository;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Response;
 
 class ColorController extends Controller
 {
-
-    /**
-     * @param IColorRepository $repository
-     */
-    public function __construct(protected IColorRepository $repository)
-    {
-
-    }
+    public function __construct(protected IColorRepository $repository) {}
 
     /**
      * Get all of Colors with pagination
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function index(TableRequest $request): JsonResponse
     {
@@ -34,8 +24,6 @@ class ColorController extends Controller
 
     /**
      * Get all of Colors
-     * @param Brand $brand
-     * @return JsonResponse
      */
     public function activeColors(?Brand $brand = null): JsonResponse
     {
@@ -44,10 +32,8 @@ class ColorController extends Controller
 
     /**
      * Get the Color.
-     * @param Color $color
-     * @return JsonResponse
      */
-    public function show(Color $color) :JsonResponse
+    public function show(Color $color): JsonResponse
     {
         return response()->json($this->repository->show($color), Response::HTTP_OK);
     }

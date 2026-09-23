@@ -2,7 +2,6 @@
 
 namespace Application\Api\Product\Resources;
 
-use Application\Api\Brand\Resources\BrandResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 

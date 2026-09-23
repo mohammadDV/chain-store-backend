@@ -2,13 +2,12 @@
 
 namespace Application\Api\Wallet\Controllers;
 
-
-use Application\Api\Wallet\Requests\WithdrawRequest;
 use Application\Api\Wallet\Requests\WithdrawalStatusRequest;
+use Application\Api\Wallet\Requests\WithdrawRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
-use Domain\Wallet\Repositories\Contracts\IWithdrawalTransactionRepository;
 use Domain\Wallet\Models\WithdrawalTransaction;
+use Domain\Wallet\Repositories\Contracts\IWithdrawalTransactionRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -22,8 +21,6 @@ class WithdrawalTransactionController extends Controller
 
     /**
      * Get all of WithdrawalTransaction with pagination
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function index(TableRequest $request): JsonResponse
     {

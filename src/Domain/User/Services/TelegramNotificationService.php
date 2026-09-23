@@ -18,7 +18,7 @@ class TelegramNotificationService
     {
         return $this->telegram->sendMessage([
             'chat_id' => $chatId,
-            'text'    => $message,
+            'text' => $message,
         ]);
     }
 
@@ -29,8 +29,8 @@ class TelegramNotificationService
 
         return $this->telegram->sendPhoto([
             'chat_id' => $chatId,
-            'photo'   => $photo,
-            'caption' => $caption
+            'photo' => $photo,
+            'caption' => $caption,
         ]);
     }
 }

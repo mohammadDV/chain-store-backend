@@ -18,4 +18,3 @@ class EditReview extends EditRecord
         ];
     }
 }
-

@@ -3,6 +3,7 @@
 namespace Application\Api\File\Requests;
 
 use Core\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class VideoRequest extends BaseRequest
 {
@@ -17,7 +18,7 @@ class VideoRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {

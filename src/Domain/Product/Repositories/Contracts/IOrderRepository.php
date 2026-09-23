@@ -18,50 +18,37 @@ interface IOrderRepository
 {
     /**
      * Get all orders with pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
     public function index(TableRequest $request): LengthAwarePaginator;
 
     /**
      * Get the order details.
-     * @param Order $order
-     * @return OrderResource
      */
     public function show(Order $order): OrderResource;
 
     /**
      * Store a new order.
-     * @param OrderRequest $request
-     * @return JsonResponse
      */
     public function store(OrderRequest $request): JsonResponse;
 
     /**
      * Check the order status.
-     * @param CheckOrderCodeRequest $request
-     * @return array
      */
     public function checkOrderStatus(CheckOrderCodeRequest $request): array;
 
     /**
      * Check the discount.
-     * @param Order $order
-     * @param string $discountCode
-     * @return array
      */
     public function checkDiscount(Order $order, string $discountCode): array;
 
     /**
      * Pay the order.
-     * @param Order $order
-     * @param PaymentRequest $request
-     * @return JsonResponse
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse;
 
     /**
      * Expire pending orders that have been created more than one hour ago.
+     *
      * @return int Number of expired orders
      */
     public function expirePendingOrders(): int;

@@ -3,6 +3,7 @@
 namespace Application\Api\Ticket\Requests;
 
 use Core\Http\Requests\BaseRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 
 class TicketMessageRequest extends BaseRequest
 {
@@ -17,13 +18,13 @@ class TicketMessageRequest extends BaseRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array|string>
+     * @return array<string, ValidationRule|array|string>
      */
     public function rules(): array
     {
         return [
-            'message' => ['required','string','min:3','max:255'],
-            'file' => !empty($this->get('file')) ? ['required','string'] : ['sometimes'],
+            'message' => ['required', 'string', 'min:3', 'max:255'],
+            'file' => ! empty($this->get('file')) ? ['required', 'string'] : ['sometimes'],
         ];
     }
 }
