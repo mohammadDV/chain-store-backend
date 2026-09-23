@@ -2,17 +2,18 @@
 
 namespace Core\Console\Commands;
 
+use Core\Console\Commands\Traits\RequestTrait;
+use Domain\Product\Models\CategoryEndpoint;
+use Domain\Product\Models\Endpoint;
+use Domain\Product\Services\Brands\BrandEnum;
+use Domain\Product\Services\Brands\BrandServiceFactory;
 use Domain\Product\Services\OxylabsService;
 use Illuminate\Console\Command;
-use Core\Console\Commands\Traits\RequestTrait;
-use Domain\Product\Models\Endpoint;
-use Domain\Product\Services\Brands\BrandServiceFactory;
-use Domain\Product\Services\Brands\BrandEnum;
-use Domain\Product\Models\CategoryEndpoint;
 
 class ProductListCommand extends Command
 {
     use RequestTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -32,14 +33,14 @@ class ProductListCommand extends Command
      */
     public function handle()
     {
-        $oxylabsService = new OxylabsService();
+        $oxylabsService = new OxylabsService;
 
         $categoryEndpoints = CategoryEndpoint::query()
             ->with('brand', 'category')
             ->where('status', 0)
             ->get();
 
-        foreach($categoryEndpoints as $categoryEndpoint) {
+        foreach ($categoryEndpoints as $categoryEndpoint) {
 
             $brandId = $categoryEndpoint->brand_id;
             $categoryId = $categoryEndpoint->category_id;
@@ -47,13 +48,15 @@ class ProductListCommand extends Command
             $brand = $categoryEndpoint->brand;
             $category = $categoryEndpoint->category;
 
-            if (!$brand) {
+            if (! $brand) {
                 $this->error("Brand with ID {$brandId} not found.");
+
                 return 1;
             }
 
-            if (!$category) {
+            if (! $category) {
                 $this->error("Category with ID {$categoryId} not found.");
+
                 return 1;
             }
 
@@ -61,7 +64,8 @@ class ProductListCommand extends Command
             try {
                 $brandService = BrandServiceFactory::getService($brand);
             } catch (\Exception $e) {
-                $this->error("Error getting brand service: " . $e->getMessage());
+                $this->error('Error getting brand service: '.$e->getMessage());
+
                 return 1;
             }
 
@@ -70,7 +74,8 @@ class ProductListCommand extends Command
                 $paginationParam = BrandEnum::getProductListPaginationParam($brand->slug);
                 $paginationSkip = BrandEnum::getProductListPaginationSkip($brand->slug);
             } catch (\ValueError $e) {
-                $this->error("Error getting pagination parameters for brand slug '{$brand->slug}': " . $e->getMessage());
+                $this->error("Error getting pagination parameters for brand slug '{$brand->slug}': ".$e->getMessage());
+
                 return 1;
             }
 
@@ -86,15 +91,16 @@ class ProductListCommand extends Command
                 ->pluck('url')
                 ->toArray();
 
-            while(!$stop) {
+            while (! $stop) {
                 // Build URL with brand-specific pagination parameter
-                $url = $categoryEndpoint->url . '?' . $paginationParam . '=' . $offset;
+                $url = $categoryEndpoint->url.'?'.$paginationParam.'='.$offset;
 
                 $filters = $this->retryRequest($oxylabsService, $parsingKey, $url);
 
-                if(!empty($filters['status']) && $filters['status'] == 2) {
-                    $this->error("Connection error: " . $filters['error']);
+                if (! empty($filters['status']) && $filters['status'] == 2) {
+                    $this->error('Connection error: '.$filters['error']);
                     $stop = true;
+
                     return;
                 }
 
@@ -102,33 +108,34 @@ class ProductListCommand extends Command
                 try {
                     $endpoints = $brandService->cleanProductList($filters, $brand, $category);
                 } catch (\Exception $e) {
-                    $this->error("Error cleaning product list: " . $e->getMessage());
+                    $this->error('Error cleaning product list: '.$e->getMessage());
                     $stop = true;
+
                     return;
                 }
 
                 $offset += $paginationSkip;
-                $this->info("Endpoints: ".count($endpoints));
+                $this->info('Endpoints: '.count($endpoints));
 
                 // Bulk insert endpoints
-                if (!empty($endpoints)) {
+                if (! empty($endpoints)) {
                     // Filter out existing endpoints
-                    $newEndpoints = array_filter($endpoints, function($endpoint) use ($existingUrls) {
-                        return !in_array($endpoint['url'], $existingUrls);
+                    $newEndpoints = array_filter($endpoints, function ($endpoint) use ($existingUrls) {
+                        return ! in_array($endpoint['url'], $existingUrls);
                     });
 
-                    if (!empty($newEndpoints)) {
+                    if (! empty($newEndpoints)) {
                         Endpoint::upsert(
                             $endpoints,
                             ['url'], // Unique column
                             ['brand_id', 'category_id', 'updated_at'] // Columns to update on duplicate
                         );
-                        $this->info("Inserted/Updated " . count($newEndpoints) . " endpoints");
+                        $this->info('Inserted/Updated '.count($newEndpoints).' endpoints');
                     }
                 }
 
                 // Stop if we got fewer results than the pagination skip value
-                if(count($endpoints) < $paginationSkip) {
+                if (count($endpoints) < $paginationSkip) {
                     $stop = true;
                 }
 
@@ -137,10 +144,9 @@ class ProductListCommand extends Command
             $categoryEndpoint->update([
                 'status' => 1,
             ]);
-            $this->info("Done: ".$offset);
+            $this->info('Done: '.$offset);
         }
 
-        $this->info("All done!");
+        $this->info('All done!');
     }
-
 }

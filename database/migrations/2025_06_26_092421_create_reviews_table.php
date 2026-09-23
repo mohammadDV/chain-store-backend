@@ -17,9 +17,9 @@ return new class extends Migration
             $table->tinyInteger('rate');
             $table->tinyInteger('active')->default(1);
             $table->enum('status', ['pending', 'approved', 'cancelled'])->default('pending');
-            $table->bigInteger("product_id")->unsigned()->index();
+            $table->bigInteger('product_id')->unsigned()->index();
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

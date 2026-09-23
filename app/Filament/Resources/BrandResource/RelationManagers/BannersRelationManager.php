@@ -135,5 +135,3 @@ class BannersRelationManager extends RelationManager
             ->defaultSort('priority', 'desc');
     }
 }
-
-

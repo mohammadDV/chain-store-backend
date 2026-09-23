@@ -2,18 +2,18 @@
 
 namespace Domain\Product\Services;
 
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 class OxylabsService
 {
-
     /**
      * Fetch product data from Oxylabs
      *
-     * @param string $identifier The ASIN (Amazon) or Product ID (Bol.com)
-     * @param string $marketplace The marketplace (e.g., 'amazon', 'bol')
-     * @param ?string $host The host of the marketplace (e.g., 'kaufland.de')
+     * @param  string  $identifier  The ASIN (Amazon) or Product ID (Bol.com)
+     * @param  string  $marketplace  The marketplace (e.g., 'amazon', 'bol')
+     * @param  ?string  $host  The host of the marketplace (e.g., 'kaufland.de')
      * @return array|null The product data or null on failure
      */
     public function fetchRequest($key, $url): ?array
@@ -22,7 +22,7 @@ class OxylabsService
         $params = $this->buildParams($key, $url);
 
         // if there
-        if (!$params) {
+        if (! $params) {
             return null;
         }
 
@@ -52,7 +52,7 @@ class OxylabsService
             ]);
 
             return null;
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+        } catch (ConnectionException $e) {
             Log::error('Oxylabs API connection error 1', [
                 'key' => $key,
                 'url' => $url,
@@ -87,20 +87,19 @@ class OxylabsService
     /**
      * Build parameters for Oxylabs API based on marketplace
      *
-     * @param string $identifier
-     * @param string $marketplace
-     * @param ?string $host
-     * @return array|null
+     * @param  string  $identifier
+     * @param  string  $marketplace
+     * @param  ?string  $host
      */
     private function buildParams($key, $url): ?array
     {
 
         $config = [
             'adidas_product' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
-                "browser_instructions" => [
+                'browser_instructions' => [
                     // [
                     //     "type" => "input",
                     //     "value" => "pizza boxes",
@@ -117,40 +116,40 @@ class OxylabsService
                     //     ]
                     // ],
                     [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
+                        'type' => 'wait',
+                        'wait_time_s' => 2,
+                    ],
                 ],
                 'parsing_instructions' => [
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']]
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']],
+                        ],
                     ],
                     'price' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
-                        ]
+                        ],
                     ],
                     'discount' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
-                        ]
+                        ],
                     ],
                     'size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.gl-label > span']],
-                        ]
+                        ],
                     ],
                     'related_products' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.color-variation_variation__jECs6 > a']],
-                        ]
+                        ],
                     ],
                     'images' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.desktop-zoom_content__qj_J5 > picture']],
-                        ]
+                        ],
                     ],
                     // 'explanation' => [
                     //     '_fns' => [
@@ -166,201 +165,201 @@ class OxylabsService
                 'url' => $url,
             ],
             'adidas_update_stock' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
-                "browser_instructions" => [
+                'browser_instructions' => [
                     [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
+                        'type' => 'wait',
+                        'wait_time_s' => 2,
+                    ],
                 ],
                 'parsing_instructions' => [
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']]
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'css', '_args' => ['.product-description_name__sg_q8 > span']],
+                        ],
                     ],
                     'price' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
-                        ]
+                        ],
                     ],
                     'discount' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
-                        ]
+                        ],
                     ],
                     'stock' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.scarcity-message_scarcity-message__7X5BG']],
-                        ]
+                        ],
                     ],
                     'size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.gl-label > span']],
-                        ]
+                        ],
                     ],
                 ],
                 'url' => $url,
             ],
             'adidas_productList' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'parsing_instructions' => [
                     'products' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.product-grid_product-card__8ufJk > div']]
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'css', '_args' => ['.product-grid_product-card__8ufJk > div']],
+                        ],
                     ],
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
-                            ['_fn' => 'element_text']
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'xpath_one', '_args' => ['.//h1/text()']],
+                            ['_fn' => 'element_text'],
+                        ],
                     ],
                 ],
                 'url' => $url,
             ],
             'adidas_product_size' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
-                "browser_instructions" => [
+                'browser_instructions' => [
                     [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
+                        'type' => 'wait',
+                        'wait_time_s' => 2,
+                    ],
                 ],
                 'parsing_instructions' => [
                     'price' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.product-description_product-price__ZlQUS ._mainPrice_1dnvn_52 > span']],
                             // ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="main-price"]']],
-                        ]
+                        ],
                     ],
                     'discount' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'xpath_one', '_args' => ['//div[@class="product-description_product-price__ZlQUS"]//span[@data-testid="discount-text"]']],
-                        ]
+                        ],
                     ],
                     'size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.gl-label > span']],
-                        ]
+                        ],
                     ],
                 ],
                 'url' => $url,
             ],
             'decathlon_product' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
-                "browser_instructions" => [
+                'browser_instructions' => [
                     [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
+                        'type' => 'wait',
+                        'wait_time_s' => 2,
+                    ],
                 ],
                 'parsing_instructions' => [
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
-                            ['_fn' => 'element_text']
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'xpath_one', '_args' => ['.//h1/text()']],
+                            ['_fn' => 'element_text'],
+                        ],
                     ],
                     'price' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-items-end > span']],
-                        ]
+                        ],
                     ],
                     'code' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.current-selected-model']],
-                        ]
+                        ],
                     ],
                     'discount' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.price-discount']],
-                        ]
+                        ],
                     ],
                     'size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
-                        ]
+                        ],
                     ],
                     'one_size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector--monosku']],
-                        ]
+                        ],
                     ],
                     'related_products' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.variant-list__item > button']],
-                        ]
+                        ],
                     ],
                     'images' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.swiper-media__image']],
-                        ]
+                        ],
                     ],
                 ],
                 'url' => $url,
             ],
             'decathlon_update_sizes_and_stock' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'render' => 'html',
-                "browser_instructions" => [
+                'browser_instructions' => [
                     [
-                        "type" => "wait",
-                        "wait_time_s" => 2
-                    ]
+                        'type' => 'wait',
+                        'wait_time_s' => 2,
+                    ],
                 ],
                 'parsing_instructions' => [
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
-                            ['_fn' => 'element_text']
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'xpath_one', '_args' => ['.//h1/text()']],
+                            ['_fn' => 'element_text'],
+                        ],
                     ],
                     'price' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-items-end > span']],
-                        ]
+                        ],
                     ],
                     'discount' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.price-discount']],
-                        ]
+                        ],
                     ],
                     'size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector__grid > button']],
-                        ]
+                        ],
                     ],
                     'one_size' => [
-                        "_fns" => [
+                        '_fns' => [
                             ['_fn' => 'css', '_args' => ['.vtmn-sku-selector--monosku']],
-                        ]
+                        ],
                     ],
                 ],
                 'url' => $url,
             ],
             'decathlon_productList' => [
-                'geo_location' => "TR",
+                'geo_location' => 'TR',
                 'source' => 'universal_ecommerce',
                 'parsing_instructions' => [
                     'products' => [
-                        "_fns" => [
-                            ['_fn' => 'css', '_args' => ['.dpb-bottom-btn-padding > a']]
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'css', '_args' => ['.dpb-bottom-btn-padding > a']],
+                        ],
                     ],
                     'title' => [
-                        "_fns" => [
-                            ['_fn' => 'xpath_one', '_args' => [".//h1/text()"]],
-                            ['_fn' => 'element_text']
-                        ]
+                        '_fns' => [
+                            ['_fn' => 'xpath_one', '_args' => ['.//h1/text()']],
+                            ['_fn' => 'element_text'],
+                        ],
                     ],
                 ],
                 'url' => $url,

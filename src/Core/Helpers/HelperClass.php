@@ -1,4 +1,5 @@
 <?php
+
 namespace Core\Helpers;
 
 use Illuminate\Http\Request;
@@ -8,7 +9,7 @@ class HelperClass
 {
     public static function sluggableCustomSlugMethod($string, $separator = '-')
     {
-        $_transliteration = array(
+        $_transliteration = [
             '/ä|æ|ǽ/' => 'ae',
             '/ö|œ/' => 'oe',
             '/ü/' => 'ue',
@@ -58,16 +59,17 @@ class HelperClass
             '/Ĳ/' => 'IJ',
             '/ĳ/' => 'ij',
             '/Œ/' => 'OE',
-            '/ƒ/' => 'f'
-        );
+            '/ƒ/' => 'f',
+        ];
         $quotedReplacement = preg_quote($separator, '/');
-        $merge = array(
+        $merge = [
             '/[^\s\p{Zs}\p{Ll}\p{Lm}\p{Lo}\p{Lt}\p{Lu}\p{Nd}]/mu' => ' ',
             '/[\s\p{Zs}]+/mu' => $separator,
             sprintf('/^[%s]+|[%s]+$/', $quotedReplacement, $quotedReplacement) => '',
-        );
+        ];
         $map = $_transliteration + $merge;
         unset($_transliteration);
+
         return preg_replace(array_keys($map), array_values($map), $string);
     }
 
@@ -75,14 +77,13 @@ class HelperClass
      * Manually check if user is authenticated via Sanctum token and get user ID
      * This method doesn't use Auth facade or middleware
      *
-     * @param Request $request
      * @return int|null Returns user ID if authenticated, null otherwise
      */
     public static function getUserIdFromToken(Request $request): ?int
     {
         $authHeader = $request->header('Authorization');
 
-        if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
+        if (! $authHeader || ! str_starts_with($authHeader, 'Bearer ')) {
             return null;
         }
 
@@ -109,9 +110,6 @@ class HelperClass
 
     /**
      * Convert number to Persian words
-     *
-     * @param float $number
-     * @return string
      */
     public static function numberToPersianWords(float $number): string
     {
@@ -141,15 +139,15 @@ class HelperClass
                 if ($billionsThousands == 1) {
                     $result .= 'یک هزار';
                 } else {
-                    $result .= self::convertHundreds($billionsThousands, $ones, $teens, $tens, $hundreds) . ' هزار';
+                    $result .= self::convertHundreds($billionsThousands, $ones, $teens, $tens, $hundreds).' هزار';
                 }
 
                 if ($billionsRemainder > 0) {
-                    $result .= ' و ' . self::convertHundreds($billionsRemainder, $ones, $teens, $tens, $hundreds);
+                    $result .= ' و '.self::convertHundreds($billionsRemainder, $ones, $teens, $tens, $hundreds);
                 }
                 $result .= ' میلیارد';
             } else {
-                $result .= self::convertHundreds($billions, $ones, $teens, $tens, $hundreds) . ' میلیارد';
+                $result .= self::convertHundreds($billions, $ones, $teens, $tens, $hundreds).' میلیارد';
             }
             $number = $number % 1000000000;
             // Add connector if there are remaining parts
@@ -166,7 +164,7 @@ class HelperClass
                 if ($millions == 1) {
                     $result .= 'یک میلیون';
                 } else {
-                    $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds) . ' میلیون';
+                    $result .= self::convertHundreds($millions, $ones, $teens, $tens, $hundreds).' میلیون';
                 }
             } else {
                 // Handle millions >= 1000 (e.g., 1500 million = 1.5 billion)
@@ -177,11 +175,11 @@ class HelperClass
                 if ($millionsThousands == 1) {
                     $result .= 'یک هزار';
                 } else {
-                    $result .= self::convertHundreds($millionsThousands, $ones, $teens, $tens, $hundreds) . ' هزار';
+                    $result .= self::convertHundreds($millionsThousands, $ones, $teens, $tens, $hundreds).' هزار';
                 }
 
                 if ($millionsRemainder > 0) {
-                    $result .= ' و ' . self::convertHundreds($millionsRemainder, $ones, $teens, $tens, $hundreds);
+                    $result .= ' و '.self::convertHundreds($millionsRemainder, $ones, $teens, $tens, $hundreds);
                 }
                 $result .= ' میلیون';
             }
@@ -198,7 +196,7 @@ class HelperClass
             if ($thousands == 1) {
                 $result .= 'هزار';
             } else {
-                $result .= self::convertHundreds($thousands, $ones, $teens, $tens, $hundreds) . ' هزار';
+                $result .= self::convertHundreds($thousands, $ones, $teens, $tens, $hundreds).' هزار';
             }
             $number = $number % 1000;
             // Add connector if there are remaining parts
@@ -212,18 +210,13 @@ class HelperClass
             $result .= self::convertHundreds($number, $ones, $teens, $tens, $hundreds);
         }
 
-        return trim($result) . ' تومان';
+        return trim($result).' تومان';
     }
 
     /**
      * Convert a three-digit number to Persian words
      *
-     * @param int $number (must be less than 1000)
-     * @param array $ones
-     * @param array $teens
-     * @param array $tens
-     * @param array $hundreds
-     * @return string
+     * @param  int  $number  (must be less than 1000)
      */
     private static function convertHundreds(int $number, array $ones, array $teens, array $tens, array $hundreds): string
     {
@@ -256,7 +249,7 @@ class HelperClass
             $result .= $tens[$ten];
             $one = $number % 10;
             if ($one > 0) {
-                $result .= ' و ' . $ones[$one];
+                $result .= ' و '.$ones[$one];
             }
         } elseif ($number >= 10) {
             $result .= $teens[$number - 10];

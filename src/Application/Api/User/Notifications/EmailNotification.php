@@ -3,16 +3,18 @@
 namespace Application\Api\User\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class EmailNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $title;
+
     protected $content;
+
     protected $actionUrl;
 
     public function __construct($title, $content, $actionUrl = null)

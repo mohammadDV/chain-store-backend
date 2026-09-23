@@ -2,10 +2,10 @@
 
 namespace Application\Api\User\Mail;
 
+use Domain\User\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Domain\User\Models\User;
 
 class ThankYouForRegistering extends Mailable
 {
@@ -21,6 +21,6 @@ class ThankYouForRegistering extends Mailable
     public function build()
     {
         return $this->markdown('emails.users.thankyou')
-                    ->subject('Thank you for registering!');
+            ->subject('Thank you for registering!');
     }
 }

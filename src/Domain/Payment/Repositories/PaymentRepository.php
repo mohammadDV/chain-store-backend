@@ -3,54 +3,43 @@
 namespace Domain\Payment\Repositories;
 
 use Application\Api\Payment\Requests\ManualPaymentRequest;
+use Application\Api\Payment\Resources\TransactionsResource;
 use Core\Http\Requests\TableRequest;
+use Domain\IdentityRecord\Models\IdentityRecord;
 use Domain\Payment\Models\Transaction;
 use Domain\Payment\Repositories\Contracts\IPaymentRepository;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
-use Application\Api\Payment\Resources\TransactionsResource;
-use Domain\IdentityRecord\Models\IdentityRecord;
 use Domain\Plan\Models\Plan;
 use Domain\User\Services\TelegramNotificationService;
-use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Morilog\Jalali\Jalalian;
 
 class PaymentRepository implements IPaymentRepository
 {
-
-    /**
-     * @param TelegramNotificationService $service
-     */
-    public function __construct(protected TelegramNotificationService $service)
-    {
-
-    }
+    public function __construct(protected TelegramNotificationService $service) {}
 
     /**
      * Get the identityRecords pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         $search = $request->get('query');
         $type = $request->get('type');
         $status = $request->get('status');
         $transactions = Transaction::query()
             ->where('user_id', Auth::user()->id)
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('bank_transaction_id', 'like', '%' . $search . '%')
-                    ->orWhere('reference', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('bank_transaction_id', 'like', '%'.$search.'%')
+                    ->orWhere('reference', 'like', '%'.$search.'%');
             })
-            ->when(!empty($type), function ($query) use ($type) {
+            ->when(! empty($type), function ($query) use ($type) {
                 return $query->where('model_type', $type);
             })
-            ->when(!empty($status), function ($query) use ($status) {
+            ->when(! empty($status), function ($query) use ($status) {
                 return $query->where('status', $status);
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
-
 
         return $transactions->through(fn ($transaction) => new TransactionsResource($transaction));
 
@@ -58,10 +47,10 @@ class PaymentRepository implements IPaymentRepository
 
     /**
      * Get the identityRecord.
-     * @param IdentityRecord $identityRecord
-     * @return array
+     *
+     * @param  IdentityRecord  $identityRecord
      */
-    public function show(string $bankTransactionId) : array
+    public function show(string $bankTransactionId): array
     {
 
         $transaction = Transaction::query()
@@ -80,12 +69,9 @@ class PaymentRepository implements IPaymentRepository
 
     /**
      * Manual payment.
-     * @param ManualPaymentRequest $request
-     * @return array
      */
-    public function manualPayment(ManualPaymentRequest $request) : array
+    public function manualPayment(ManualPaymentRequest $request): array
     {
-
 
         if (empty(Auth::user()->status)) {
             return [
@@ -99,7 +85,7 @@ class PaymentRepository implements IPaymentRepository
         if ($request->input('type') == Transaction::IDENTITY) {
             $identityRecord = IdentityRecord::where('user_id', Auth::user()->id)->first();
 
-            if (!$identityRecord) {
+            if (! $identityRecord) {
                 return [
                     'status' => 0,
                     'message' => __('site.identity_record_not_found'),
@@ -140,9 +126,8 @@ class PaymentRepository implements IPaymentRepository
             'image' => $request->input('image'),
             'user_id' => Auth::user()->id,
             'manual' => 1,
-            'model_id' => !empty($identityRecord->id) ? $identityRecord->id : null,
+            'model_id' => ! empty($identityRecord->id) ? $identityRecord->id : null,
         ]);
-
 
         if ($transaction) {
             // update identity record status
@@ -151,16 +136,14 @@ class PaymentRepository implements IPaymentRepository
                 $identityRecord->save();
             }
 
-
             $this->service->sendNotification(
                 config('telegram.chat_id'),
-                'پرداخت دستی جدید' . PHP_EOL .
-                'user_id ' . Auth::user()->id . PHP_EOL .
-                'nickname ' . Auth::user()->nickname . PHP_EOL .
-                'amount ' . $amount . PHP_EOL .
-                'type ' . $request->type
+                'پرداخت دستی جدید'.PHP_EOL.
+                'user_id '.Auth::user()->id.PHP_EOL.
+                'nickname '.Auth::user()->nickname.PHP_EOL.
+                'amount '.$amount.PHP_EOL.
+                'type '.$request->type
             );
-
 
             return [
                 'status' => 1,
@@ -173,5 +156,4 @@ class PaymentRepository implements IPaymentRepository
             'message' => __('site.transaction_failed'),
         ];
     }
-
 }

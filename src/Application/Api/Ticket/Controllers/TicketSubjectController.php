@@ -14,14 +14,13 @@ class TicketSubjectController extends Controller
     /**
      * Constructor of TicketSubjectController.
      */
-    public function __construct(protected  ITicketSubjectRepository $repository)
+    public function __construct(protected ITicketSubjectRepository $repository)
     {
         //
     }
 
     /**
      * Get all of Subjects
-     * @return JsonResponse
      */
     public function activeSubjects(TableRequest $request): JsonResponse
     {
@@ -30,10 +29,10 @@ class TicketSubjectController extends Controller
 
     /**
      * Get the subject.
-     * @param TicketSubject $subject
-     * @return JsonResponse
+     *
+     * @param  TicketSubject  $subject
      */
-    public function show(TicketSubject $ticketSubject) :JsonResponse
+    public function show(TicketSubject $ticketSubject): JsonResponse
     {
         return response()->json($this->repository->show($ticketSubject), Response::HTTP_OK);
     }

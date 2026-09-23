@@ -17,4 +17,3 @@ class ViewBanner extends ViewRecord
         ];
     }
 }
-

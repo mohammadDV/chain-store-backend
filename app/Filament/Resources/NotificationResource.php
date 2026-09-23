@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\NotificationResource\Pages;
-use App\Filament\Resources\UserResource;
 use Domain\Notification\Models\Notification;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -19,7 +18,6 @@ use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
 use Morilog\Jalali\Jalalian;
 
 class NotificationResource extends Resource
@@ -110,6 +108,7 @@ class NotificationResource extends Resource
                         if (strlen($state) <= 100) {
                             return null;
                         }
+
                         return $state;
                     }),
                 TextColumn::make('user.nickname')

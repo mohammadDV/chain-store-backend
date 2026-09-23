@@ -1,5 +1,6 @@
 <?php
-return array(
+
+return [
     'The operation has been successfully' => 'The operation has been successfully completed.',
     'Active' => 'Active',
     'Inactive' => 'Inactive',
@@ -883,4 +884,4 @@ return array(
     'scraper_field_discount' => 'Discount',
     'scraper_field_images' => 'Images',
     'scraper_field_sizes' => 'Sizes',
-);
+];

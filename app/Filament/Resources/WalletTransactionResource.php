@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WalletTransactionResource\Pages;
+use App\Filament\Resources\WalletTransactionResource\RelationManagers\WalletRelationManager;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -10,7 +11,6 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
 
 class WalletTransactionResource extends Resource
@@ -200,7 +200,7 @@ class WalletTransactionResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Resources\WalletTransactionResource\RelationManagers\WalletRelationManager::class,
+            WalletRelationManager::class,
         ];
     }
 

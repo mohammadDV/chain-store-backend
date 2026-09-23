@@ -3,21 +3,21 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\WithdrawalTransactionResource\Pages;
-use Domain\Wallet\Models\WithdrawalTransaction;
-use Domain\Wallet\Models\WalletTransaction;
 use Domain\Notification\Services\NotificationService;
+use Domain\Wallet\Models\WalletTransaction;
+use Domain\Wallet\Models\WithdrawalTransaction;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Filament\Tables\Actions\Action;
-use Morilog\Jalali\Jalalian;
-use Filament\Forms\Components\Textarea;
-use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\DB;
-use Filament\Forms\Components\FileUpload;
+use Morilog\Jalali\Jalalian;
 
 class WithdrawalTransactionResource extends Resource
 {
@@ -93,23 +93,23 @@ class WithdrawalTransactionResource extends Resource
                         Forms\Components\TextInput::make('sheba')
                             ->label(__('site.sheba'))
                             ->disabled(),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label(__('site.description'))
                             ->disabled()
                             ->rows(3),
-                        Forms\Components\Textarea::make('reason')
+                        Textarea::make('reason')
                             ->label(__('site.reason'))
                             ->disabled()
                             ->rows(3),
 
                         FileUpload::make('image')
-                        ->label(__('site.project_image'))
-                        ->placeholder(__('site.upload_project_image'))
-                        ->image()
-                        ->imageEditor()
-                        ->disk('s3')
-                        ->directory('/projects/images')
-                        ->visible(fn ($record) => !empty($record->image)),
+                            ->label(__('site.project_image'))
+                            ->placeholder(__('site.upload_project_image'))
+                            ->image()
+                            ->imageEditor()
+                            ->disk('s3')
+                            ->directory('/projects/images')
+                            ->visible(fn ($record) => ! empty($record->image)),
                         // Forms\Components\ViewField::make('image')
                         //     ->label(__('site.image'))
                         //     ->view('filament.components.image-display')
@@ -203,7 +203,7 @@ class WithdrawalTransactionResource extends Resource
                             ->label(__('site.completion_reason'))
                             ->placeholder(__('site.completion_reason_placeholder'))
                             ->rows(3),
-                        Forms\Components\FileUpload::make('image')
+                        FileUpload::make('image')
                             ->label(__('site.completion_image'))
                             ->image()
                             ->imageEditor()
@@ -227,7 +227,7 @@ class WithdrawalTransactionResource extends Resource
                                 'status' => WithdrawalTransaction::COMPLETED,
                             ];
 
-                            if (isset($data['reason']) && !empty($data['reason'])) {
+                            if (isset($data['reason']) && ! empty($data['reason'])) {
                                 $updateData['reason'] = $data['reason'];
                             }
 
@@ -269,7 +269,7 @@ class WithdrawalTransactionResource extends Resource
                             ->label(__('site.rejection_reason'))
                             ->placeholder(__('site.rejection_reason_placeholder'))
                             ->rows(3),
-                        Forms\Components\FileUpload::make('image')
+                        FileUpload::make('image')
                             ->label(__('site.rejection_image'))
                             ->image()
                             ->imageEditor()
@@ -302,7 +302,7 @@ class WithdrawalTransactionResource extends Resource
                                 'status' => WithdrawalTransaction::REJECT,
                             ];
 
-                            if (isset($data['reason']) && !empty($data['reason'])) {
+                            if (isset($data['reason']) && ! empty($data['reason'])) {
                                 $updateData['reason'] = $data['reason'];
                             }
 

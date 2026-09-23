@@ -17,19 +17,19 @@ return [
 
     'driver' => 'gd',
 
-    //index size
+    // index size
     'index-image-sizes' => [
         'large' => [
             'width' => 800,
-            'height' => 450
+            'height' => 450,
         ],
         'medium' => [
             'width' => 400,
-            'height' => 300
+            'height' => 300,
         ],
         'small' => [
             'width' => 80,
-            'height' => 60
+            'height' => 60,
         ],
 
     ],

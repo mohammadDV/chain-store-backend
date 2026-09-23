@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\ProductAttribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\ProductAttribute>
+ * @extends Factory<ProductAttribute>
  */
 class ProductAttributeFactory extends Factory
 {

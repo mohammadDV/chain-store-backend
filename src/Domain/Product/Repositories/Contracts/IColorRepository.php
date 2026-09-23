@@ -15,22 +15,16 @@ interface IColorRepository
 {
     /**
      * Get the colors pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator;
+    public function index(TableRequest $request): LengthAwarePaginator;
 
     /**
      * Get the colors.
-     * @param Brand|null $brand
      */
     public function activeColors(?Brand $brand = null);
 
     /**
      * Get the Color.
-     * @param Color $color
-     * @return ColorResource
      */
-    public function show(Color $color) :ColorResource;
-
+    public function show(Color $color): ColorResource;
 }

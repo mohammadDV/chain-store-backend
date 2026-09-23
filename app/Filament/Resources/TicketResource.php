@@ -6,20 +6,17 @@ use App\Filament\Resources\TicketResource\Pages;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketSubject;
 use Domain\User\Models\User;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Tables\Actions\Action;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Actions\ViewAction;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class TicketResource extends Resource
 {
@@ -55,7 +52,7 @@ class TicketResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Section::make(__('site.ticket_information'))
+                Section::make(__('site.ticket_information'))
                     ->schema([
                         Select::make('user_id')
                             ->label(__('site.ticket_user'))
@@ -64,12 +61,12 @@ class TicketResource extends Resource
                             }))
                             ->searchable()
                             ->required(),
-                        Forms\Components\Select::make('subject_id')
+                        Select::make('subject_id')
                             ->label(__('site.ticket_subject'))
                             ->options(TicketSubject::all()->pluck('title', 'id'))
                             ->searchable()
                             ->required(),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.ticket_status'))
                             ->options([
                                 'active' => __('site.active'),
@@ -149,7 +146,7 @@ class TicketResource extends Resource
                     ->requiresConfirmation()
                     ->modalHeading(__('site.confirm_mark_closed'))
                     ->modalDescription(__('site.confirm_mark_closed_description')),
-                ]);
+            ]);
     }
 
     public static function getRelations(): array

@@ -94,4 +94,3 @@ class ProductAttributeRelationManager extends RelationManager
             ->defaultSort('id', 'desc');
     }
 }
-

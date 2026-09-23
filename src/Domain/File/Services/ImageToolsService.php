@@ -6,13 +6,18 @@ use Illuminate\Support\Facades\Auth;
 
 class ImageToolsService
 {
-
     protected $image;
+
     protected $exclusiveDirectory;
+
     protected $imageDirectory;
+
     protected $imageName;
+
     protected $imageFormat;
+
     protected $finalImageDirectory;
+
     protected $finalImageName;
 
     public function setImage($image)
@@ -22,7 +27,7 @@ class ImageToolsService
 
     public function reset()
     {
-        $this->imageName = rand(1111111111,9999999999);
+        $this->imageName = rand(1111111111, 9999999999);
     }
 
     public function getExclusiveDirectory()
@@ -39,6 +44,7 @@ class ImageToolsService
     {
         return $this->imageDirectory;
     }
+
     public function setImageDirectory($imageDirectory)
     {
         $this->imageDirectory = trim($imageDirectory, '/\\');
@@ -49,14 +55,14 @@ class ImageToolsService
         return $this->imageName;
     }
 
-     public function setImageName($imageName)
+    public function setImageName($imageName)
     {
         $this->imageName = $imageName;
     }
 
     public function setCurrentImageName()
     {
-        return !empty($this->image) ? $this->setImageName(pathinfo($this->image->getClientOriginalName(), PATHINFO_FILENAME)) : false;
+        return ! empty($this->image) ? $this->setImageName(pathinfo($this->image->getClientOriginalName(), PATHINFO_FILENAME)) : false;
     }
 
     public function getImageFormat()
@@ -64,7 +70,7 @@ class ImageToolsService
         return $this->imageFormat;
     }
 
-   public function setImageFormat($imageFormat)
+    public function setImageFormat($imageFormat)
     {
         $this->imageFormat = $imageFormat;
     }
@@ -79,7 +85,7 @@ class ImageToolsService
         $this->finalImageDirectory = $finalImageDirectory;
     }
 
-   public function getFinalImageName()
+    public function getFinalImageName()
     {
         return $this->finalImageName;
     }
@@ -91,47 +97,33 @@ class ImageToolsService
 
     protected function checkDirectory($imageDirectory)
     {
-        if(!file_exists($imageDirectory))
-        {
+        if (! file_exists($imageDirectory)) {
             mkdir($imageDirectory, 0755, true);
         }
     }
 
     public function getImageAddress()
     {
-        return $this->finalImageDirectory . DIRECTORY_SEPARATOR . $this->finalImageName;
+        return $this->finalImageDirectory.DIRECTORY_SEPARATOR.$this->finalImageName;
     }
 
     protected function provider()
     {
-        //set properties
+        // set properties
         $this->getImageDirectory() ?? $this->setImageDirectory(Auth::check() ?
-        'user-' . Auth::user()->id . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d'):
-        'common' . DIRECTORY_SEPARATOR . date('Y') . DIRECTORY_SEPARATOR . date('m') . DIRECTORY_SEPARATOR . date('d'));
-        $this->getImageName() ?? $this->setImageName(random_int(1111111111,9999999999) . time());
+        'user-'.Auth::user()->id.DIRECTORY_SEPARATOR.date('Y').DIRECTORY_SEPARATOR.date('m').DIRECTORY_SEPARATOR.date('d') :
+        'common'.DIRECTORY_SEPARATOR.date('Y').DIRECTORY_SEPARATOR.date('m').DIRECTORY_SEPARATOR.date('d'));
+        $this->getImageName() ?? $this->setImageName(random_int(1111111111, 9999999999).time());
         $this->getImageFormat() ?? $this->setImageFormat($this->image->extension());
 
-
-        //set final image Directory
-        $finalImageDirectory = empty($this->getExclusiveDirectory()) ? $this->getImageDirectory() : $this->getExclusiveDirectory() . DIRECTORY_SEPARATOR . $this->getImageDirectory();
+        // set final image Directory
+        $finalImageDirectory = empty($this->getExclusiveDirectory()) ? $this->getImageDirectory() : $this->getExclusiveDirectory().DIRECTORY_SEPARATOR.$this->getImageDirectory();
         $this->setFinalImageDirectory($finalImageDirectory);
 
+        // set final image name
+        $this->setFinalImageName($this->getImageName().'.'.$this->getImageFormat());
 
-        //set final image name
-        $this->setFinalImageName($this->getImageName() . '.' . $this->getImageFormat());
-
-
-        //check adn create final image directory
+        // check adn create final image directory
         // $this->checkDirectory($this->getFinalImageDirectory());
     }
-
-
-
-
-
-
-
-
-
-
 }

@@ -15,22 +15,16 @@ interface IBrandRepository
 {
     /**
      * Get the brands collection.
-     * @param TableRequest $request
-     * @return Collection
      */
-    public function index(TableRequest $request) :Collection;
+    public function index(TableRequest $request): Collection;
 
     /**
      * Get the brand.
-     * @param Brand $brand
-     * @return BrandResource
      */
-    public function show(Brand $brand) :BrandResource;
+    public function show(Brand $brand): BrandResource;
 
     /**
      * Get the banners.
-     * @param Request $request
-     * @return Collection
      */
-    public function getBanners(Request $request) :Collection;
+    public function getBanners(Request $request): Collection;
 }

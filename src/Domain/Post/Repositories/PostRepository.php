@@ -7,8 +7,8 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Post\Models\Post;
 use Domain\Post\Repositories\Contracts\IPostRepository;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Domain\User\Services\TelegramNotificationService;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class PostRepository.
@@ -27,17 +27,15 @@ class PostRepository implements IPostRepository
 
     /**
      * Get the posts.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function getPosts(TableRequest $request) :LengthAwarePaginator
+    public function getPosts(TableRequest $request): LengthAwarePaginator
     {
 
         $search = $request->get('query');
         $posts = Post::query()
             ->where('status', 1)
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('title', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -46,7 +44,7 @@ class PostRepository implements IPostRepository
 
     }
 
-    public function getPopularPosts(TableRequest $request) :LengthAwarePaginator
+    public function getPopularPosts(TableRequest $request): LengthAwarePaginator
     {
         $posts = Post::query()
             ->where('status', 1)
@@ -56,7 +54,7 @@ class PostRepository implements IPostRepository
         return $posts->through(fn ($post) => new PostResource($post));
     }
 
-    public function getLatestPosts(TableRequest $request) :LengthAwarePaginator
+    public function getLatestPosts(TableRequest $request): LengthAwarePaginator
     {
         $posts = Post::query()
             ->where('status', 1)
@@ -66,12 +64,10 @@ class PostRepository implements IPostRepository
         return $posts->through(fn ($post) => new PostResource($post));
     }
 
-     /**
+    /**
      * Get the post info.
-     * @param Post $post
-     * @return PostResource
      */
-    public function getPostInfo(Post $post) :PostResource
+    public function getPostInfo(Post $post): PostResource
     {
 
         $post->increment('view');

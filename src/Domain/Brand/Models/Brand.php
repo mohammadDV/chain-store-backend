@@ -2,6 +2,7 @@
 
 namespace Domain\Brand\Models;
 
+use Database\Factories\BrandFactory;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Brand extends Model
 {
-    /** @use HasFactory<\Database\Factories\BrandFactory> */
+    /** @use HasFactory<BrandFactory> */
     use HasFactory;
 
     protected $guarded = [];
@@ -34,5 +35,4 @@ class Brand extends Model
     {
         return $this->belongsToMany(Color::class);
     }
-
 }

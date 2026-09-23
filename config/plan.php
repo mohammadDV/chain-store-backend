@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'default_plan_id' => 1
+    'default_plan_id' => 1,
 ];

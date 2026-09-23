@@ -7,25 +7,21 @@ use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager
 use App\Filament\Resources\ProductResource\RelationManagers\ProductAttributeRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
 use Domain\Brand\Models\Brand;
-use Domain\Product\Models\Category as ProductCategory;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\View;
-use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -126,29 +122,29 @@ class ProductResource extends Resource
                             ->url(),
                     ]),
                 Section::make(__('site.product_relations'))
-                ->schema([
-                    Grid::make(2)
-                        ->schema([
-                            Select::make('brand_id')
-                                ->label(__('site.brand'))
-                                ->relationship('brand', 'title')
-                                ->searchable()
-                                ->required(),
-                            Select::make('categories')
-                                ->label(__('site.category'))
-                                ->relationship('categories', 'title')
-                                ->multiple()
-                                ->searchable()
-                                ->required(),
-                            Select::make('color_id')
-                                ->label(__('site.color'))
-                                ->relationship('color', 'title')
-                                ->required(),
-                            Hidden::make('user_id')
-                                ->default(fn (): ?int => Auth::id())
-                                ->required(),
-                        ]),
-                ]),
+                    ->schema([
+                        Grid::make(2)
+                            ->schema([
+                                Select::make('brand_id')
+                                    ->label(__('site.brand'))
+                                    ->relationship('brand', 'title')
+                                    ->searchable()
+                                    ->required(),
+                                Select::make('categories')
+                                    ->label(__('site.category'))
+                                    ->relationship('categories', 'title')
+                                    ->multiple()
+                                    ->searchable()
+                                    ->required(),
+                                Select::make('color_id')
+                                    ->label(__('site.color'))
+                                    ->relationship('color', 'title')
+                                    ->required(),
+                                Hidden::make('user_id')
+                                    ->default(fn (): ?int => Auth::id())
+                                    ->required(),
+                            ]),
+                    ]),
                 Section::make(__('site.pricing_inventory'))
                     ->schema([
                         Grid::make(3)

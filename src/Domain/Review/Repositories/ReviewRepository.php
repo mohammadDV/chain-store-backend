@@ -6,16 +6,15 @@ use Application\Api\Review\Requests\ReviewRequest;
 use Application\Api\Review\Resources\ReviewResource;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
-use Domain\Product\Models\Product;
-use Domain\Product\Models\ServiceVote;
 use Domain\Notification\Services\NotificationService;
+use Domain\Product\Models\Product;
 use Domain\Review\Models\Review;
 use Domain\Review\Repositories\Contracts\IReviewRepository;
 use Domain\User\Models\User;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -27,19 +26,18 @@ class ReviewRepository implements IReviewRepository
 
     /**
      * Get my reviews with pagination
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function myReviews(TableRequest $request) :LengthAwarePaginator
+    public function myReviews(TableRequest $request): LengthAwarePaginator
     {
 
         $search = $request->get('query');
+
         return Review::query()
             ->with('user:id,nickname,profile_photo_path,rate', 'product:id,title,amount,image')
             ->withCount('likes')
             ->where('user_id', Auth::id())
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('comment', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('comment', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -47,27 +45,22 @@ class ReviewRepository implements IReviewRepository
 
     /**
      * Get the review.
-     * @param Review $review
-     * @return ReviewResource
      */
-    public function show(Review $review) :ReviewResource
+    public function show(Review $review): ReviewResource
     {
         $this->checkLevelAccess(Auth::user()->level == 3);
 
         $review = Review::query()
-                ->where('id', $review->id)
-                ->first();
+            ->where('id', $review->id)
+            ->first();
 
         return new ReviewResource($review);
     }
 
     /**
      * Get the review per product.
-     * @param TableRequest $request
-     * @param Product $product
-     * @return LengthAwarePaginator
      */
-    public function getReviewsPerProduct(TableRequest $request, Product $product) :LengthAwarePaginator
+    public function getReviewsPerProduct(TableRequest $request, Product $product): LengthAwarePaginator
     {
         $reviews = Review::query()
             ->with('user:id,nickname,profile_photo_path,rate')
@@ -78,17 +71,15 @@ class ReviewRepository implements IReviewRepository
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
 
-        return $reviews->through(fn ($review) => new ReviewResource($review));;
+        return $reviews->through(fn ($review) => new ReviewResource($review));
     }
 
     /**
      * Store the review.
-     * @param Product $product
-     * @param ReviewRequest $request
-     * @return JsonResponse
+     *
      * @throws \Exception
      */
-    public function store(Product $product, ReviewRequest $request) :JsonResponse
+    public function store(Product $product, ReviewRequest $request): JsonResponse
     {
         if (empty(Auth::user()->status)) {
             return response()->json([
@@ -135,7 +126,7 @@ class ReviewRepository implements IReviewRepository
 
             // Update product with average rate (rounded to nearest integer)
             $product->update([
-                'rate' => round($averageRate)
+                'rate' => round($averageRate),
             ]);
 
             // NotificationService::create([
@@ -150,7 +141,7 @@ class ReviewRepository implements IReviewRepository
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
-                'data' => new ReviewResource($review)
+                'data' => new ReviewResource($review),
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
@@ -161,12 +152,10 @@ class ReviewRepository implements IReviewRepository
 
     /**
      * Update the review.
-     * @param ReviewRequest $request
-     * @param Review $review
-     * @return JsonResponse
+     *
      * @throws \Exception
      */
-    public function update(ReviewRequest $request, Review $review) :JsonResponse
+    public function update(ReviewRequest $request, Review $review): JsonResponse
     {
         $review->update([
             'comment' => $request->input('comment'),
@@ -182,30 +171,28 @@ class ReviewRepository implements IReviewRepository
             ->avg('rate');
 
         $product->update([
-            'rate' => round($averageRate)
+            'rate' => round($averageRate),
         ]);
 
         if ($review) {
             return response()->json([
                 'status' => 1,
-                'message' => __('site.The operation has been successfully')
+                'message' => __('site.The operation has been successfully'),
             ], Response::HTTP_OK);
         }
 
-        throw new \Exception();
+        throw new \Exception;
     }
 
     /**
      * Change the review status.
-     * @param Review $review
-     * @return JsonResponse
      */
-    public function changeStatus(Review $review) :JsonResponse
+    public function changeStatus(Review $review): JsonResponse
     {
         $this->checkLevelAccess(Auth::user()->id == $review->user_id);
 
         $review->update([
-            'status' => in_array($review->status, [Review::PENDING, Review::APPROVED]) ? Review::CANCELLED : Review::PENDING
+            'status' => in_array($review->status, [Review::PENDING, Review::APPROVED]) ? Review::CANCELLED : Review::PENDING,
         ]);
 
         $review->refresh();
@@ -213,16 +200,14 @@ class ReviewRepository implements IReviewRepository
         return response()->json([
             'status_review' => $review->status,
             'status' => 1,
-            'message' => __('site.The operation has been successfully')
+            'message' => __('site.The operation has been successfully'),
         ], Response::HTTP_OK);
     }
 
     /**
      * Like the review.
-     * @param Review $review
-     * @return array
      */
-    public function likeReview(Review $review) :array
+    public function likeReview(Review $review): array
     {
         $active = 0;
         $like = $review->likes()

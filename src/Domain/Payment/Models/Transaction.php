@@ -2,21 +2,26 @@
 
 namespace Domain\Payment\Models;
 
-use Domain\Wallet\Models\Wallet;
 use Domain\User\Models\User;
+use Domain\Wallet\Models\Wallet;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
     const PENDING = 'pending';
-    const COMPLETED = 'completed';
-    const CANCELLED = 'cancelled';
-    const FAILED = 'failed';
-    const WALLET = 'wallet';
-    const BANK = 'bank';
-    const ORDER = 'order';
 
+    const COMPLETED = 'completed';
+
+    const CANCELLED = 'cancelled';
+
+    const FAILED = 'failed';
+
+    const WALLET = 'wallet';
+
+    const BANK = 'bank';
+
+    const ORDER = 'order';
 
     protected $fillable = [
         'model_id',
@@ -44,7 +49,7 @@ class Transaction extends Model
 
     public static function generateHash(string $id): string
     {
-        return md5('sys#65687' . $id . '$#$rstg@3');
+        return md5('sys#65687'.$id.'$#$rstg@3');
     }
 
     /**

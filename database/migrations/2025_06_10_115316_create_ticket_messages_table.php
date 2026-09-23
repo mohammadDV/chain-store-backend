@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('ticket_messages', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger("ticket_id")->unsigned()->index();
+            $table->bigInteger('ticket_id')->unsigned()->index();
             $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->enum('status', ['pending', 'read'])->default('pending');
             $table->text('message');

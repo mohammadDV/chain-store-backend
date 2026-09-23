@@ -36,7 +36,7 @@ class ProductsByStatusChart extends ChartWidget
             'labels' => [
                 __('site.pending'),
                 __('site.approved'),
-                __('site.rejected')
+                __('site.rejected'),
             ],
         ];
     }

@@ -12,8 +12,7 @@ class BaseRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'status' => 0,
-            'message' => $validator->errors()->first()
+            'message' => $validator->errors()->first(),
         ], 400));
     }
 }
-

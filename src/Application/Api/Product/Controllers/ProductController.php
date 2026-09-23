@@ -2,50 +2,36 @@
 
 namespace Application\Api\Product\Controllers;
 
+use Application\Api\Product\Requests\SearchProductRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IProductRepository;
-use Illuminate\Http\Response;
 use Illuminate\Http\JsonResponse;
-use Application\Api\Product\Requests\SearchProductRequest;
-
+use Illuminate\Http\Response;
 
 class ProductController extends Controller
 {
-
-    /**
-     * @param IProductRepository $repository
-     */
-    public function __construct(protected IProductRepository $repository)
-    {
-
-    }
+    public function __construct(protected IProductRepository $repository) {}
 
     /**
      * Get the product.
-     * @param Product $product
-     * @return JsonResponse
      */
-    public function show(Product $product) :JsonResponse
+    public function show(Product $product): JsonResponse
     {
         return response()->json($this->repository->show($product), Response::HTTP_OK);
     }
 
     /**
      * Favorite the product.
-     * @param Product $product
-     * @return JsonResponse
      */
-    public function favorite(Product $product) :JsonResponse
+    public function favorite(Product $product): JsonResponse
     {
         return $this->repository->favorite($product);
     }
 
     /**
      * Get favorite products.
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function getFavoriteProducts(TableRequest $request): JsonResponse
     {
@@ -54,8 +40,6 @@ class ProductController extends Controller
 
     /**
      * Get similar products.
-     * @param Product $product
-     * @return JsonResponse
      */
     public function similarProducts(Product $product): JsonResponse
     {
@@ -64,21 +48,17 @@ class ProductController extends Controller
 
     /**
      * Get featured products by type.
-     * @param TableRequest $request
-     * @return JsonResponse
      */
     public function getFeaturedProducts(TableRequest $request): JsonResponse
     {
         return response()->json([
             'status' => 1,
-            'data' => $this->repository->getFeaturedProducts($request)
+            'data' => $this->repository->getFeaturedProducts($request),
         ], Response::HTTP_OK);
     }
 
     /**
      * Search products with filters.
-     * @param SearchProductRequest $request
-     * @return JsonResponse
      */
     public function search(SearchProductRequest $request): JsonResponse
     {
@@ -87,8 +67,6 @@ class ProductController extends Controller
 
     /**
      * Search suggestions with filters.
-     * @param TableRequest     $request
-     * @return JsonResponse
      */
     public function searchSuggestions(TableRequest $request): JsonResponse
     {

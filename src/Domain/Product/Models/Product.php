@@ -3,9 +3,8 @@
 namespace Domain\Product\Models;
 
 use App\ProductAttribute;
+use Database\Factories\ProductFactory;
 use Domain\Brand\Models\Brand;
-use Domain\Product\Models\Category;
-use Domain\Product\Models\File;
 use Domain\Review\Models\Review;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Models\User;
@@ -16,12 +15,14 @@ use Illuminate\Support\Carbon;
 
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
+    /** @use HasFactory<ProductFactory> */
     use HasFactory;
 
-    const PENDING = "pending";
-    const COMPLETED = "completed";
-    const REJECT = "reject";
+    const PENDING = 'pending';
+
+    const COMPLETED = 'completed';
+
+    const REJECT = 'reject';
 
     protected $guarded = [];
 
@@ -113,8 +114,8 @@ class Product extends Model
     /**
      * Get the active plans
      *
-     * @param Builder $builder The query builder
-     * @return Builder              The query builder including the active statement
+     * @param  Builder  $builder  The query builder
+     * @return Builder The query builder including the active statement
      */
     public function scopeActive(Builder $builder): Builder
     {

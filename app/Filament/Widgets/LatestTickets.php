@@ -3,11 +3,10 @@
 namespace App\Filament\Widgets;
 
 use Domain\Ticket\Models\Ticket;
-use Filament\Tables;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Actions\Action;
 
 class LatestTickets extends BaseWidget
 {

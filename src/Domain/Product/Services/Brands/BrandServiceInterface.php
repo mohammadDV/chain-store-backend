@@ -18,9 +18,10 @@ interface BrandServiceInterface
     /**
      * Clean and normalize product data from API response
      *
-     * @param array $response The raw response from Oxylabs API
-     * @param string $domain The brand domain (e.g., 'https://www.adidas.com.tr')
+     * @param  array  $response  The raw response from Oxylabs API
+     * @param  string  $domain  The brand domain (e.g., 'https://www.adidas.com.tr')
      * @return array Normalized product data with keys: title, images, size, price, discount, related_products
+     *
      * @throws \Exception If required product data is missing
      */
     public function cleanProductData(array $response, string $domain): array;
@@ -28,22 +29,23 @@ interface BrandServiceInterface
     /**
      * Clean and normalize product list data from API response
      *
-     * @param array $response The raw response from Oxylabs API
-     * @param Brand $brand The brand model
-     * @param Category $category The category model
+     * @param  array  $response  The raw response from Oxylabs API
+     * @param  Brand  $brand  The brand model
+     * @param  Category  $category  The category model
      * @return array Array of endpoint data with keys: url, brand_id, category_id, status, created_at, updated_at
+     *
      * @throws \Exception If required data is missing
      */
     public function cleanProductList(array $response, Brand $brand, Category $category): array;
 
-
     /**
      * Clean and normalize stock data from API response
      *
-     * @param array $response The raw response from Oxylabs API
-     * @param string $domain The brand domain (e.g., 'https://www.adidas.com.tr')
-     * @param string $sizeCode The size code
+     * @param  array  $response  The raw response from Oxylabs API
+     * @param  string  $domain  The brand domain (e.g., 'https://www.adidas.com.tr')
+     * @param  string  $sizeCode  The size code
      * @return array Normalized stock data with keys: stock
+     *
      * @throws \Exception If required stock data is missing
      */
     public function cleanStockData(array $response, string $domain, string $sizeCode): array;
@@ -73,10 +75,10 @@ interface BrandServiceInterface
     /**
      * Store product data in the database
      *
-     * @param array $productData Product data to store
-     * @param int $categoryId Category ID
-     * @param string $url Product URL
-     * @param int $brandId Brand ID
+     * @param  array  $productData  Product data to store
+     * @param  int  $categoryId  Category ID
+     * @param  string  $url  Product URL
+     * @param  int  $brandId  Brand ID
      * @return Product Product model
      */
     public function storeProduct(array $productData, int $categoryId, string $url, int $brandId): Product;
@@ -84,9 +86,9 @@ interface BrandServiceInterface
     /**
      * Update product data in the database
      *
-     * @param array $productData Product data to update
-     * @param Product $product Product model
-     * @param ?Size $size Size model
+     * @param  array  $productData  Product data to update
+     * @param  Product  $product  Product model
+     * @param  ?Size  $size  Size model
      * @return Product Product model
      */
     public function updateProduct(array $productData, Product $product, ?Size $size = null): Product;

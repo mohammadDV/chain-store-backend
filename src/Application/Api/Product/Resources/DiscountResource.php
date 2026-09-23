@@ -19,7 +19,7 @@ class DiscountResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'type' => $this->type,
-            'value' => $this->value . ' ' . ($this->type === 'percentage' ? '%' : 'تومان'),
+            'value' => $this->value.' '.($this->type === 'percentage' ? '%' : 'تومان'),
             'max_value' => $this->max_value,
             'expire_date' => $this->expire_date ? Jalalian::fromDateTime($this->expire_date)->format('Y/m/d') : null,
         ];

@@ -216,5 +216,5 @@ return [
         // 'status' => Acme\Project\Commands\StatusCommand::class,
     ],
 
-    'chat_id' => env('TELEGRAM_CHAT_ID','1184138863'),
+    'chat_id' => env('TELEGRAM_CHAT_ID', '1184138863'),
 ];

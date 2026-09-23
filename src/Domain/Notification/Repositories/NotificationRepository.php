@@ -19,28 +19,27 @@ class NotificationRepository implements INotificationRepository
 
     /**
      * Get the notifications pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         Notification::query()
             ->where('user_id', Auth::id())
             ->where('status', 1)
             ->where('read', 0)
             ->update([
-                'read' => 1
+                'read' => 1,
             ]);
 
         $search = $request->get('query');
+
         return Notification::query()
             ->when(Auth::user()->level != 3, function ($query) {
                 return $query->where('user_id', Auth::user()->id)
                     ->where('status', 1);
             })
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('title', 'content', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('title', 'content', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -48,9 +47,8 @@ class NotificationRepository implements INotificationRepository
 
     /**
      * Get the unread notification.
-     * @return Collection
      */
-    public function unread() :Collection
+    public function unread(): Collection
     {
         return Notification::query()
             ->where('user_id', Auth::id())
@@ -62,30 +60,29 @@ class NotificationRepository implements INotificationRepository
 
     /**
      * Get the unread notification.
-     * @return array
      */
-    public function readAll() :array
+    public function readAll(): array
     {
         Notification::query()
             ->where('user_id', Auth::id())
             ->where('status', 1)
             ->where('read', 0)
             ->update([
-                'read' => 1
+                'read' => 1,
             ]);
 
         return [
             'status' => 1,
-            'message' => __('site.The operation has been successfully')
+            'message' => __('site.The operation has been successfully'),
         ];
     }
 
     /**
      * Get the notification.
-     * @param Notification $notification
+     *
      * @return Plan
      */
-    public function show(Notification $notification) :Notification
+    public function show(Notification $notification): Notification
     {
 
         $this->checkLevelAccess($notification->user_id == Auth::id());

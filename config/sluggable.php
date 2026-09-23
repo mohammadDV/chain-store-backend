@@ -60,7 +60,7 @@ return [
      *    'method' => array('Str','slug'),
      */
 
-    'method' => [ HelperClass::class, 'sluggableCustomSlugMethod' ],
+    'method' => [HelperClass::class, 'sluggableCustomSlugMethod'],
 
     // Separator to use when generating slugs.  Defaults to a hyphen.
 

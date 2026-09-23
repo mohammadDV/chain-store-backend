@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Wallet extends Model
 {
-
     const IRR = 'IRR';
 
     protected $fillable = [

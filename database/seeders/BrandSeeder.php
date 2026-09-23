@@ -18,35 +18,35 @@ class BrandSeeder extends Seeder
                 'slug' => 'nike',
                 'description' => 'برند معروف ورزشی نایک',
                 'status' => 1,
-                'priority' => 1
+                'priority' => 1,
             ],
             [
                 'title' => 'آدیداس',
                 'slug' => 'adidas',
                 'description' => 'برند ورزشی آدیداس',
                 'status' => 1,
-                'priority' => 2
+                'priority' => 2,
             ],
             [
                 'title' => 'سامسونگ',
                 'slug' => 'samsung',
                 'description' => 'برند الکترونیک سامسونگ',
                 'status' => 1,
-                'priority' => 3
+                'priority' => 3,
             ],
             [
                 'title' => 'اپل',
                 'slug' => 'apple',
                 'description' => 'برند تکنولوژی اپل',
                 'status' => 1,
-                'priority' => 4
+                'priority' => 4,
             ],
             [
                 'title' => 'زارا',
                 'slug' => 'zara',
                 'description' => 'برند پوشاک زارا',
                 'status' => 1,
-                'priority' => 5
+                'priority' => 5,
             ],
         ];
 

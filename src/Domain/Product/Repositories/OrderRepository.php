@@ -27,7 +27,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
 /**
  * Class OrderRepository.
  */
@@ -39,14 +38,12 @@ class OrderRepository implements IOrderRepository
         protected TelegramNotificationService $service,
         protected IWalletRepository $walletRepository,
         protected SettingService $settingService
-    ){
+    ) {
         //
     }
 
     /**
      * Get all orders with pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
     public function index(TableRequest $request): LengthAwarePaginator
     {
@@ -57,10 +54,10 @@ class OrderRepository implements IOrderRepository
             ->with(['products', 'user', 'discount'])
             ->where('user_id', Auth::user()->id)
             ->where('active', 1)
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('id', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('id', 'like', '%'.$search.'%');
             })
-            ->when(!empty($status), function ($query) use ($status) {
+            ->when(! empty($status), function ($query) use ($status) {
                 return $query->where('status', $status);
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
@@ -71,8 +68,6 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Get the order details.
-     * @param Order $order
-     * @return OrderResource
      */
     public function show(Order $order): OrderResource
     {
@@ -89,8 +84,6 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Check the order status.
-     * @param CheckOrderCodeRequest $request
-     * @return array
      */
     public function checkOrderStatus(CheckOrderCodeRequest $request): array
     {
@@ -100,25 +93,22 @@ class OrderRepository implements IOrderRepository
             ->where('active', 1)
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return [
                 'status' => 0,
-                'message' => __('site.Order not found')
+                'message' => __('site.Order not found'),
             ];
         }
 
         return [
             'status' => 1,
             'order' => new OrderResource($order->load('products.color')),
-            'message' => __('site.The operation has been successfully')
+            'message' => __('site.The operation has been successfully'),
         ];
     }
 
     /**
      * Check the discount.
-     * @param Order $order
-     * @param ?string $discountCode
-     * @return array
      */
     public function checkDiscount(Order $order, ?string $discountCode): array
     {
@@ -127,7 +117,7 @@ class OrderRepository implements IOrderRepository
             || $order->active != 1) {
             return [
                 'status' => 0,
-                'message' => __('site.Order not found')
+                'message' => __('site.Order not found'),
             ];
         }
 
@@ -148,7 +138,7 @@ class OrderRepository implements IOrderRepository
             if ($orderExist) {
                 return [
                     'status' => 0,
-                    'message' => __('site.Discount already used')
+                    'message' => __('site.Discount already used'),
                 ];
             }
 
@@ -167,7 +157,7 @@ class OrderRepository implements IOrderRepository
 
                 return [
                     'status' => 0,
-                    'message' => __('site.amount should grater than default amount', ['amount' => number_format(config('product.default_limit_discount_amount'))])
+                    'message' => __('site.amount should grater than default amount', ['amount' => number_format(config('product.default_limit_discount_amount'))]),
                 ];
             }
 
@@ -178,20 +168,19 @@ class OrderRepository implements IOrderRepository
                 'discount_amount' => $discountAmount,
                 'delivery_amount' => $deliveryAmount,
                 'discount_id' => $discount->id,
-                'message' => __('site.The operation has been successfully')
+                'message' => __('site.The operation has been successfully'),
             ];
         }
 
         return [
             'status' => 0,
-            'message' => __('site.Discount not found')
+            'message' => __('site.Discount not found'),
         ];
     }
 
     /**
      * Store a new order.
-     * @param OrderRequest $request
-     * @return JsonResponse
+     *
      * @throws \Exception
      */
     public function store(OrderRequest $request): JsonResponse
@@ -208,11 +197,12 @@ class OrderRepository implements IOrderRepository
             foreach ($products as $productData) {
                 $product = Product::find($productData['id']);
 
-                if (!$product || $product->amount < 50000) {
+                if (! $product || $product->amount < 50000) {
                     DB::rollBack();
+
                     return response()->json([
                         'status' => 0,
-                        'message' => __('site.Product not found')
+                        'message' => __('site.Product not found'),
                     ], Response::HTTP_NOT_FOUND);
                 }
 
@@ -274,7 +264,7 @@ class OrderRepository implements IOrderRepository
                     $size = $product->sizes->findOrFail($productData['size_id']);
 
                     $productsOrderedCount = 0;
-                    if (!empty($product->brand->has_stock_management)) {
+                    if (! empty($product->brand->has_stock_management)) {
                         $productsOrderedCount = OrderProduct::query()
                             ->whereHas('order', function ($query) {
                                 $query->where('status', Order::PENDING)
@@ -289,6 +279,7 @@ class OrderRepository implements IOrderRepository
 
                     if ($productStock < $productData['count']) {
                         DB::rollBack();
+
                         return response()->json([
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
@@ -296,11 +287,12 @@ class OrderRepository implements IOrderRepository
                     }
                 } else {
                     // if ($product->stock < $productData['count']) {
-                        DB::rollBack();
-                        return response()->json([
-                            'status' => 0,
-                            'message' => __('site.Insufficient stock'),
-                        ], Response::HTTP_BAD_REQUEST);
+                    DB::rollBack();
+
+                    return response()->json([
+                        'status' => 0,
+                        'message' => __('site.Insufficient stock'),
+                    ], Response::HTTP_BAD_REQUEST);
                     // }
                 }
 
@@ -330,7 +322,7 @@ class OrderRepository implements IOrderRepository
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
-                'order' => new OrderResource($order->load('products.color'))
+                'order' => new OrderResource($order->load('products.color')),
             ], Response::HTTP_CREATED);
 
         } catch (\Exception $e) {
@@ -341,9 +333,6 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Paid an order.
-     * @param Order $order
-     * @param PaymentRequest $request
-     * @return JsonResponse
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse
     {
@@ -365,15 +354,14 @@ class OrderRepository implements IOrderRepository
         $deliveryAmount = $order->delivery_amount;
         $discountId = null;
 
-        if (!empty($request->input('discount_code'))) {
+        if (! empty($request->input('discount_code'))) {
 
             $calclulatedAmount = $this->checkDiscount($order, $request->input('discount_code'));
-
 
             if (empty($calclulatedAmount['status'])) {
                 return response()->json([
                     'status' => 0,
-                    'message' => $calclulatedAmount['message']
+                    'message' => $calclulatedAmount['message'],
                 ], Response::HTTP_BAD_REQUEST);
             }
 
@@ -382,7 +370,6 @@ class OrderRepository implements IOrderRepository
             $discountAmount = $calclulatedAmount['discount_amount'];
             $deliveryAmount = $calclulatedAmount['delivery_amount'];
             $discountId = $calclulatedAmount['discount_id'];
-
 
         } else {
             $deliveryAmount = 0;
@@ -421,8 +408,7 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Pay with wallet.
-     * @param Order $order
-     * @return JsonResponse
+     *
      * @throws \Exception
      */
     private function payWithWallet(Order $order): JsonResponse
@@ -437,6 +423,7 @@ class OrderRepository implements IOrderRepository
 
             if ($wallet->balance < $amount) {
                 DB::rollBack();
+
                 return response()->json([
                     'status' => 0,
                     'message' => __('site.Insufficient funds'),
@@ -471,7 +458,7 @@ class OrderRepository implements IOrderRepository
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
-                'order' => new OrderResource($order->load('products.color'))
+                'order' => new OrderResource($order->load('products.color')),
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -481,7 +468,7 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Pay with bank.
-     * @param Order $order
+     *
      * @throws \Exception
      */
     private function payWithBank(Order $order)
@@ -502,7 +489,7 @@ class OrderRepository implements IOrderRepository
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
-                'url' => route('user.payment') . '?transaction=' . $transaction->id . '&sign=' . $code
+                'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
             ], Response::HTTP_OK);
         }
 
@@ -514,10 +501,8 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Complete the order
-     * @param int $orderId
-     * @return void
      */
-    public function completeOrder(int $orderId) :void
+    public function completeOrder(int $orderId): void
     {
         DB::beginTransaction();
 
@@ -548,11 +533,11 @@ class OrderRepository implements IOrderRepository
 
             $this->service->sendNotification(
                 config('telegram.chat_id'),
-                'سفارش با موفقیت پرداخت شد' . PHP_EOL .
-                'order_id ' . $order->id . PHP_EOL .
-                'order_code ' . $order->code . PHP_EOL .
-                'order_amount ' . $order->total_amount . PHP_EOL .
-                'order_time ' . now()
+                'سفارش با موفقیت پرداخت شد'.PHP_EOL.
+                'order_id '.$order->id.PHP_EOL.
+                'order_code '.$order->code.PHP_EOL.
+                'order_amount '.$order->total_amount.PHP_EOL.
+                'order_time '.now()
             );
 
         } catch (\Exception $e) {
@@ -562,6 +547,7 @@ class OrderRepository implements IOrderRepository
 
     /**
      * Expire pending orders that have been created more than one hour ago.
+     *
      * @return int Number of expired orders
      */
     public function expirePendingOrders(): int

@@ -4,7 +4,6 @@ namespace App\Filament\Resources\PostResource\Pages;
 
 use App\Filament\Resources\PostResource;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Facades\DB;
 
 class CreatePost extends CreateRecord
 {
@@ -18,13 +17,13 @@ class CreatePost extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Handle thumbnail generation if image is provided and thumb is enabled
-        if (!empty($data['image']) && isset($data['thumb']) && $data['thumb']) {
+        if (! empty($data['image']) && isset($data['thumb']) && $data['thumb']) {
             $image = $data['image'];
             $path = parse_url($image, PHP_URL_PATH);
             $filename = basename($path);
 
-            $data['thumbnail'] = str_replace($filename, 'thumbnails/' . $filename, $image);
-            $data['slide'] = str_replace($filename, 'slides/' . $filename, $image);
+            $data['thumbnail'] = str_replace($filename, 'thumbnails/'.$filename, $image);
+            $data['slide'] = str_replace($filename, 'slides/'.$filename, $image);
         }
 
         // Set default values

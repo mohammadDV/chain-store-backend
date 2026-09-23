@@ -22,7 +22,6 @@ class FileController extends Controller
 
     /**
      * Upload the image.
-     * @param ImageRequest $request
      */
     public function uploadImage(ImageRequest $request): JsonResponse
     {
@@ -31,19 +30,17 @@ class FileController extends Controller
 
     /**
      * Upload the video.
-     * @param VideoRequest $request
      */
     public function uploadVideo(VideoRequest $request): JsonResponse
     {
         return response()->json($this->repository->uploadVideo($request), Response::HTTP_OK);
     }
+
     /**
      * Upload the video.
-     * @param FileRequest $request
      */
     public function uploadFile(FileRequest $request): JsonResponse
     {
         return response()->json($this->repository->uploadFile($request), Response::HTTP_OK);
     }
-
 }

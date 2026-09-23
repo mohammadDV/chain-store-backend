@@ -27,7 +27,7 @@ return new class extends Migration
             $table->tinyInteger('active')->default(0);
             $table->integer('order_count')->default(0);
             $table->integer('view_count')->default(0);
-            $table->enum('status',['pending', 'completed'])->default('pending'); // pending, completed
+            $table->enum('status', ['pending', 'completed'])->default('pending'); // pending, completed
             $table->tinyInteger('vip')->default(0);
             $table->tinyInteger('is_failed')->default(0);
             $table->tinyInteger('priority')->default(0);
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->foreign('color_id')->references('id')->on('colors')->onDelete('cascade');
             $table->bigInteger('brand_id')->unsigned()->index();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

@@ -2,16 +2,18 @@
 
 namespace Domain\Product\Models;
 
+use Database\Factories\DiscountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Discount extends Model
 {
-    /** @use HasFactory<\Database\Factories\DiscountFactory> */
+    /** @use HasFactory<DiscountFactory> */
     use HasFactory;
 
-    const TYPE_PERCENTAGE = "percentage";
-    const TYPE_FIXED = "fixed";
+    const TYPE_PERCENTAGE = 'percentage';
+
+    const TYPE_FIXED = 'fixed';
 
     protected $guarded = [];
 
@@ -27,11 +29,10 @@ class Discount extends Model
 
     /**
      * Check if the discount is active and not expired.
-     * @return bool
      */
     public function isValid(): bool
     {
-        if (!$this->active) {
+        if (! $this->active) {
             return false;
         }
 
@@ -44,8 +45,6 @@ class Discount extends Model
 
     /**
      * Calculate discount amount based on type.
-     * @param float $amount
-     * @return float
      */
     public function calculateDiscount(float $amount): float
     {
@@ -53,7 +52,7 @@ class Discount extends Model
 
             $discountAmount = ($amount * $this->value) / 100;
 
-            if (!empty($this->max_value) && intval($this->max_value) > 0) {
+            if (! empty($this->max_value) && intval($this->max_value) > 0) {
                 $discountAmount = $discountAmount > $this->max_value ? $this->max_value : $discountAmount;
             }
 

@@ -3,17 +3,17 @@
 use Application\Api\Brand\Controllers\BrandController;
 use Application\Api\File\Controllers\FileController;
 use Application\Api\Notification\Controllers\NotificationController;
-use Application\Api\Product\Controllers\OrderController;
+use Application\Api\Payment\Controllers\PaymentController;
 use Application\Api\Post\Controllers\PostController;
 use Application\Api\Product\Controllers\CategoryController;
 use Application\Api\Product\Controllers\ColorController;
+use Application\Api\Product\Controllers\DiscountController;
+use Application\Api\Product\Controllers\OrderController;
 use Application\Api\Product\Controllers\ProductController;
 use Application\Api\Review\Controllers\ReviewController;
 use Application\Api\Ticket\Controllers\TicketController;
 use Application\Api\Ticket\Controllers\TicketSubjectController;
 use Application\Api\User\Controllers\UserController;
-use Application\Api\Payment\Controllers\PaymentController;
-use Application\Api\Product\Controllers\DiscountController;
 use Application\Api\Wallet\Controllers\WalletController;
 use Application\Api\Wallet\Controllers\WalletTransactionController;
 use Application\Api\Wallet\Controllers\WithdrawalTransactionController;
@@ -34,7 +34,6 @@ Route::prefix('colors')->group(function () {
     Route::get('/', [ColorController::class, 'index'])->name('colors.index');
 });
 
-
 // Products
 Route::prefix('products')->group(function () {
     Route::post('search', [ProductController::class, 'search']);
@@ -45,13 +44,11 @@ Route::prefix('products')->group(function () {
     Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
 });
 
-
 // user info
 Route::get('/user-info/{user}', [UserController::class, 'getUserInfo'])->name('user.show');
 
 // ticket subjects
 Route::get('/active-subjects', [TicketSubjectController::class, 'activeSubjects'])->name('active-subjects');
-
 
 // payment
 Route::get('/payment/callback', [PaymentController::class, 'callback'])->name('user.payment.callback');
@@ -72,7 +69,7 @@ Route::get('/posts/popular', [PostController::class, 'getPopularPosts'])->name('
 Route::get('/posts/latest', [PostController::class, 'getLatestPosts'])->name('site.posts.latest');
 Route::get('/post/{post}', [PostController::class, 'getPostInfo'])->name('site.post.info');
 
-Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')->name('profile.')->group(function() {
+Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')->name('profile.')->group(function () {
 
     // product
     Route::post('products/{product}/favorite', [ProductController::class, 'favorite'])->name('products.favorite');
@@ -93,14 +90,12 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::get('orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::post('orders/{order}/pay', [OrderController::class, 'payOrder'])->name('orders.pay');
 
-
     Route::get('/check-verification', [UserController::class, 'checkVerification'])->name('user.check.verification');
 
     // // update user
     Route::get('/my-info', [UserController::class, 'show'])->name('user.show');
     Route::patch('/users', [UserController::class, 'update'])->name('user.update');
     Route::patch('/users/change-password', [UserController::class, 'changePassword'])->name('user.change-password');
-
 
     Route::resource('notifications', NotificationController::class);
     Route::get('/notifications-unread', [NotificationController::class, 'unread'])->name('unread-notifications');
@@ -132,7 +127,7 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
 });
 
 // upload files
-Route::middleware(['auth:sanctum', 'auth', 'throttle:10,1'])->group(function() {
+Route::middleware(['auth:sanctum', 'auth', 'throttle:10,1'])->group(function () {
     Route::post('/upload-image', [FileController::class, 'uploadImage'])->name('site.upload-image');
     Route::post('/upload-video', [FileController::class, 'uploadVideo'])->name('site.upload-video');
     Route::post('/upload-file', [FileController::class, 'uploadFile'])->name('site.upload-file');

@@ -3,8 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TicketMessageResource\Pages;
-use Domain\Ticket\Models\TicketMessage;
 use Domain\Ticket\Models\Ticket;
+use Domain\Ticket\Models\TicketMessage;
 use Domain\User\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -13,7 +13,6 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
 class TicketMessageResource extends Resource
 {

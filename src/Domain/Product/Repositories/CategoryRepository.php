@@ -2,7 +2,6 @@
 
 namespace Domain\Product\Repositories;
 
-use Application\Api\Brand\Resources\BrandResource;
 use Application\Api\Product\Resources\CategoryResource;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
@@ -11,9 +10,8 @@ use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\ICategoryRepository;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Class CategoryRepository.
@@ -24,16 +22,14 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories pagination.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
-    public function index(TableRequest $request) :LengthAwarePaginator
+    public function index(TableRequest $request): LengthAwarePaginator
     {
         $search = $request->get('query');
         $categories = Category::query()
             ->with(['brand', 'childrenRecursive', 'parentRecursive'])
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('title', 'like', '%'.$search.'%');
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -43,7 +39,7 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories.
-     * @param Brand|null $brand
+     *
      * @return Collection
      */
     public function activeProductCategories(?Brand $brand = null)
@@ -69,13 +65,12 @@ class CategoryRepository implements ICategoryRepository
             ->orderBy('priority', 'desc')
             ->get();
 
-
         return CategoryResource::collection($categories);
     }
 
     /**
      * Get the productCategories with all nested children recursively.
-     * @param Brand|null $brand
+     *
      * @return Collection
      */
     public function allCategories(?Brand $brand = null)
@@ -99,7 +94,8 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the children of a specific category.
-     * @param Brand $brand
+     *
+     * @param  Brand  $brand
      * @return Collection|AnonymousResourceCollection
      */
     public function getCategoryChildren(Category $category)
@@ -117,7 +113,7 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the Category.
-     * @param Category $category
+     *
      * @return CategoryResource
      */
     public function show(Category $category)

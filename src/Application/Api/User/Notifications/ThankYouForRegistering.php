@@ -3,9 +3,9 @@
 namespace Application\Api\User\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
 
 class ThankYouForRegistering extends Notification implements ShouldQueue
 {
@@ -21,7 +21,7 @@ class ThankYouForRegistering extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject(__('site.Welcome to') . ' ' . config('app.name'))
+            ->subject(__('site.Welcome to').' '.config('app.name'))
             ->view('emails.users.thankyou')
             ->with([
                 'user' => $notifiable,

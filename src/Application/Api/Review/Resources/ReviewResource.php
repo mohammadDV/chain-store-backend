@@ -2,18 +2,17 @@
 
 namespace Application\Api\Review\Resources;
 
-use Application\Api\Product\Resources\FileResource;
-use Application\Api\Product\Resources\ServiceResource;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Application\Api\User\Resources\UserResource;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class ReviewResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)

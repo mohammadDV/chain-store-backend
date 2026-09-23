@@ -2,24 +2,24 @@
 
 namespace Domain\Product\Repositories;
 
-use Application\Api\Product\Resources\ProductResource;
-use Core\Http\Requests\TableRequest;
-use Core\Http\traits\GlobalFunc;
-use Domain\Product\Models\Product;
-use Domain\Product\Repositories\Contracts\IProductRepository;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
 use Application\Api\Product\Requests\SearchProductRequest;
 use Application\Api\Product\Resources\CategoryResource;
 use Application\Api\Product\Resources\ProductBoxResource;
 use Application\Api\Product\Resources\ProductFavoriteResource;
+use Application\Api\Product\Resources\ProductResource;
+use Core\Http\Requests\TableRequest;
+use Core\Http\traits\GlobalFunc;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Favorite;
+use Domain\Product\Models\Product;
+use Domain\Product\Repositories\Contracts\IProductRepository;
 use Domain\Review\Models\Review;
 use Domain\User\Services\TelegramNotificationService;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -36,34 +36,32 @@ class ProductRepository implements IProductRepository
 
     /**
      * Get the product.
-     * @param Product $product
-     * @return array
      */
-    public function show(Product $product) :array
+    public function show(Product $product): array
     {
         $product = Product::query()
-                ->with([
-                    'categories.parentRecursive',
-                    'files',
-                    'attributes',
-                    'color',
-                    'brand',
-                    'sizes'
-                ])
-                ->where('id', $product->id)
-                ->active()
-                ->first();
+            ->with([
+                'categories.parentRecursive',
+                'files',
+                'attributes',
+                'color',
+                'brand',
+                'sizes',
+            ])
+            ->where('id', $product->id)
+            ->active()
+            ->first();
 
-        if (!$product) {
+        if (! $product) {
             abort(404);
         }
 
         $reviews = $this->getReviewsByRate($product->id);
 
         $relatedProducts = json_decode($product->related_products, true);
-        $relatedProducts = Product::query()        
+        $relatedProducts = Product::query()
             ->active()
-            ->whereIn('url', !empty($relatedProducts) ? $relatedProducts : [])
+            ->whereIn('url', ! empty($relatedProducts) ? $relatedProducts : [])
             ->get()
             ->map(fn ($product) => new ProductResource($product));
 
@@ -75,13 +73,10 @@ class ProductRepository implements IProductRepository
 
     }
 
-
     /**
      * Favorite the product.
-     * @param Product $product
-     * @return JsonResponse
      */
-    public function favorite(Product $product) :JsonResponse
+    public function favorite(Product $product): JsonResponse
     {
         $favorite = Favorite::query()
             ->where('product_id', $product->id)
@@ -109,8 +104,6 @@ class ProductRepository implements IProductRepository
 
     /**
      * Get favorite products.
-     * @param TableRequest $request
-     * @return LengthAwarePaginator
      */
     public function getFavoriteProducts(TableRequest $request): LengthAwarePaginator
     {
@@ -120,8 +113,8 @@ class ProductRepository implements IProductRepository
             ->whereHas('favorites', function ($query) {
                 $query->where('favorites.user_id', Auth::user()->id);
             })
-            ->when(!empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%' . $search . '%');
+            ->when(! empty($search), function ($query) use ($search) {
+                return $query->where('title', 'like', '%'.$search.'%');
             })
             ->active()
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
@@ -130,10 +123,8 @@ class ProductRepository implements IProductRepository
         return $products->through(fn ($product) => new ProductFavoriteResource($product));
     }
 
-        /**
+    /**
      * Get featured products by type with configurable limits.
-     * @param TableRequest $request
-     * @return Collection
      */
     public function getFeaturedProducts(TableRequest $request): Collection
     {
@@ -156,7 +147,7 @@ class ProductRepository implements IProductRepository
         $products = Product::query()
             ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
             ->withCount('reviews')
-            ->when(!empty($brand), function ($query) use ($brand) {
+            ->when(! empty($brand), function ($query) use ($brand) {
                 $query->where('brand_id', $brand);
             })
             ->active()
@@ -174,7 +165,6 @@ class ProductRepository implements IProductRepository
 
     /**
      * Get similar products.
-     * @param Product $product
      */
     public function similarProducts(Product $product)
     {
@@ -203,7 +193,6 @@ class ProductRepository implements IProductRepository
 
     /**
      * Search suggestions with filters and pagination.
-     * @param TableRequest $request
      */
     public function searchSuggestions(TableRequest $request)
     {
@@ -213,7 +202,7 @@ class ProductRepository implements IProductRepository
         $categories = Category::query()
             ->with('parentRecursive')
             ->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%');
+                $query->where('title', 'like', '%'.$search.'%');
             })
             ->where('status', 1)
             ->limit(10)
@@ -222,15 +211,14 @@ class ProductRepository implements IProductRepository
         $queryProduct = Product::query()
             ->active()
             ->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%')
-                    ->orWhere('description', 'like', '%' . $search . '%')
-                    ->orWhere('details', 'like', '%' . $search . '%');
+                $query->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhere('details', 'like', '%'.$search.'%');
             });
 
         $products = $queryProduct->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->limit(5)
             ->get();
-
 
         return [
             'products' => $products->map(fn ($product) => new ProductBoxResource($product)),
@@ -241,8 +229,6 @@ class ProductRepository implements IProductRepository
 
     /**
      * Search products with filters and pagination.
-     * @param SearchProductRequest $request
-     * @return LengthAwarePaginator
      */
     public function search(SearchProductRequest $request): LengthAwarePaginator
     {
@@ -267,7 +253,7 @@ class ProductRepository implements IProductRepository
         };
 
         // Generate a unique cache key based on all search parameters
-        $cacheKey = 'product_search_' . md5(json_encode([
+        $cacheKey = 'product_search_'.md5(json_encode([
             'query' => $search,
             'category' => $categories,
             'brand' => $brands,
@@ -280,72 +266,71 @@ class ProductRepository implements IProductRepository
 
         // Try to get results from cache first
         // return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($request, $today) {
-            $query = Product::query()
-                ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
-                ->withCount('reviews')
-                ->active();
+        $query = Product::query()
+            ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+            ->withCount('reviews')
+            ->active();
 
-            if (!empty($search)) {
-                $query->where(function ($query) use ($search) {
-                    $query->where('title','like', '%' . $search . '%')
-                        ->orWhere('description','like', '%' . $search . '%')
-                        ->orWhere('details','like', '%' . $search . '%');
-                });
-            }
+        if (! empty($search)) {
+            $query->where(function ($query) use ($search) {
+                $query->where('title', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhere('details', 'like', '%'.$search.'%');
+            });
+        }
 
-            // start amount
-            if (!empty($startAmount)) {
-                $query->where('amount', '>=', $startAmount);
-            }
+        // start amount
+        if (! empty($startAmount)) {
+            $query->where('amount', '>=', $startAmount);
+        }
 
-            // end amount
-            if (!empty($endAmount)) {
-                $query->where('amount', '<=', $endAmount);
-            }
+        // end amount
+        if (! empty($endAmount)) {
+            $query->where('amount', '<=', $endAmount);
+        }
 
-            // brand
-            if (!empty($brands)) {
-                $query->whereIn('brand_id', $brands);
-            }
+        // brand
+        if (! empty($brands)) {
+            $query->whereIn('brand_id', $brands);
+        }
 
-            // color
-            if (!empty($colors)) {
-                $query->whereHas('color', function ($q) use ($colors) {
-                    $q->whereIn('id', $colors);
-                });
-            }
+        // color
+        if (! empty($colors)) {
+            $query->whereHas('color', function ($q) use ($colors) {
+                $q->whereIn('id', $colors);
+            });
+        }
 
-            // category
-            if (!empty($categories)) {
+        // category
+        if (! empty($categories)) {
 
-                $parents = Category::query()
-                    ->whereIn('parent_id', $categories)
-                    ->pluck('id')
-                    ->toArray();
+            $parents = Category::query()
+                ->whereIn('parent_id', $categories)
+                ->pluck('id')
+                ->toArray();
 
-                    
-                    $categories = array_merge($categories, $parents);
-                    $categories = array_unique($categories);
-                    // var_dump($categories);
-                    // dd($parents);
+            $categories = array_merge($categories, $parents);
+            $categories = array_unique($categories);
+            // var_dump($categories);
+            // dd($parents);
 
-                $query->whereHas('categories', function ($q) use ($categories) {
-                    $q->whereIn('categories.id', $categories)
-                      ->orWhereIn('categories.parent_id', $categories);
-                });
-            }
+            $query->whereHas('categories', function ($q) use ($categories) {
+                $q->whereIn('categories.id', $categories)
+                    ->orWhereIn('categories.parent_id', $categories);
+            });
+        }
 
-            $products = $query->orderBy($column, $request->get('sort', 'desc'))
-                ->paginate($request->get('count', 25));
+        $products = $query->orderBy($column, $request->get('sort', 'desc'))
+            ->paginate($request->get('count', 25));
 
-            return $products->through(fn ($product) => new ProductBoxResource($product));
+        return $products->through(fn ($product) => new ProductBoxResource($product));
         // });
     }
 
     /**
      * Get reviews grouped by rate with counts for products
-     * @param int|null $productId Optional product ID to filter by specific product
-     * @return Collection
+     *
+     * @param  int|null  $productId  Optional product ID to filter by specific product
      */
     public function getReviewsByRate(?int $productId = null): Collection
     {
@@ -363,7 +348,7 @@ class ProductRepository implements IProductRepository
             2 => __('site.bad'),
             3 => __('site.average'),
             4 => __('site.good'),
-            5 => __('site.excellent')
+            5 => __('site.excellent'),
         ];
 
         // Calculate total reviews once (matching the same filters as the grouped query)
@@ -383,7 +368,7 @@ class ProductRepository implements IProductRepository
                     'title' => $titles[$item->rate],
                     'rate' => $item->rate,
                     'count' => $item->count,
-                    'percentage' => $totalReviews > 0 ? round(($item->count / $totalReviews) * 100, 2) : 0
+                    'percentage' => $totalReviews > 0 ? round(($item->count / $totalReviews) * 100, 2) : 0,
                 ];
             });
     }

@@ -7,7 +7,7 @@ use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<Post>
+ * @extends Factory<Post>
  */
 class PostFactory extends Factory
 {
@@ -35,7 +35,7 @@ class PostFactory extends Factory
             'معرفی آثار تاریخی ایران',
             'راهنمای سفر به بندرعباس',
             'بهترین رستوران‌های سنتی',
-            'معرفی جاذبه‌های طبیعی ایران'
+            'معرفی جاذبه‌های طبیعی ایران',
         ];
 
         $persianSummaries = [
@@ -48,7 +48,7 @@ class PostFactory extends Factory
             'تجربه سفر به شهر تاریخی و زیبای یزد.',
             'کافه‌های مدرن و سنتی با فضایی دلنشین.',
             'طبیعت بکر و زیبای ایران در پارک‌های ملی.',
-            'جزیره‌ای زیبا با جاذبه‌های طبیعی منحصر به فرد.'
+            'جزیره‌ای زیبا با جاذبه‌های طبیعی منحصر به فرد.',
         ];
 
         $persianContents = [
@@ -70,7 +70,7 @@ class PostFactory extends Factory
 
             'ایران دارای پارک‌های ملی متعددی است که هر کدام طبیعتی بکر و زیبا دارند. از جنگل‌های شمال گرفته تا کویرهای مرکزی، همه چیز برای طبیعت‌گردی فراهم است.',
 
-            'جزیره قشم با طبیعتی منحصر به فرد و جاذبه‌های طبیعی فراوان، یکی از زیباترین جزایر ایران است. دره ستارگان، جنگل حرا و سواحل زیبا از جمله جاذبه‌های این جزیره هستند.'
+            'جزیره قشم با طبیعتی منحصر به فرد و جاذبه‌های طبیعی فراوان، یکی از زیباترین جزایر ایران است. دره ستارگان، جنگل حرا و سواحل زیبا از جمله جاذبه‌های این جزیره هستند.',
         ];
 
         return [
@@ -78,9 +78,9 @@ class PostFactory extends Factory
             'title' => fake()->randomElement($persianTitles),
             'summary' => fake()->randomElement($persianSummaries),
             'content' => fake()->randomElement($persianContents),
-            'image' => 'https://picsum.photos/800/600?random=' . fake()->numberBetween(1, 1000),
-            'thumbnail' => 'https://picsum.photos/400/300?random=' . fake()->numberBetween(1, 1000),
-            'slide' => 'https://picsum.photos/1200/600?random=' . fake()->numberBetween(1, 1000),
+            'image' => 'https://picsum.photos/800/600?random='.fake()->numberBetween(1, 1000),
+            'thumbnail' => 'https://picsum.photos/400/300?random='.fake()->numberBetween(1, 1000),
+            'slide' => 'https://picsum.photos/1200/600?random='.fake()->numberBetween(1, 1000),
             'user_id' => User::factory(),
             'video_id' => null,
             'status' => fake()->randomElement([0, 1]),

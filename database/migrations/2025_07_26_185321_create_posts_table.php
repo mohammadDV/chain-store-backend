@@ -21,9 +21,9 @@ return new class extends Migration
             $table->text('image')->nullable();
             $table->text('thumbnail')->nullable();
             $table->text('slide')->nullable();
-            $table->bigInteger("user_id")->unsigned()->index();
+            $table->bigInteger('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->bigInteger("video_id")->nullable();
+            $table->bigInteger('video_id')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->bigInteger('view')->default(0);
             $table->tinyInteger('type')->default(0); // 0 = normal | 1 = video

@@ -2,20 +2,22 @@
 
 namespace Domain\Wallet\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\WithdrawalTransactionFactory;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WithdrawalTransaction extends Model
 {
-    /** @use HasFactory<\Database\Factories\WithdrawalTransactionFactory> */
+    /** @use HasFactory<WithdrawalTransactionFactory> */
     use HasFactory;
 
-    const PENDING = "pending";
-    const COMPLETED = "completed";
-    const REJECT = "reject";
+    const PENDING = 'pending';
+
+    const COMPLETED = 'completed';
+
+    const REJECT = 'reject';
 
     protected $guarded = [];
 
@@ -38,6 +40,6 @@ class WithdrawalTransaction extends Model
                 ->exists();
         } while ($exists);
 
-        return (string)$reference;
+        return (string) $reference;
     }
 }
