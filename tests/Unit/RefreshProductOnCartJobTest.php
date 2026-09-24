@@ -14,7 +14,7 @@ it('refreshes the product via refreshById', function () {
         action: 'refresh',
     );
 
-    $service = \Mockery::mock(StaleProductRefreshService::class);
+    $service = Mockery::mock(StaleProductRefreshService::class);
     $service->shouldReceive('refreshById')
         ->once()
         ->with(7)
@@ -24,7 +24,7 @@ it('refreshes the product via refreshById', function () {
 });
 
 it('exits quietly when the product is missing', function () {
-    $service = \Mockery::mock(StaleProductRefreshService::class);
+    $service = Mockery::mock(StaleProductRefreshService::class);
     $service->shouldReceive('refreshById')
         ->once()
         ->with(99)

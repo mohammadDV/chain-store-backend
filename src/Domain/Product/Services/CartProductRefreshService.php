@@ -30,8 +30,8 @@ class CartProductRefreshService
         }
 
         $code = trim((string) $product->code);
-        $brandId = $product->brand_id !== null ? (int) $product->brand_id : null;
-        if ($code === '' || $brandId === null || $brandId < 1) {
+        $brandId = (int) $product->brand_id;
+        if ($code === '' || $brandId < 1) {
             return false;
         }
 

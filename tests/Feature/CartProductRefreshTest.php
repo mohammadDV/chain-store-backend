@@ -3,6 +3,7 @@
 use Domain\Product\Jobs\RefreshProductOnCartJob;
 use Domain\Product\Models\Product;
 use Domain\Setting\Services\SettingService;
+use Domain\User\Services\TelegramNotificationService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,8 @@ beforeEach(function () {
     config()->set('product.min_order_amount', 50000);
     config()->set('product_scraper.stale_refresh.hours', 48);
     config()->set('product_scraper.cart_refresh.queue', 'high');
+
+    $this->mock(TelegramNotificationService::class);
 
     $this->mock(SettingService::class, function ($mock) {
         $mock->shouldReceive('getExchangeRateWithFallback')->andReturn(1.0);
