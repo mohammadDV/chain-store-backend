@@ -4,51 +4,63 @@ namespace Domain\Product\Jobs;
 
 use Domain\Product\Services\StaleProductRefreshService;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class RefreshStaleProductsJob implements ShouldQueue
+class RefreshProductOnCartJob implements ShouldBeUnique, ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Do not retry the whole batch; successful products already got a fresh updated_at.
-     */
     public int $tries = 1;
 
+    public int $timeout;
+
     /**
-     * Allow enough time for up to N sequential scraper /apply calls.
+     * Max seconds the unique lock may be held if a worker dies mid-job.
      */
-    public int $timeout = 1200;
+    public int $uniqueFor;
 
     public function __construct(
-        public readonly ?int $limit = null,
-        public readonly ?int $staleHours = null,
-    ) {}
+        public readonly int $productId,
+    ) {
+        $timeout = (int) config('product_scraper.timeout', 180);
+        $this->timeout = $timeout;
+        $this->uniqueFor = $timeout;
+    }
+
+    public function uniqueId(): string
+    {
+        return (string) $this->productId;
+    }
 
     public function handle(StaleProductRefreshService $service): void
     {
         $startedAt = microtime(true);
 
-        Log::info('RefreshStaleProductsJob: started', [
-            'limit' => $this->limit,
-            'stale_hours' => $this->staleHours,
+        Log::info('RefreshProductOnCartJob: started', [
+            'product_id' => $this->productId,
         ]);
 
-        $result = $service->refresh($this->limit, $this->staleHours);
+        $outcome = $service->refreshById($this->productId);
 
-        Log::info('RefreshStaleProductsJob: finished', [
-            ...$result->toLogContext(),
+        if ($outcome === null) {
+            return;
+        }
+
+        Log::info('RefreshProductOnCartJob: finished', [
+            ...$outcome->toArray(),
             'duration_seconds' => round(microtime(true) - $startedAt, 2),
         ]);
     }
 
     public function failed(?\Throwable $exception): void
     {
-        Log::error('RefreshStaleProductsJob: permanently failed', [
+        Log::error('RefreshProductOnCartJob: permanently failed', [
+            'product_id' => $this->productId,
             'error' => $exception?->getMessage(),
             'exception' => $exception ? $exception::class : null,
         ]);
@@ -62,7 +74,8 @@ class RefreshStaleProductsJob implements ShouldQueue
         return [
             'products',
             'scraper',
-            'stale-refresh',
+            'cart-refresh',
+            'product:'.$this->productId,
         ];
     }
 }

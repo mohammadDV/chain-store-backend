@@ -40,6 +40,9 @@ Route::prefix('products')->group(function () {
     Route::post('search-suggestions', [ProductController::class, 'searchSuggestions']);
     Route::get('{product}/similar', [ProductController::class, 'similarProducts'])->name('product.similar');
     Route::post('featured', [ProductController::class, 'getFeaturedProducts'])->name('product.featured');
+    Route::post('{product}/refresh-on-cart', [ProductController::class, 'refreshOnCart'])
+        ->middleware('throttle:30,1')
+        ->name('product.refresh-on-cart');
     Route::get('{product}', [ProductController::class, 'show']);
     Route::get('{product}/reviews', [ReviewController::class, 'getReviewsPerProduct'])->name('product.reviews.get');
 });

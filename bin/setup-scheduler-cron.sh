@@ -8,7 +8,8 @@ LOG_FILE=/var/www/html/storage/logs/scheduler-cron.log
 
 chmod +x /var/www/html/bin/run-schedule.sh
 
-printenv | grep -E '^(APP_|DB_|REDIS_|QUEUE_|CACHE_|PRODUCT_SCRAPER_|HORIZON_)' > "$ENV_FILE"
+# Build-time images often have no APP_/DB_ env yet; empty file is fine (boot rewrites it).
+printenv | grep -E '^(APP_|DB_|REDIS_|QUEUE_|CACHE_|PRODUCT_SCRAPER_|HORIZON_)' > "$ENV_FILE" || true
 chmod 600 "$ENV_FILE"
 chown root:root "$ENV_FILE" 2>/dev/null || true
 

@@ -17,22 +17,22 @@ class StaleProductRefreshService
         private readonly ProductScraperService $scraper,
     ) {}
 
-    public function refresh(?int $limit = null, ?int $staleDays = null): StaleProductRefreshResult
+    public function refresh(?int $limit = null, ?int $staleHours = null): StaleProductRefreshResult
     {
         $limit = $limit ?? (int) config('product_scraper.stale_refresh.limit', 10);
-        $staleDays = $staleDays ?? (int) config('product_scraper.stale_refresh.days', 2);
-        $staleBefore = now()->subDays($staleDays);
+        $staleHours = $staleHours ?? (int) config('product_scraper.stale_refresh.hours', 48);
+        $staleBefore = now()->subHours($staleHours);
 
         $products = $this->candidates($limit, $staleBefore);
 
         if ($products->isEmpty()) {
             $message = sprintf(
-                'No stale products to refresh (active=1, status=completed, updated_at older than %d days).',
-                $staleDays,
+                'No stale products to refresh (active=1, status=completed, updated_at older than %d hours).',
+                $staleHours,
             );
 
             Log::info('StaleProductRefreshService: empty', [
-                'stale_days' => $staleDays,
+                'stale_hours' => $staleHours,
                 'limit' => $limit,
                 'stale_before' => $staleBefore->toDateTimeString(),
             ]);
@@ -158,6 +158,21 @@ class StaleProductRefreshService
 
             return $outcome;
         }
+    }
+
+    public function refreshById(int $productId): ?ProductRefreshOutcome
+    {
+        $product = Product::query()->find($productId);
+
+        if ($product === null) {
+            Log::warning('StaleProductRefreshService: product not found', [
+                'product_id' => $productId,
+            ]);
+
+            return null;
+        }
+
+        return $this->refreshOne($product);
     }
 
     /**

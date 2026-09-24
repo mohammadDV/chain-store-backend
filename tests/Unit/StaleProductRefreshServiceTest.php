@@ -32,7 +32,7 @@ class StaleProductRefreshServiceTest extends TestCase
         $service = Mockery::mock(StaleProductRefreshService::class, [$scraper])->makePartial();
         $service->shouldReceive('candidates')->once()->andReturn(new Collection);
 
-        $result = $service->refresh(10, 2);
+        $result = $service->refresh(10, 48);
 
         $this->assertTrue($result->isEmpty());
         $this->assertSame(0, $result->selected);
@@ -63,7 +63,7 @@ class StaleProductRefreshServiceTest extends TestCase
         $service = Mockery::mock(StaleProductRefreshService::class, [$scraper])->makePartial();
         $service->shouldReceive('candidates')->once()->andReturn(new Collection([$ok, $bad]));
 
-        $result = $service->refresh(10, 2);
+        $result = $service->refresh(10, 48);
 
         $this->assertSame(2, $result->selected);
         $this->assertSame(1, $result->succeeded);
@@ -98,7 +98,7 @@ class StaleProductRefreshServiceTest extends TestCase
         $service->shouldReceive('candidates')->once()->andReturn(new Collection([$first, $second]));
         $service->shouldReceive('pauseBetweenRequests')->once()->with(3);
 
-        $service->refresh(2, 2);
+        $service->refresh(2, 48);
     }
 
     public function test_refresh_one_skips_product_without_code(): void

@@ -18,10 +18,10 @@ class RefreshStaleProductsJobTest extends TestCase
         $service = Mockery::mock(StaleProductRefreshService::class);
         $service->shouldReceive('refresh')
             ->once()
-            ->with(3, 2)
+            ->with(3, 48)
             ->andReturn(StaleProductRefreshResult::empty('No stale products to refresh'));
 
-        (new RefreshStaleProductsJob(limit: 3, staleDays: 2))->handle($service);
+        (new RefreshStaleProductsJob(limit: 3, staleHours: 48))->handle($service);
     }
 
     public function test_job_exposes_horizon_tags_and_limits(): void

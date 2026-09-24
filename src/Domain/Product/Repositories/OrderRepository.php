@@ -197,7 +197,7 @@ class OrderRepository implements IOrderRepository
             foreach ($products as $productData) {
                 $product = Product::find($productData['id']);
 
-                if (! $product || $product->amount < 50000) {
+                if (! $product || $product->amount < (int) config('product.min_order_amount', 50000)) {
                     DB::rollBack();
 
                     return response()->json([

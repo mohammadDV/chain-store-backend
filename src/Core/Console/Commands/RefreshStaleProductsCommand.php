@@ -10,7 +10,7 @@ class RefreshStaleProductsCommand extends Command
 {
     protected $signature = 'products:refresh-stale
                             {--limit= : Max products to refresh}
-                            {--days= : Treat products older than this many days as stale}
+                            {--hours= : Treat products older than this many hours as stale}
                             {--queue : Dispatch to Horizon instead of running inline}';
 
     protected $description = 'Refresh the oldest stale active products via the product-scraper code endpoint';
@@ -18,16 +18,16 @@ class RefreshStaleProductsCommand extends Command
     public function handle(StaleProductRefreshService $service): int
     {
         $limit = $this->option('limit') !== null ? (int) $this->option('limit') : null;
-        $days = $this->option('days') !== null ? (int) $this->option('days') : null;
+        $hours = $this->option('hours') !== null ? (int) $this->option('hours') : null;
 
         if ($this->option('queue')) {
-            RefreshStaleProductsJob::dispatch($limit, $days);
+            RefreshStaleProductsJob::dispatch($limit, $hours);
             $this->info('RefreshStaleProductsJob queued.');
 
             return self::SUCCESS;
         }
 
-        $result = $service->refresh($limit, $days);
+        $result = $service->refresh($limit, $hours);
 
         $this->info($result->message);
         $this->table(

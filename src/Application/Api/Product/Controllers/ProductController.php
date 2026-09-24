@@ -7,6 +7,7 @@ use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IProductRepository;
+use Domain\Product\Services\CartProductRefreshService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -20,6 +21,20 @@ class ProductController extends Controller
     public function show(Product $product): JsonResponse
     {
         return response()->json($this->repository->show($product), Response::HTTP_OK);
+    }
+
+    /**
+     * Queue a stale-product scrape when the product is added to the cart.
+     * Fire-and-forget from the client; eligibility is checked here.
+     */
+    public function refreshOnCart(Product $product, CartProductRefreshService $cartRefresh): JsonResponse
+    {
+        $queued = $cartRefresh->dispatchIfEligible($product);
+
+        return response()->json([
+            'status' => 1,
+            'queued' => $queued,
+        ], Response::HTTP_OK);
     }
 
     /**
