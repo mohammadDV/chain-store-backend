@@ -7,6 +7,9 @@ use Domain\Payment\Models\Transaction;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -37,17 +40,17 @@ class Order extends Model
         'active' => 'integer',
     ];
 
-    public function products()
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')->withPivot('count', 'amount', 'status', 'color_id', 'size_id');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function discount()
+    public function discount(): BelongsTo
     {
         return $this->belongsTo(Discount::class);
     }
@@ -64,7 +67,7 @@ class Order extends Model
         return (string) $code;
     }
 
-    public function transactions()
+    public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'model_id', 'id')->where('model_type', Transaction::ORDER);
     }

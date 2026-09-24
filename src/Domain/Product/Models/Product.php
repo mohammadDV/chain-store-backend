@@ -11,6 +11,10 @@ use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 class Product extends Model
@@ -33,32 +37,32 @@ class Product extends Model
         'related_products' => 'array',
     ];
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_product', 'product_id', 'category_id');
     }
 
-    public function orders()
+    public function orders(): BelongsToMany
     {
         return $this->belongsToMany(Order::class, 'order_product', 'product_id', 'order_id')->withPivot('count', 'amount', 'status', 'color_id', 'size_id');
     }
 
-    public function likes()
+    public function likes(): MorphMany
     {
         return $this->morphMany(Like::class, 'likeable', 'likeable_type', 'likeable_id');
     }
 
-    public function brand()
+    public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
     }
 
-    public function color()
+    public function color(): BelongsTo
     {
         return $this->belongsTo(Color::class);
     }
 
-    public function attributes()
+    public function attributes(): HasMany
     {
         return $this->hasMany(ProductAttribute::class);
     }
@@ -66,27 +70,27 @@ class Product extends Model
     /**
      * Get the files associated with the product.
      */
-    public function files()
+    public function files(): HasMany
     {
         return $this->hasMany(File::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function reviews()
+    public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
-    public function favorites()
+    public function favorites(): HasMany
     {
         return $this->hasMany(Favorite::class);
     }
 
-    public function sizes()
+    public function sizes(): HasMany
     {
         return $this->hasMany(Size::class);
     }

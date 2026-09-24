@@ -13,32 +13,14 @@ parameters:
 			path: app/Filament/Resources/ColorResource.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$products\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot\.$#'
 			identifier: property.notFound
-			count: 1
+			count: 4
 			path: app/Filament/Resources/OrderResource.php
 
 		-
 			message: '#^Method App\\Filament\\Resources\\OrderResource\:\:generateInvoicePdf\(\) should return Illuminate\\Http\\Response but returns Symfony\\Component\\HttpFoundation\\StreamedResponse\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Filament/Resources/OrderResource.php
-
-		-
-			message: '#^Relation ''discount'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Filament/Resources/OrderResource.php
-
-		-
-			message: '#^Relation ''products'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: app/Filament/Resources/OrderResource.php
-
-		-
-			message: '#^Relation ''user'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
 			count: 1
 			path: app/Filament/Resources/OrderResource.php
 
@@ -341,6 +323,12 @@ parameters:
 			identifier: property.notFound
 			count: 2
 			path: database/migrations/2025_07_20_081634_create_notifications_table.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: database/seeders/ProductSeeder.php
 
 		-
 			message: '#^If condition is always true\.$#'
@@ -1237,7 +1225,7 @@ parameters:
 			path: src/Core/Console/Commands/ProductListCommand.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$brand\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$domain\.$#'
 			identifier: property.notFound
 			count: 1
 			path: src/Core/Console/Commands/ProductSizeCommand.php
@@ -1267,18 +1255,6 @@ parameters:
 			path: src/Core/Console/Commands/ProductSizeCommand.php
 
 		-
-			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Core/Console/Commands/ProductSizeCommand.php
-
-		-
-			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: src/Core/Console/Commands/ProductSizeCommand.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>id" in empty\(\) is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -1291,21 +1267,15 @@ parameters:
 			path: src/Core/Console/Commands/ProductSizeCommand.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$brand\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$domain\.$#'
 			identifier: property.notFound
 			count: 1
 			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
 
 		-
-			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Parameter \#1 \$brand of static method Domain\\Product\\Services\\Brands\\BrandServiceFactory\:\:getService\(\) expects Domain\\Brand\\Models\\Brand, Illuminate\\Database\\Eloquent\\Model given\.$#'
+			identifier: argument.type
 			count: 1
-			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
-
-		-
-			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
 			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
 
 		-
@@ -1324,6 +1294,12 @@ parameters:
 			message: '#^Using nullsafe property access on non\-nullable type Domain\\Product\\Models\\Product\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 2
+			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
+
+		-
+			message: '#^Using nullsafe property access on non\-nullable type Illuminate\\Database\\Eloquent\\Model\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
 			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
 
 		-
@@ -1723,15 +1699,15 @@ parameters:
 			path: src/Domain/Product/Repositories/DiscountRepository.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$products\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$brand\.$#'
 			identifier: property.notFound
 			count: 1
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$user\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$pivot\.$#'
 			identifier: property.notFound
-			count: 2
+			count: 1
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
@@ -1753,27 +1729,9 @@ parameters:
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
-			message: '#^Relation ''discount'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
+			message: '#^Parameter \#2 \$user of static method Domain\\Notification\\Services\\NotificationService\:\:create\(\) expects Domain\\User\\Models\\User, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
 			count: 2
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Relation ''products'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
-			count: 5
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Relation ''transactions'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Relation ''user'' is not found in Domain\\Product\\Models\\Order model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
@@ -1783,16 +1741,10 @@ parameters:
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>color_id" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			message: '#^Using nullsafe property access on non\-nullable type Illuminate\\Database\\Eloquent\\Model\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
-			count: 1
+			count: 2
 			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\:\:\$categories\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
 
 		-
 			message: '#^Access to an undefined property Domain\\Review\\Models\\Review\:\:\$count\.$#'
@@ -1819,55 +1771,7 @@ parameters:
 			path: src/Domain/Product/Repositories/ProductRepository.php
 
 		-
-			message: '#^Relation ''attributes'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''brand'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''categories'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 4
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''color'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''favorites'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''files'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
 			message: '#^Relation ''parentRecursive'' is not found in Domain\\Product\\Models\\Category model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''reviews'' is not found in Domain\\Product\\Models\\Product model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
-			path: src/Domain/Product/Repositories/ProductRepository.php
-
-		-
-			message: '#^Relation ''sizes'' is not found in Domain\\Product\\Models\\Product model\.$#'
 			identifier: larastan.relationExistence
 			count: 1
 			path: src/Domain/Product/Repositories/ProductRepository.php
@@ -1885,6 +1789,12 @@ parameters:
 			path: src/Domain/Product/Repositories/ProductRepository.php
 
 		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Domain/Product/Services/Brands/AdidasBrandService.php
+
+		-
 			message: '#^Offset ''images'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
@@ -1895,6 +1805,12 @@ parameters:
 			identifier: nullCoalesce.offset
 			count: 1
 			path: src/Domain/Product/Services/Brands/AdidasBrandService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 2
+			path: src/Domain/Product/Services/Brands/DecathlonBrandService.php
 
 		-
 			message: '#^Offset ''images'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
