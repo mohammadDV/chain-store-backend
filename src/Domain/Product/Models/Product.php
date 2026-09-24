@@ -122,7 +122,9 @@ class Product extends Model
         return $builder->where('active', 1)
             ->whereHas('sizes', function ($query) {
                 $query->where('status', 1)
-                    ->where('stock', '>', 0);
+                    ->whereHas('stock', function ($stockQuery) {
+                        $stockQuery->where('quantity', '>', 0);
+                    });
             })
             ->where('status', self::COMPLETED)
             ->where('is_failed', 0);
@@ -140,5 +142,10 @@ class Product extends Model
             ->whereNotNull('code')
             ->where('code', '!=', '')
             ->whereNotNull('brand_id');
+    }
+
+    protected static function newFactory(): ProductFactory
+    {
+        return ProductFactory::new();
     }
 }

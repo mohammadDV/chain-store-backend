@@ -68,4 +68,9 @@ class Order extends Model
     {
         return $this->hasMany(Transaction::class, 'model_id', 'id')->where('model_type', Transaction::ORDER);
     }
+
+    protected static function newFactory(): OrderFactory
+    {
+        return OrderFactory::new();
+    }
 }

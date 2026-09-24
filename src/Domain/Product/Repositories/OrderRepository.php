@@ -12,10 +12,9 @@ use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
-use Domain\Product\Models\OrderProduct;
 use Domain\Product\Models\Product;
-use Domain\Product\Models\Size;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
+use Domain\Product\Services\StockService;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
@@ -37,7 +36,8 @@ class OrderRepository implements IOrderRepository
     public function __construct(
         protected TelegramNotificationService $service,
         protected IWalletRepository $walletRepository,
-        protected SettingService $settingService
+        protected SettingService $settingService,
+        protected StockService $stockService
     ) {
         //
     }
@@ -190,12 +190,19 @@ class OrderRepository implements IOrderRepository
         try {
             $products = $request->input('products');
 
+            $productIds = collect($products)->pluck('id')->unique()->all();
+            $productModels = Product::query()
+                ->with(['brand', 'sizes'])
+                ->whereIn('id', $productIds)
+                ->get()
+                ->keyBy('id');
+
             // Calculate total amount
             $productsAmount = 0;
             $productCount = 0;
 
             foreach ($products as $productData) {
-                $product = Product::find($productData['id']);
+                $product = $productModels->get($productData['id']);
 
                 if (! $product || $product->amount < (int) config('product.min_order_amount', 50000)) {
                     DB::rollBack();
@@ -253,7 +260,7 @@ class OrderRepository implements IOrderRepository
 
             // Attach products to order
             foreach ($products as $productData) {
-                $product = Product::find($productData['id']);
+                $product = $productModels->get($productData['id']);
                 $productAmount = $product->amount;
 
                 // if ($product->discount > 0) {
@@ -261,23 +268,24 @@ class OrderRepository implements IOrderRepository
                 // }
 
                 if ($productData['size_id']) {
-                    $size = $product->sizes->findOrFail($productData['size_id']);
+                    $sizeBelongsToProduct = $product->sizes->contains('id', (int) $productData['size_id']);
 
-                    $productsOrderedCount = 0;
-                    if (! empty($product->brand->has_stock_management)) {
-                        $productsOrderedCount = OrderProduct::query()
-                            ->whereHas('order', function ($query) {
-                                $query->where('status', Order::PENDING)
-                                    ->where('active', 1);
-                            })
-                            ->where('product_id', $product->id)
-                            ->where('size_id', $productData['size_id'])
-                            ->sum('count');
+                    if (! $sizeBelongsToProduct) {
+                        DB::rollBack();
+
+                        return response()->json([
+                            'status' => 0,
+                            'message' => __('site.Insufficient stock'),
+                        ], Response::HTTP_BAD_REQUEST);
                     }
 
-                    $productStock = $size->stock - $productsOrderedCount;
+                    $withPendingReservation = ! empty($product->brand->has_stock_management);
+                    $availableStock = $this->stockService->availableForOrder(
+                        (int) $productData['size_id'],
+                        $withPendingReservation
+                    );
 
-                    if ($productStock < $productData['count']) {
+                    if ($availableStock < $productData['count']) {
                         DB::rollBack();
 
                         return response()->json([
@@ -286,21 +294,19 @@ class OrderRepository implements IOrderRepository
                         ], Response::HTTP_BAD_REQUEST);
                     }
                 } else {
-                    // if ($product->stock < $productData['count']) {
                     DB::rollBack();
 
                     return response()->json([
                         'status' => 0,
                         'message' => __('site.Insufficient stock'),
                     ], Response::HTTP_BAD_REQUEST);
-                    // }
                 }
 
                 $order->products()->attach($productData['id'], [
                     'count' => $productData['count'],
                     'amount' => $productAmount,
                     'status' => Order::PENDING,
-                    'color_id' => $product?->color_id ?? null,
+                    'color_id' => $product->color_id ?? null,
                     'size_id' => $productData['size_id'] ?? null,
                 ]);
 
@@ -509,16 +515,19 @@ class OrderRepository implements IOrderRepository
         try {
 
             // Create transaction record
-            $order = Order::find($orderId);
+            $order = Order::query()
+                ->with(['products.brand', 'user'])
+                ->find($orderId);
             // Update order status
             $order->update(['status' => Order::PAID]);
 
             // Update stock
             foreach ($order->products as $product) {
                 if ($product?->brand?->has_stock_management && $product?->pivot?->size_id) {
-                    Size::query()
-                        ->where('id', $product->pivot->size_id)
-                        ->decrement('stock', $product->pivot->count);
+                    $this->stockService->decrementForOrder(
+                        (int) $product->pivot->size_id,
+                        (int) $product->pivot->count
+                    );
                 }
             }
 

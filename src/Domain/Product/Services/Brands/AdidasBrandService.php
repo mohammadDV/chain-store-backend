@@ -6,6 +6,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Services\StockService;
 
 /**
  * Adidas brand-specific product scraping service
@@ -14,6 +15,10 @@ use Domain\Product\Models\Size;
  */
 class AdidasBrandService implements BrandServiceInterface
 {
+    public function __construct(
+        protected StockService $stockService
+    ) {}
+
     /**
      * {@inheritDoc}
      */
@@ -367,7 +372,6 @@ class AdidasBrandService implements BrandServiceInterface
             'discount' => $productData['discount'],
             'image' => $productData['images'][0] ?? null,
             'status' => Product::PENDING,
-            'stock' => config('product.default_stock'),
             'vip' => false,
             'priority' => 1,
             'color_id' => 1,
@@ -403,15 +407,15 @@ class AdidasBrandService implements BrandServiceInterface
 
             // Create or update sizes
             foreach ($productData['size'] ?? [] as $key => $sizeTitle) {
-                $product->sizes()->updateOrCreate(
+                $size = $product->sizes()->updateOrCreate(
                     ['code' => trim($sizeTitle)],
                     [
                         'title' => trim($sizeTitle),
                         'status' => 1,
-                        'stock' => config('product.default_stock'),
                         'priority' => 100 - $key,
                     ]
                 );
+                $this->stockService->setQuantity($size->id, (int) config('product.default_stock'));
             }
         }
 
@@ -493,10 +497,10 @@ class AdidasBrandService implements BrandServiceInterface
             'updated_at' => now(),
         ]);
 
-        $size->update([
-            'stock' => $productData['stock'] == 'notfound' ? 0 : $productData['stock'],
-            'updated_at' => now(),
-        ]);
+        if ($size) {
+            $quantity = $productData['stock'] == 'notfound' ? 0 : (int) $productData['stock'];
+            $this->stockService->setQuantity($size->id, $quantity);
+        }
 
         return $product;
     }

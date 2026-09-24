@@ -19,6 +19,11 @@ class Color extends Model
         'priority' => 'integer',
     ];
 
+    protected static function newFactory(): ColorFactory
+    {
+        return ColorFactory::new();
+    }
+
     /**
      * Get the product that owns the file.
      */

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
+use Domain\Product\Services\StockService;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -44,7 +45,7 @@ class SizesRelationManager extends RelationManager
                 TextInput::make('code')
                     ->label(__('site.code'))
                     ->maxLength(255),
-                TextInput::make('stock')
+                TextInput::make('quantity')
                     ->label(__('site.stock'))
                     ->numeric()
                     ->default(0)
@@ -63,6 +64,7 @@ class SizesRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query->with('stock'))
             ->columns([
                 TextColumn::make('title')
                     ->label(__('site.title'))
@@ -72,7 +74,7 @@ class SizesRelationManager extends RelationManager
                     ->label(__('site.code'))
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('stock')
+                TextColumn::make('stock.quantity')
                     ->label(__('site.stock'))
                     ->numeric()
                     ->sortable()
@@ -93,10 +95,34 @@ class SizesRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->using(function (array $data, string $model): Model {
+                        $quantity = (int) ($data['quantity'] ?? 0);
+                        unset($data['quantity']);
+
+                        /** @var Model $record */
+                        $record = $this->getRelationship()->create($data);
+                        app(StockService::class)->setQuantity($record->getKey(), $quantity);
+
+                        return $record;
+                    }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->mutateRecordDataUsing(function (array $data, Model $record): array {
+                        $data['quantity'] = $record->stock->quantity ?? 0;
+
+                        return $data;
+                    })
+                    ->using(function (Model $record, array $data): Model {
+                        $quantity = (int) ($data['quantity'] ?? 0);
+                        unset($data['quantity']);
+
+                        $record->update($data);
+                        app(StockService::class)->setQuantity($record->getKey(), $quantity);
+
+                        return $record;
+                    }),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

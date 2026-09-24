@@ -349,7 +349,7 @@ parameters:
 			path: database/seeders/ProductSeeder.php
 
 		-
-			message: '#^Offset ''category_id'' on array\{title\: ''آیفون 15 پرو مکس'', description\: ''جدیدترین آیفون اپل…'', details\: non\-empty\-string\|false, stock\: 20, points\: 800, rate\: 5, amount\: 68000000, active\: 1, \.\.\.\}\|array\{title\: ''تلویزیون سامسونگ 55…'', description\: ''تلویزیون هوشمند 4K…'', details\: non\-empty\-string\|false, stock\: 15, points\: 300, rate\: 4, amount\: 25000000, active\: 1, \.\.\.\}\|array\{title\: ''تی‌شرت ورزشی آدیداس'', description\: ''تی‌شرت ورزشی با…'', details\: non\-empty\-string\|false, stock\: 100, points\: 50, rate\: 4, amount\: 850000, active\: 1, \.\.\.\}\|array\{title\: ''شلوار ورزشی نایک'', description\: ''شلوار ورزشی راحت با…'', details\: non\-empty\-string\|false, stock\: 70, points\: 35, rate\: 4, amount\: 950000, active\: 1, \.\.\.\}\|array\{title\: ''مانتو زنانه زارا'', description\: ''مانتو زنانه شیک و…'', details\: non\-empty\-string\|false, stock\: 60, points\: 45, rate\: 5, amount\: 1800000, active\: 1, \.\.\.\}\|array\{title\: ''مک‌بوک پرو 14 اینچ'', description\: ''لپ‌تاپ حرفه‌ای اپل…'', details\: non\-empty\-string\|false, stock\: 10, points\: 600, rate\: 5, amount\: 95000000, active\: 1, \.\.\.\}\|array\{title\: ''پیراهن مردانه زارا'', description\: ''پیراهن مردانه رسمی…'', details\: non\-empty\-string\|false, stock\: 80, points\: 40, rate\: 4, amount\: 1200000, active\: 1, \.\.\.\}\|array\{title\: ''کفش ورزشی آدیداس…'', description\: ''کفش دویدن با فناوری…'', details\: non\-empty\-string\|false, stock\: 40, points\: 90, rate\: 5, amount\: 5200000, active\: 1, \.\.\.\}\|array\{title\: ''کفش ورزشی نایک ایر…'', description\: ''کفش ورزشی با کیفیت…'', details\: non\-empty\-string\|false, stock\: 50, points\: 100, rate\: 5, amount\: 4500000, active\: 1, \.\.\.\}\|array\{title\: ''گوشی سامسونگ گلکسی…'', description\: ''گوشی هوشمند سامسونگ…'', details\: non\-empty\-string\|false, stock\: 30, points\: 500, rate\: 5, amount\: 35000000, active\: 1, \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
+			message: '#^Offset ''category_id'' on array\{title\: ''آیفون 15 پرو مکس'', description\: ''جدیدترین آیفون اپل…'', details\: non\-empty\-string\|false, points\: 800, rate\: 5, amount\: 68000000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''تلویزیون سامسونگ 55…'', description\: ''تلویزیون هوشمند 4K…'', details\: non\-empty\-string\|false, points\: 300, rate\: 4, amount\: 25000000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''تی‌شرت ورزشی آدیداس'', description\: ''تی‌شرت ورزشی با…'', details\: non\-empty\-string\|false, points\: 50, rate\: 4, amount\: 850000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''شلوار ورزشی نایک'', description\: ''شلوار ورزشی راحت با…'', details\: non\-empty\-string\|false, points\: 35, rate\: 4, amount\: 950000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''مانتو زنانه زارا'', description\: ''مانتو زنانه شیک و…'', details\: non\-empty\-string\|false, points\: 45, rate\: 5, amount\: 1800000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''مک‌بوک پرو 14 اینچ'', description\: ''لپ‌تاپ حرفه‌ای اپل…'', details\: non\-empty\-string\|false, points\: 600, rate\: 5, amount\: 95000000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''پیراهن مردانه زارا'', description\: ''پیراهن مردانه رسمی…'', details\: non\-empty\-string\|false, points\: 40, rate\: 4, amount\: 1200000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''کفش ورزشی آدیداس…'', description\: ''کفش دویدن با فناوری…'', details\: non\-empty\-string\|false, points\: 90, rate\: 5, amount\: 5200000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''کفش ورزشی نایک ایر…'', description\: ''کفش ورزشی با کیفیت…'', details\: non\-empty\-string\|false, points\: 100, rate\: 5, amount\: 4500000, active\: 1, status\: ''completed'', \.\.\.\}\|array\{title\: ''گوشی سامسونگ گلکسی…'', description\: ''گوشی هوشمند سامسونگ…'', details\: non\-empty\-string\|false, points\: 500, rate\: 5, amount\: 35000000, active\: 1, status\: ''completed'', \.\.\.\} on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
 			path: database/seeders/ProductSeeder.php
@@ -1063,14 +1063,14 @@ parameters:
 			path: src/Application/Api/Product/Resources/SizeResource.php
 
 		-
-			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$stock\.$#'
+			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$title\.$#'
 			identifier: property.notFound
 			count: 1
 			path: src/Application/Api/Product/Resources/SizeResource.php
 
 		-
-			message: '#^Access to an undefined property Application\\Api\\Product\\Resources\\SizeResource\:\:\$title\.$#'
-			identifier: property.notFound
+			message: '#^Using nullsafe property access "\?\-\>quantity" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
 			path: src/Application/Api/Product/Resources/SizeResource.php
 
@@ -1327,9 +1327,15 @@ parameters:
 			path: src/Core/Console/Commands/UpdateSizeAndStockCommand.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Size\:\:\$product\.$#'
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$brand\.$#'
 			identifier: property.notFound
-			count: 4
+			count: 2
+			path: src/Core/Console/Commands/UpdateStockCommand.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
+			identifier: property.notFound
+			count: 1
 			path: src/Core/Console/Commands/UpdateStockCommand.php
 
 		-
@@ -1345,9 +1351,9 @@ parameters:
 			path: src/Core/Console/Commands/UpdateStockCommand.php
 
 		-
-			message: '#^Relation ''product'' is not found in Domain\\Product\\Models\\Size model\.$#'
-			identifier: larastan.relationExistence
-			count: 2
+			message: '#^Parameter \#2 \$product of method Domain\\Product\\Services\\Brands\\BrandServiceInterface\:\:updateProduct\(\) expects Domain\\Product\\Models\\Product, Illuminate\\Database\\Eloquent\\Model\|null given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Core/Console/Commands/UpdateStockCommand.php
 
 		-
@@ -1361,18 +1367,6 @@ parameters:
 			identifier: nullsafe.neverNull
 			count: 4
 			path: src/Core/Console/Commands/UpdateStockCommand.php
-
-		-
-			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\BrandFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Domain/Brand/Models/Brand.php
-
-		-
-			message: '#^Type Database\\Factories\\BrandFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\BrandFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: src/Domain/Brand/Models/Brand.php
 
 		-
 			message: '#^PHPDoc tag @param references unknown parameter\: \$conditions$#'
@@ -1597,18 +1591,6 @@ parameters:
 			path: src/Domain/Product/Models/CategoryEndpoint.php
 
 		-
-			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ColorFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Domain/Product/Models/Color.php
-
-		-
-			message: '#^Type Database\\Factories\\ColorFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ColorFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: src/Domain/Product/Models/Color.php
-
-		-
 			message: '#^Method Domain\\Product\\Models\\Discount\:\:calculateDiscount\(\) should return float but returns string\.$#'
 			identifier: return.type
 			count: 1
@@ -1661,42 +1643,6 @@ parameters:
 			identifier: generics.notSubtype
 			count: 1
 			path: src/Domain/Product/Models/Like.php
-
-		-
-			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\OrderFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Domain/Product/Models/Order.php
-
-		-
-			message: '#^Type Database\\Factories\\OrderFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\OrderFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: src/Domain/Product/Models/Order.php
-
-		-
-			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\OrderFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Domain/Product/Models/OrderProduct.php
-
-		-
-			message: '#^Type Database\\Factories\\OrderFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\OrderFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: src/Domain/Product/Models/OrderProduct.php
-
-		-
-			message: '#^PHPDoc tag @use has invalid type Database\\Factories\\ProductFactory\.$#'
-			identifier: class.notFound
-			count: 1
-			path: src/Domain/Product/Models/Product.php
-
-		-
-			message: '#^Type Database\\Factories\\ProductFactory in generic type Illuminate\\Database\\Eloquent\\Factories\\HasFactory\<Database\\Factories\\ProductFactory\> in PHPDoc tag @use is not subtype of template type TFactory of Illuminate\\Database\\Eloquent\\Factories\\Factory of trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: src/Domain/Product/Models/Product.php
 
 		-
 			message: '#^Method Domain\\Product\\Repositories\\CategoryRepository\:\:activeProductCategories\(\) should return Illuminate\\Database\\Eloquent\\Collection but returns Illuminate\\Http\\Resources\\Json\\AnonymousResourceCollection\.$#'
@@ -1777,12 +1723,6 @@ parameters:
 			path: src/Domain/Product/Repositories/DiscountRepository.php
 
 		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$delivery_amount\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
 			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$products\.$#'
 			identifier: property.notFound
 			count: 1
@@ -1792,12 +1732,6 @@ parameters:
 			message: '#^Access to an undefined property Domain\\Product\\Models\\Order\:\:\$user\.$#'
 			identifier: property.notFound
 			count: 2
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Access to an undefined property Domain\\Product\\Models\\Product\|Illuminate\\Database\\Eloquent\\Collection\<\(int\|string\), Domain\\Product\\Models\\Product\>\:\:\$sizes\.$#'
-			identifier: property.notFound
-			count: 1
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-
@@ -1822,12 +1756,6 @@ parameters:
 			message: '#^Relation ''discount'' is not found in Domain\\Product\\Models\\Order model\.$#'
 			identifier: larastan.relationExistence
 			count: 2
-			path: src/Domain/Product/Repositories/OrderRepository.php
-
-		-
-			message: '#^Relation ''order'' is not found in Domain\\Product\\Models\\OrderProduct model\.$#'
-			identifier: larastan.relationExistence
-			count: 1
 			path: src/Domain/Product/Repositories/OrderRepository.php
 
 		-

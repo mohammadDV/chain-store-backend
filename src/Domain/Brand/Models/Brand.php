@@ -15,6 +15,11 @@ class Brand extends Model
 
     protected $guarded = [];
 
+    protected static function newFactory(): BrandFactory
+    {
+        return BrandFactory::new();
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);

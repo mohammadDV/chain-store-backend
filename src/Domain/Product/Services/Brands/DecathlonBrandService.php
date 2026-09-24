@@ -7,12 +7,17 @@ use Domain\Product\Models\Category;
 use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Services\StockService;
 
 /**
  * Decathlon brand-specific product scraping service
  */
 class DecathlonBrandService implements BrandServiceInterface
 {
+    public function __construct(
+        protected StockService $stockService
+    ) {}
+
     /**
      * {@inheritDoc}
      */
@@ -378,7 +383,6 @@ class DecathlonBrandService implements BrandServiceInterface
             'discount' => $productData['discount'],
             'image' => $productData['images'][0] ?? null,
             'status' => Product::PENDING,
-            'stock' => config('product.default_stock'),
             'vip' => false,
             'priority' => 1,
             'color_id' => 1,
@@ -432,15 +436,15 @@ class DecathlonBrandService implements BrandServiceInterface
                         break;
                 }
 
-                $product->sizes()->updateOrCreate(
+                $size = $product->sizes()->updateOrCreate(
                     ['code' => $sizeTitle],
                     [
                         'title' => $sizeTitle,
                         'status' => 1,
-                        'stock' => $stock,
                         'priority' => $priority,
                     ]
                 );
+                $this->stockService->setQuantity($size->id, (int) $stock);
                 $priority--;
             }
         }
@@ -520,15 +524,15 @@ class DecathlonBrandService implements BrandServiceInterface
                         break;
                 }
 
-                $product->sizes()->updateOrCreate(
+                $sizeModel = $product->sizes()->updateOrCreate(
                     ['code' => trim($sizeTitle)],
                     [
                         'title' => trim($sizeTitle),
                         'status' => 1,
-                        'stock' => $stock,
                         'priority' => $priority,
                     ]
                 );
+                $this->stockService->setQuantity($sizeModel->id, (int) $stock);
                 $priority--;
             }
         }

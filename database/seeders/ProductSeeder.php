@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Domain\Product\Models\Product;
+use Domain\Product\Services\StockService;
 use Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -41,7 +42,6 @@ class ProductSeeder extends Seeder
                     'کشور سازنده' => 'ویتنام',
                     'گارانتی' => '6 ماه',
                 ]),
-                'stock' => 50,
                 'points' => 100,
                 'rate' => 5,
                 'amount' => 4500000,
@@ -64,7 +64,6 @@ class ProductSeeder extends Seeder
                     'سایز' => 'L',
                     'رنگ' => 'آبی',
                 ]),
-                'stock' => 100,
                 'points' => 50,
                 'rate' => 4,
                 'amount' => 850000,
@@ -87,7 +86,6 @@ class ProductSeeder extends Seeder
                     'رم' => '8 گیگابایت',
                     'دوربین' => '50 مگاپیکسل',
                 ]),
-                'stock' => 30,
                 'points' => 500,
                 'rate' => 5,
                 'amount' => 35000000,
@@ -110,7 +108,6 @@ class ProductSeeder extends Seeder
                     'رنگ' => 'تیتانیوم طبیعی',
                     'گارانتی' => '18 ماه',
                 ]),
-                'stock' => 20,
                 'points' => 800,
                 'rate' => 5,
                 'amount' => 68000000,
@@ -133,7 +130,6 @@ class ProductSeeder extends Seeder
                     'کیفیت' => '4K UHD',
                     'فناوری' => 'QLED',
                 ]),
-                'stock' => 15,
                 'points' => 300,
                 'rate' => 4,
                 'amount' => 25000000,
@@ -156,7 +152,6 @@ class ProductSeeder extends Seeder
                     'رم' => '16 گیگابایت',
                     'حافظه' => '512 گیگابایت SSD',
                 ]),
-                'stock' => 10,
                 'points' => 600,
                 'rate' => 5,
                 'amount' => 95000000,
@@ -179,7 +174,6 @@ class ProductSeeder extends Seeder
                     'سایز' => 'XL',
                     'رنگ' => 'سفید',
                 ]),
-                'stock' => 80,
                 'points' => 40,
                 'rate' => 4,
                 'amount' => 1200000,
@@ -202,7 +196,6 @@ class ProductSeeder extends Seeder
                     'سایز' => 'M',
                     'طرح' => 'ساده',
                 ]),
-                'stock' => 60,
                 'points' => 45,
                 'rate' => 5,
                 'amount' => 1800000,
@@ -225,7 +218,6 @@ class ProductSeeder extends Seeder
                     'وزن' => '310 گرم',
                     'مناسب برای' => 'دویدن',
                 ]),
-                'stock' => 40,
                 'points' => 90,
                 'rate' => 5,
                 'amount' => 5200000,
@@ -248,7 +240,6 @@ class ProductSeeder extends Seeder
                     'سایز' => 'L',
                     'جیب' => 'دارد',
                 ]),
-                'stock' => 70,
                 'points' => 35,
                 'rate' => 4,
                 'amount' => 950000,
@@ -275,13 +266,13 @@ class ProductSeeder extends Seeder
                 $created->categories()->attach($categoryId);
             }
 
-            $created->sizes()->create([
+            $size = $created->sizes()->create([
                 'title' => 'Default',
                 'code' => 'default',
-                'stock' => $created->stock ?: 10,
                 'status' => 1,
                 'priority' => 1,
             ]);
+            app(StockService::class)->setQuantity($size->id, 10);
         }
     }
 }

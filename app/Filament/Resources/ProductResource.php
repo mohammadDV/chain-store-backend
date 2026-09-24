@@ -160,11 +160,6 @@ class ProductResource extends Resource
                                     ->default(0)
                                     ->minValue(0)
                                     ->maxValue(99),
-                                TextInput::make('stock')
-                                    ->label(__('site.stock'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0),
                                 TextInput::make('points')
                                     ->label(__('site.points'))
                                     ->numeric()
@@ -312,11 +307,6 @@ class ProductResource extends Resource
                     ->label(__('site.discount'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('stock')
-                    ->label(__('site.stock'))
-                    ->sortable()
-                    ->badge()
-                    ->color('info'),
                 TextColumn::make('order_count')
                     ->label(__('site.order_count'))
                     ->sortable()

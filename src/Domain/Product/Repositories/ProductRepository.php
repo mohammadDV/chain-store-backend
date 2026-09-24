@@ -46,7 +46,7 @@ class ProductRepository implements IProductRepository
                 'attributes',
                 'color',
                 'brand',
-                'sizes',
+                'sizes.stock',
             ])
             ->where('id', $product->id)
             ->active()

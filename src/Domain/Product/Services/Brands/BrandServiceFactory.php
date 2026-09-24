@@ -36,7 +36,7 @@ class BrandServiceFactory
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass;
+        return app($serviceClass);
     }
 
     /**
@@ -61,7 +61,7 @@ class BrandServiceFactory
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass;
+        return app($serviceClass);
     }
 
     /**
@@ -80,6 +80,6 @@ class BrandServiceFactory
             throw new \Exception("Brand service class {$serviceClass} does not exist.");
         }
 
-        return new $serviceClass;
+        return app($serviceClass);
     }
 }
