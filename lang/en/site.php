@@ -414,6 +414,7 @@ return [
     'id' => 'ID',
     'title' => 'Title',
     'user' => 'User',
+    'user_id' => 'User ID',
     'status' => 'Status',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
@@ -917,4 +918,5 @@ return [
     'inventory_manual_type_help' => 'Depending on the transaction type, increase/decrease may be locked.',
     'inventory_direction_locked_help' => 'For this transaction type, the stock direction is fixed and cannot be changed.',
     'inventory_direction_invalid' => 'Invalid stock direction.',
+    'user_related' => 'User related',
 ];

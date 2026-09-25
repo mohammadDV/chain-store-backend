@@ -14,7 +14,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
-use Morilog\Jalali\Jalalian;
 
 class UserResource extends Resource
 {
@@ -37,6 +36,66 @@ class UserResource extends Resource
     public static function getPluralModelLabel(): string
     {
         return __('site.users');
+    }
+
+    /**
+     * Deep-link URLs to related admin lists filtered by this user.
+     * Pure URL building — no extra queries.
+     *
+     * @return array<string, array{label: string, icon: string, url: string}>
+     */
+    public static function relatedResourceLinks(int $userId): array
+    {
+        $userFilter = [
+            'tableFilters' => [
+                'user_id' => [
+                    'value' => $userId,
+                ],
+            ],
+        ];
+
+        return [
+            'wallet' => [
+                'label' => __('site.wallet'),
+                'icon' => 'heroicon-o-wallet',
+                'url' => WalletResource::getUrl('index', $userFilter),
+            ],
+            'wallet_transactions' => [
+                'label' => __('site.wallet_transactions'),
+                'icon' => 'heroicon-o-arrows-right-left',
+                'url' => WalletTransactionResource::getUrl('index', $userFilter),
+            ],
+            'withdrawals' => [
+                'label' => __('site.withdrawal_transactions'),
+                'icon' => 'heroicon-o-arrow-down-tray',
+                'url' => WithdrawalTransactionResource::getUrl('index', $userFilter),
+            ],
+            'orders' => [
+                'label' => __('site.orders'),
+                'icon' => 'heroicon-o-shopping-bag',
+                'url' => OrderResource::getUrl('index', $userFilter),
+            ],
+            'transactions' => [
+                'label' => __('site.transactions'),
+                'icon' => 'heroicon-o-arrow-path',
+                'url' => TransactionResource::getUrl('index', $userFilter),
+            ],
+            'reviews' => [
+                'label' => __('site.reviews'),
+                'icon' => 'heroicon-o-chat-bubble-bottom-center-text',
+                'url' => ReviewResource::getUrl('index', $userFilter),
+            ],
+            'tickets' => [
+                'label' => __('site.tickets'),
+                'icon' => 'heroicon-o-ticket',
+                'url' => TicketResource::getUrl('index', $userFilter),
+            ],
+            'notifications' => [
+                'label' => __('site.notifications'),
+                'icon' => 'heroicon-o-bell',
+                'url' => NotificationResource::getUrl('index', $userFilter),
+            ],
+        ];
     }
 
     public static function form(Form $form): Form
@@ -247,33 +306,23 @@ class UserResource extends Resource
                     }),
             ])
             ->actions([
-                // Tables\Actions\ViewAction::make()
-                //     ->label(__('site.view_user')),
-                // Tables\Actions\EditAction::make()
-                //     ->label(__('site.edit_user')),
-                // Tables\Actions\Action::make('toggle_status')
-                //     ->label(fn ($record) => $record->status === 1 ? __('site.disable_user') : __('site.enable_user'))
-                //     ->icon(fn ($record) => $record->status === 1 ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-                //     ->color(fn ($record) => $record->status === 1 ? 'danger' : 'success')
-                //     ->requiresConfirmation()
-                //     ->modalHeading(fn ($record) => $record->status === 1 ? __('site.confirm_disable_user') : __('site.confirm_enable_user'))
-                //     ->modalDescription(fn ($record) => $record->status === 1 ? __('site.confirm_disable_user_description') : __('site.confirm_enable_user_description'))
-                //     ->modalSubmitActionLabel(fn ($record) => $record->status === 1 ? __('site.disable_user') : __('site.enable_user'))
-                //     ->modalCancelActionLabel(__('site.cancel'))
-                //     ->action(function ($record) {
-                //         $newStatus = $record->status === 1 ? 0 : 1;
-                //         $record->update(['status' => $newStatus]);
-
-                //         // Clear cache when user status changes
-                //         Cache::forget('user_count');
-                //     })
-                //     ->after(function ($record) {
-                //         $message = $record->status === 1 ? __('site.user_enabled_successfully') : __('site.user_disabled_successfully');
-                //         \Filament\Notifications\Notification::make()
-                //             ->title($message)
-                //             ->success()
-                //             ->send();
-                //     }),
+                Tables\Actions\ActionGroup::make(
+                    collect(static::relatedResourceLinks(0))
+                        ->map(fn (array $link, string $name): Tables\Actions\Action => Tables\Actions\Action::make('related_'.$name)
+                            ->label($link['label'])
+                            ->icon($link['icon'])
+                            ->url(fn (User $record): string => static::relatedResourceLinks($record->id)[$name]['url']))
+                        ->values()
+                        ->all()
+                )
+                    ->label(__('site.user_related'))
+                    ->icon('heroicon-o-squares-plus')
+                    ->color('gray')
+                    ->button(),
+                Tables\Actions\ViewAction::make()
+                    ->label(__('site.view_user')),
+                Tables\Actions\EditAction::make()
+                    ->label(__('site.edit_user')),
                 Tables\Actions\Action::make('verify_email')
                     ->label(__('site.verify_email'))
                     ->icon('heroicon-o-envelope')

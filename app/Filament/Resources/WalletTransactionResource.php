@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletTransactionResource\Pages;
 use App\Filament\Resources\WalletTransactionResource\RelationManagers\WalletRelationManager;
 use Domain\Wallet\Models\WalletTransaction;
@@ -11,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
 
 class WalletTransactionResource extends Resource
@@ -165,11 +167,10 @@ class WalletTransactionResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('wallet.user_id')
-                    ->label(__('site.user'))
-                    ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
-                    ->searchable()
-                    ->preload(),
+                UserIdFilter::make(fn (Builder $query, int $userId): Builder => $query->whereHas(
+                    'wallet',
+                    fn (Builder $walletQuery) => $walletQuery->where('user_id', $userId)
+                )),
                 Tables\Filters\SelectFilter::make('type')
                     ->label(__('site.type'))
                     ->options([

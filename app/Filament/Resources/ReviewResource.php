@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\ReviewResource\Pages;
 use Domain\Review\Models\Review;
 use Domain\User\Models\User;
@@ -155,9 +156,7 @@ class ReviewResource extends Resource
                 SelectFilter::make('product_id')
                     ->label(__('site.product'))
                     ->relationship('product', 'title'),
-                SelectFilter::make('user_id')
-                    ->label(__('site.user'))
-                    ->relationship('user', 'email'),
+                UserIdFilter::make(),
                 TernaryFilter::make('active')
                     ->label(__('site.active')),
             ])

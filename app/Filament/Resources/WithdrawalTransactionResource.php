@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\WalletTransaction;
@@ -16,6 +17,7 @@ use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Morilog\Jalali\Jalalian;
 
@@ -178,11 +180,10 @@ class WithdrawalTransactionResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('wallet.user_id')
-                    ->label(__('site.user'))
-                    ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
-                    ->searchable()
-                    ->preload(),
+                UserIdFilter::make(fn (Builder $query, int $userId): Builder => $query->whereHas(
+                    'wallet',
+                    fn (Builder $walletQuery) => $walletQuery->where('user_id', $userId)
+                )),
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([

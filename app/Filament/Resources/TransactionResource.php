@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TransactionResource\Pages;
 use Domain\Payment\Models\Transaction;
 use Filament\Forms;
@@ -166,11 +167,7 @@ class TransactionResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('user_id')
-                    ->label(__('site.user'))
-                    ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
-                    ->searchable()
-                    ->preload(),
+                UserIdFilter::make(),
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([

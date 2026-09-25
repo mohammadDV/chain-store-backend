@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderProductsRelationManager;
 use Core\Helpers\HelperClass;
@@ -254,11 +255,7 @@ class OrderResource extends Resource
                         Order::FAILED => __('site.failed'),
                         Order::EXPIRED => __('site.expired'),
                     ]),
-                SelectFilter::make('user_id')
-                    ->label(__('site.user'))
-                    ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
-                    ->searchable()
-                    ->preload(),
+                UserIdFilter::make(),
                 SelectFilter::make('vip')
                     ->label(__('site.vip'))
                     ->options([

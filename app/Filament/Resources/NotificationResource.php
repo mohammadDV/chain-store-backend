@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\NotificationResource\Pages;
 use Domain\Notification\Models\Notification;
 use Filament\Forms;
@@ -147,6 +148,7 @@ class NotificationResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                UserIdFilter::make(),
                 SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
@@ -159,11 +161,6 @@ class NotificationResource extends Resource
                         1 => __('site.read'),
                         0 => __('site.unread'),
                     ]),
-                SelectFilter::make('user')
-                    ->label(__('site.user'))
-                    ->relationship('user', 'first_name')
-                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->getFilamentName())
-                    ->searchable(),
                 Filter::make('created_at')
                     ->label(__('site.created_at'))
                     ->form([

@@ -1541,4 +1541,5 @@ return [
     'inventory_manual_type_help' => 'بسته به نوع تراکنش، جهت افزایش یا کاهش ممکن است قفل شود.',
     'inventory_direction_locked_help' => 'برای این نوع تراکنش، جهت تغییر موجودی ثابت است و قابل تغییر نیست.',
     'inventory_direction_invalid' => 'جهت تغییر موجودی نامعتبر است.',
+    'user_related' => 'مرتبط با کاربر',
 ];
