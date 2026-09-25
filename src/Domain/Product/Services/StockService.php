@@ -150,6 +150,56 @@ class StockService
     }
 
     /**
+     * Apply a signed quantity delta with an explicit ledger type (e.g. admin tools).
+     *
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     */
+    public function applyManualChange(
+        int $sizeId,
+        int $quantityChange,
+        InventoryTransactionType $type,
+        string $source = InventoryTransactionSource::Admin,
+        ?int $userId = null,
+        ?string $description = null,
+    ): InventoryTransaction {
+        if ($quantityChange === 0) {
+            throw new InvalidArgumentException('Quantity change must not be zero.');
+        }
+
+        return DB::transaction(function () use (
+            $sizeId,
+            $quantityChange,
+            $type,
+            $source,
+            $userId,
+            $description,
+        ) {
+            [$size, $stock] = $this->lockSizeAndStock($sizeId);
+            $previous = (int) $stock->quantity;
+            $resulting = $previous + $quantityChange;
+
+            if ($resulting < 0) {
+                throw new RuntimeException("Insufficient stock for size_id {$sizeId}.");
+            }
+
+            $stock->update(['quantity' => $resulting]);
+
+            return InventoryTransaction::query()->create([
+                'product_id' => $size->product_id,
+                'size_id' => $size->id,
+                'type' => $type,
+                'source' => $source,
+                'user_id' => $userId,
+                'quantity_change' => $quantityChange,
+                'previous_quantity' => $previous,
+                'resulting_quantity' => $resulting,
+                'description' => $description,
+            ]);
+        });
+    }
+
+    /**
      * Available quantity for placing an order.
      * Soft-reserves pending orders when $withPendingReservation is true.
      * Locks the stock row — must be called inside a DB transaction.

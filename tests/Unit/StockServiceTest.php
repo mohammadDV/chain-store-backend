@@ -281,4 +281,59 @@ class StockServiceTest extends TestCase
             'resulting_quantity' => 15,
         ]);
     }
+
+    public function test_apply_manual_change_writes_admin_ledger(): void
+    {
+        $user = User::factory()->create();
+        $product = Product::factory()->create();
+        $size = Size::factory()->create(['product_id' => $product->id]);
+        $this->stockService->setQuantity($size->id, 10);
+
+        $transaction = $this->stockService->applyManualChange(
+            $size->id,
+            -4,
+            InventoryTransactionType::Adjust,
+            InventoryTransactionSource::Admin,
+            $user->id,
+            'Admin panel adjust',
+        );
+
+        $this->assertSame(6, $size->stock->fresh()->quantity);
+        $this->assertSame(InventoryTransactionType::Adjust, $transaction->type);
+        $this->assertSame(InventoryTransactionSource::Admin, $transaction->source);
+        $this->assertSame(-4, $transaction->quantity_change);
+        $this->assertSame(10, $transaction->previous_quantity);
+        $this->assertSame(6, $transaction->resulting_quantity);
+        $this->assertSame($user->id, $transaction->user_id);
+        $this->assertSame('Admin panel adjust', $transaction->description);
+    }
+
+    public function test_apply_manual_change_rejects_zero(): void
+    {
+        $product = Product::factory()->create();
+        $size = Size::factory()->create(['product_id' => $product->id]);
+        $this->stockService->setQuantity($size->id, 2);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->stockService->applyManualChange(
+            $size->id,
+            0,
+            InventoryTransactionType::Adjust,
+        );
+    }
+
+    public function test_apply_manual_change_rejects_insufficient_stock(): void
+    {
+        $product = Product::factory()->create();
+        $size = Size::factory()->create(['product_id' => $product->id]);
+        $this->stockService->setQuantity($size->id, 2);
+
+        $this->expectException(\RuntimeException::class);
+        $this->stockService->applyManualChange(
+            $size->id,
+            -5,
+            InventoryTransactionType::Sale,
+            InventoryTransactionSource::Admin,
+        );
+    }
 }
