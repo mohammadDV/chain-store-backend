@@ -120,14 +120,10 @@ class TicketRepository implements ITicketRepository
             'nickname '.Auth::user()->nickname
         );
 
-        if ($message) {
-            return response()->json([
-                'status' => 1,
-                'message' => __('site.The operation has been successfully'),
-            ], Response::HTTP_CREATED);
-        }
-
-        throw new \Exception;
+        return response()->json([
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+        ], Response::HTTP_CREATED);
     }
 
     /**
@@ -186,13 +182,9 @@ class TicketRepository implements ITicketRepository
             'user_id' => Auth::user()->id,
         ]);
 
-        if ($message) {
-            return response()->json([
-                'status' => 1,
-                'message' => __('site.The operation has been successfully'),
-            ], Response::HTTP_OK);
-        }
-
-        throw new \Exception;
+        return response()->json([
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+        ], Response::HTTP_OK);
     }
 }

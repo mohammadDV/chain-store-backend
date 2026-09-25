@@ -7,7 +7,22 @@ use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property int $wallet_id
+ * @property string $type
+ * @property numeric $amount
+ * @property string $currency
+ * @property string $status
+ * @property string $reference
+ * @property string|null $description
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read User|null $user
+ * @property-read Wallet $wallet
+ */
 class WalletTransaction extends Model
 {
     /** @use HasFactory<WalletTransactionFactory> */
@@ -31,11 +46,17 @@ class WalletTransaction extends Model
 
     protected $guarded = [];
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Wallet, $this>
+     */
     public function wallet(): BelongsTo
     {
         return $this->belongsTo(Wallet::class);

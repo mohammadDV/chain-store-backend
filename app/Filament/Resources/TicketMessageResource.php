@@ -111,10 +111,12 @@ class TicketMessageResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
                         'read' => 'success',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => __('site.pending'),
                         'read' => __('site.read'),
+                        default => $state,
                     }),
                 TextColumn::make('created_at')
                     ->label(__('site.ticket_message_created_at'))

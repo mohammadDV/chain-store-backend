@@ -2,19 +2,17 @@
 
 namespace Database\Factories;
 
-use Domain\Ticket\Models\TicketSubject;
+use Domain\Product\Models\Like;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<TicketSubject>
+ * @extends Factory<Like>
  */
-class TicketSubjectFactory extends Factory
+class LikeFactory extends Factory
 {
-    protected $model = TicketSubject::class;
+    protected $model = Like::class;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array

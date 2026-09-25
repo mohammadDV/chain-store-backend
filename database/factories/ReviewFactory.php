@@ -2,19 +2,17 @@
 
 namespace Database\Factories;
 
-use Domain\Ticket\Models\TicketSubject;
+use Domain\Review\Models\Review;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<TicketSubject>
+ * @extends Factory<Review>
  */
-class TicketSubjectFactory extends Factory
+class ReviewFactory extends Factory
 {
-    protected $model = TicketSubject::class;
+    protected $model = Review::class;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array

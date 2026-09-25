@@ -81,8 +81,6 @@ class NotificationRepository implements INotificationRepository
 
     /**
      * Get the notification.
-     *
-     * @return Plan
      */
     public function show(Notification $notification): Notification
     {

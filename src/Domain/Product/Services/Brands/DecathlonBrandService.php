@@ -82,8 +82,6 @@ class DecathlonBrandService implements BrandServiceInterface
         }
 
         return $links;
-
-        throw new \Exception('DecathlonBrandService::cleanProductList() is not yet implemented');
     }
 
     /**
@@ -192,9 +190,9 @@ class DecathlonBrandService implements BrandServiceInterface
     }
 
     /**
-     * Extract sizes with stock status from HTML array
+     * Extract sizes with stock status from HTML
      *
-     * @param  string|null  $array  Array of HTML strings containing size information
+     * @param  string|null  $html  HTML string containing size information
      * @return array One size
      */
     private function extractOneSize(?string $html): array
@@ -209,7 +207,7 @@ class DecathlonBrandService implements BrandServiceInterface
         // Extract size text before the span and stock status from span class
         preg_match('/<div[^>]*class="[^"]*vtmn-sku-selector--monosku[^"]*"[^>]*>([^<]+)<span[^>]*class="[^"]*sku-selector__stock--(inStock|low|outOfStock)[^"]*"[^>]*>/i', $html, $matches);
 
-        if (! empty($matches[1]) && ! empty($matches[2])) {
+        if (! empty($matches[1])) {
             // Decode HTML entities to properly handle Turkish characters (e.g., Ş from &#350;)
             $size = trim(html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8'));
             $stockStatus = $matches[2];
@@ -337,7 +335,7 @@ class DecathlonBrandService implements BrandServiceInterface
         // Extract the first href attribute from anchor tags
         // Pattern matches: <a class="dpb-product-model-link svelte-1bclr8g" href="/p/kadin-binici-yelegi-siyah-100/_/R-p-177631?mc=8404044&amp;c=S&#x130;YAH" tabindex="-1"><span class="vh">Kad&#305;n Binici Yele&#287;i - Siyah - 100</span></a>\n
         if (preg_match('/<a[^>]+href=["\']([^"\']+)["\']/i', $html, $matches)) {
-            return explode('&', $matches[1])[0] ?? '';
+            return explode('&', $matches[1])[0];
         }
 
         // If no href found, return empty string
@@ -400,7 +398,7 @@ class DecathlonBrandService implements BrandServiceInterface
         if (! empty($productData['images'])) {
 
             // Create or update images
-            foreach ($productData['images'] ?? [] as $key => $imagePath) {
+            foreach ($productData['images'] as $key => $imagePath) {
                 $product->files()->updateOrCreate(
                     [
                         'path' => $imagePath,
@@ -419,7 +417,7 @@ class DecathlonBrandService implements BrandServiceInterface
 
             $priority = 100;
             // Create or update sizes
-            foreach ($productData['size'] ?? [] as $key => $status) {
+            foreach ($productData['size'] as $key => $status) {
                 $sizeTitle = trim($key, '.');
 
                 switch (strtolower($status)) {
@@ -446,7 +444,7 @@ class DecathlonBrandService implements BrandServiceInterface
                     ]
                 );
                 $this->stockService->setQuantity(
-                    $size->id,
+                    (int) $size->getKey(),
                     (int) $stock,
                     InventoryTransactionSource::Scraper,
                     null,
@@ -513,7 +511,7 @@ class DecathlonBrandService implements BrandServiceInterface
 
             $priority = 100;
             // Create or update sizes
-            foreach ($productData['size'] ?? [] as $key => $status) {
+            foreach ($productData['size'] as $key => $status) {
                 $sizeTitle = trim($key, '.');
 
                 switch (strtolower($status)) {
@@ -540,7 +538,7 @@ class DecathlonBrandService implements BrandServiceInterface
                     ]
                 );
                 $this->stockService->setQuantity(
-                    $sizeModel->id,
+                    (int) $sizeModel->getKey(),
                     (int) $stock,
                     InventoryTransactionSource::Scraper,
                     null,

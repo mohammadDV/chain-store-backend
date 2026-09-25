@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\TicketMessage;
+use Domain\Ticket\Models\TicketMessage;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TicketMessageFactory extends Factory
 {
+    protected $model = TicketMessage::class;
+
     /**
      * Define the model's default state.
      *

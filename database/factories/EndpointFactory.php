@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Endpoint;
+use Domain\Product\Models\Endpoint;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class EndpointFactory extends Factory
 {
+    protected $model = Endpoint::class;
+
     /**
      * Define the model's default state.
      *

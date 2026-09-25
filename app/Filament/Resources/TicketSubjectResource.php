@@ -88,10 +88,12 @@ class TicketSubjectResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         '0' => 'danger',
                         '1' => 'success',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         '0' => __('site.inactive'),
                         '1' => __('site.active'),
+                        default => $state,
                     }),
                 TextColumn::make('created_at')
                     ->label(__('site.created_at'))

@@ -18,8 +18,6 @@ class DiscountRepository implements IDiscountRepository
 
     /**
      * Get the Category.
-     *
-     * @param  Discount  $discount
      */
     public function getActiveDiscount(): JsonResponse
     {

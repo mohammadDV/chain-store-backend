@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
+/**
+ * @property-read OrderProduct|null $pivot
+ */
 class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
@@ -52,6 +55,9 @@ class Product extends Model
         return $this->morphMany(Like::class, 'likeable', 'likeable_type', 'likeable_id');
     }
 
+    /**
+     * @return BelongsTo<Brand, $this>
+     */
     public function brand(): BelongsTo
     {
         return $this->belongsTo(Brand::class);
@@ -90,6 +96,9 @@ class Product extends Model
         return $this->hasMany(Favorite::class);
     }
 
+    /**
+     * @return HasMany<Size, $this>
+     */
     public function sizes(): HasMany
     {
         return $this->hasMany(Size::class);

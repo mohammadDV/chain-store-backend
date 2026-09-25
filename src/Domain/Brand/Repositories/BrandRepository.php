@@ -40,8 +40,6 @@ class BrandRepository implements IBrandRepository
 
     /**
      * Get the brand.
-     *
-     * @return array
      */
     public function show(Brand $brand): BrandResource
     {

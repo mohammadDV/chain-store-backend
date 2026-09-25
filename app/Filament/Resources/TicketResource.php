@@ -64,7 +64,7 @@ class TicketResource extends Resource
                             ->required(),
                         Select::make('subject_id')
                             ->label(__('site.ticket_subject'))
-                            ->options(TicketSubject::all()->pluck('title', 'id'))
+                            ->options(TicketSubject::query()->pluck('title', 'id'))
                             ->searchable()
                             ->required(),
                         Select::make('status')
@@ -100,10 +100,12 @@ class TicketResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'success',
                         'closed' => 'danger',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'active' => __('site.active'),
                         'closed' => __('site.closed'),
+                        default => $state,
                     }),
                 TextColumn::make('messages_count')
                     ->label(__('site.ticket_messages_count'))

@@ -5,12 +5,42 @@ namespace Domain\Product\Models;
 use Database\Factories\OrderFactory;
 use Domain\Payment\Models\Transaction;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $code
+ * @property int $user_id
+ * @property int|null $discount_id
+ * @property string|null $description
+ * @property int $product_count
+ * @property numeric $total_amount
+ * @property numeric $amount
+ * @property numeric $discount_amount
+ * @property numeric|null $delivery_amount
+ * @property string $status
+ * @property int $active
+ * @property int|bool $vip
+ * @property string|null $postal
+ * @property string|null $address
+ * @property string|null $postal_code
+ * @property numeric $profit
+ * @property numeric $profit_rate
+ * @property numeric $exchange_rate
+ * @property Carbon|null $expire_date
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Product> $products
+ * @property-read User $user
+ * @property-read Discount|null $discount
+ * @property-read Collection<int, Transaction> $transactions
+ */
 class Order extends Model
 {
     /** @use HasFactory<OrderFactory> */
@@ -41,16 +71,25 @@ class Order extends Model
         'expire_date' => 'datetime',
     ];
 
+    /**
+     * @return BelongsToMany<Product, $this>
+     */
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')->withPivot('count', 'amount', 'status', 'color_id', 'size_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @return BelongsTo<Discount, $this>
+     */
     public function discount(): BelongsTo
     {
         return $this->belongsTo(Discount::class);
@@ -68,6 +107,9 @@ class Order extends Model
         return (string) $code;
     }
 
+    /**
+     * @return HasMany<Transaction, $this>
+     */
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'model_id', 'id')->where('model_type', Transaction::ORDER);

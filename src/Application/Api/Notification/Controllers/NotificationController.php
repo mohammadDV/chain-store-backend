@@ -18,8 +18,6 @@ class NotificationController extends Controller
 
     /**
      * Get the notifications pagination.
-     *
-     * @return LengthAwarePaginator
      */
     public function index(TableRequest $request): JsonResponse
     {
@@ -27,10 +25,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Get the notification
-     *
-     * @param  string  $bankTransactionId
-     * @return array
+     * Get the notification.
      */
     public function show(Notification $notification): JsonResponse
     {
@@ -39,9 +34,6 @@ class NotificationController extends Controller
 
     /**
      * Get the unread notifications.
-     *
-     * @param  string  $bankTransactionId
-     * @return array
      */
     public function unread(): JsonResponse
     {
@@ -49,10 +41,7 @@ class NotificationController extends Controller
     }
 
     /**
-     * Get the unread notifications.
-     *
-     * @param  string  $bankTransactionId
-     * @return array
+     * Mark all notifications as read.
      */
     public function readAll(): JsonResponse
     {

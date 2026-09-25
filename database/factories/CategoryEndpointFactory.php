@@ -2,19 +2,17 @@
 
 namespace Database\Factories;
 
-use Domain\Ticket\Models\TicketSubject;
+use Domain\Product\Models\CategoryEndpoint;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<TicketSubject>
+ * @extends Factory<CategoryEndpoint>
  */
-class TicketSubjectFactory extends Factory
+class CategoryEndpointFactory extends Factory
 {
-    protected $model = TicketSubject::class;
+    protected $model = CategoryEndpoint::class;
 
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array

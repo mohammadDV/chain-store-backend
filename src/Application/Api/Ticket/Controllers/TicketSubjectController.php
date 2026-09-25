@@ -3,7 +3,6 @@
 namespace Application\Api\Ticket\Controllers;
 
 use Core\Http\Controllers\Controller;
-use Core\Http\Requests\TableRequest;
 use Domain\Ticket\Models\TicketSubject;
 use Domain\Ticket\Repositories\Contracts\ITicketSubjectRepository;
 use Illuminate\Http\JsonResponse;
@@ -22,15 +21,13 @@ class TicketSubjectController extends Controller
     /**
      * Get all of Subjects
      */
-    public function activeSubjects(TableRequest $request): JsonResponse
+    public function activeSubjects(): JsonResponse
     {
-        return response()->json($this->repository->activeSubjects($request), Response::HTTP_OK);
+        return response()->json($this->repository->activeSubjects(), Response::HTTP_OK);
     }
 
     /**
      * Get the subject.
-     *
-     * @param  TicketSubject  $subject
      */
     public function show(TicketSubject $ticketSubject): JsonResponse
     {

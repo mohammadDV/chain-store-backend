@@ -57,10 +57,10 @@ class Discount extends Model
                 $discountAmount = $discountAmount > $this->max_value ? $this->max_value : $discountAmount;
             }
 
-            return $discountAmount;
+            return (float) $discountAmount;
         }
 
-        return $this->value;
+        return (float) $this->value;
     }
 
     protected static function newFactory(): DiscountFactory

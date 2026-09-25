@@ -5,9 +5,33 @@ namespace Domain\Product\Models;
 use Database\Factories\CategoryFactory;
 use Domain\Brand\Models\Brand;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property int $id
+ * @property string $title
+ * @property int $status
+ * @property string|null $description
+ * @property string|null $image
+ * @property int $parent_id
+ * @property int $priority
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Collection<int, Brand> $brands
+ * @property-read User|null $user
+ * @property-read Collection<int, Product> $products
+ * @property-read Category|null $parent
+ * @property-read Collection<int, Category> $children
+ * @property-read Collection<int, Category> $childrenRecursive
+ * @property-read Collection<int, Category> $allChildren
+ * @property-read Category|null $parentRecursive
+ */
 class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
@@ -22,70 +46,88 @@ class Category extends Model
 
     /**
      * Get the brands that belong to the category.
+     *
+     * @return BelongsToMany<Brand, $this>
      */
-    public function brands()
+    public function brands(): BelongsToMany
     {
         return $this->belongsToMany(Brand::class, 'brand_category', 'category_id', 'brand_id')->withPivot('priority', 'status');
     }
 
     /**
      * Get the user that owns the category.
+     *
+     * @return BelongsTo<User, $this>
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
     /**
      * Get the products that belong to the category.
+     *
+     * @return BelongsToMany<Product, $this>
      */
-    public function products()
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'category_product', 'category_id', 'product_id');
     }
 
     /**
      * Get the parent category.
+     *
+     * @return BelongsTo<Category, $this>
      */
-    public function parent()
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
 
     /**
      * Get the children categories.
+     *
+     * @return HasMany<Category, $this>
      */
-    public function children()
+    public function children(): HasMany
     {
         return $this->hasMany(Category::class, 'parent_id')->where('status', 1);
     }
 
     /**
      * Get all children recursively
+     *
+     * @return HasMany<Category, $this>
      */
-    public function childrenRecursive()
+    public function childrenRecursive(): HasMany
     {
         return $this->children()->with('childrenRecursive');
     }
 
     /**
      * Get all descendants (all levels of children)
+     *
+     * @return HasMany<Category, $this>
      */
-    public function allChildren()
+    public function allChildren(): HasMany
     {
         return $this->children()->with('allChildren');
     }
 
     /**
      * Get all parent categories up to the root
+     *
+     * @return BelongsTo<Category, $this>
      */
-    public function parentRecursive()
+    public function parentRecursive(): BelongsTo
     {
         return $this->parent()->with('parentRecursive');
     }
 
     /**
      * Get the full category path (breadcrumb)
+     *
+     * @return list<array{id: int, title: string}>
      */
     public function getPath(): array
     {
@@ -116,7 +158,7 @@ class Category extends Model
      */
     public function isRoot(): bool
     {
-        return $this->parent_id === 0 || $this->parent_id === null;
+        return (int) $this->parent_id === 0;
     }
 
     /**

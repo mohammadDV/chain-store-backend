@@ -4,6 +4,7 @@ namespace App\Filament\Resources\WalletResource\Pages;
 
 use App\Filament\Resources\WalletResource;
 use Domain\Notification\Services\NotificationService;
+use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Actions;
 use Filament\Forms\Components\Select;
@@ -50,6 +51,7 @@ class ViewWallet extends ViewRecord
                         ->default(true),
                 ])
                 ->action(function (array $data): void {
+                    /** @var Wallet $wallet */
                     $wallet = $this->getRecord();
                     $amount = (float) $data['amount'];
                     $adjustmentType = $data['adjustment_type'];

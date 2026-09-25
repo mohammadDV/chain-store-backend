@@ -4,7 +4,6 @@ namespace Domain\Notification\Repositories\Contracts;
 
 use Core\Http\Requests\TableRequest;
 use Domain\Notification\Models\Notification;
-use Domain\Plan\Models\Plan;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -30,8 +29,6 @@ interface INotificationRepository
 
     /**
      * Get the notification.
-     *
-     * @return Plan
      */
     public function show(Notification $notification): Notification;
 }

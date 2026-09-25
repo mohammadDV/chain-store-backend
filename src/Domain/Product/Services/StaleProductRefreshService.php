@@ -98,13 +98,13 @@ class StaleProductRefreshService
     public function refreshOne(Product $product): ProductRefreshOutcome
     {
         $code = trim((string) $product->code);
-        $brandId = $product->brand_id !== null ? (int) $product->brand_id : null;
+        $brandId = (int) $product->brand_id;
 
-        if ($code === '' || $brandId === null || $brandId < 1) {
+        if ($code === '' || $brandId < 1) {
             $outcome = new ProductRefreshOutcome(
                 productId: (int) $product->id,
                 code: $code !== '' ? $code : null,
-                brandId: $brandId,
+                brandId: $brandId > 0 ? $brandId : null,
                 status: ProductRefreshOutcome::STATUS_SKIPPED,
                 reason: 'Product is missing a code or brand_id.',
             );
@@ -124,7 +124,7 @@ class StaleProductRefreshService
                 code: $code,
                 brandId: $brandId,
                 status: ProductRefreshOutcome::STATUS_SUCCESS,
-                action: is_array($response) ? ($response['action'] ?? null) : null,
+                action: $response['action'] ?? null,
             );
 
             Log::info('StaleProductRefreshService: success', $outcome->toArray());

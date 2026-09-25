@@ -4,6 +4,7 @@ namespace App\Filament\Resources\OrderResource\RelationManagers;
 
 use Domain\Notification\Services\NotificationService;
 use Domain\Product\Models\Color;
+use Domain\Product\Models\Order;
 use Domain\Product\Models\Size;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
@@ -132,7 +133,7 @@ class OrderProductsRelationManager extends RelationManager
                         if ($record->pivot->color_id) {
                             $color = Color::find($record->pivot->color_id);
 
-                            return $color?->title ?? '-';
+                            return $color !== null ? $color->title : '-';
                         }
 
                         return '-';
@@ -145,7 +146,7 @@ class OrderProductsRelationManager extends RelationManager
                         if ($record->pivot->size_id) {
                             $size = Size::find($record->pivot->size_id);
 
-                            return $size?->title ?? '-';
+                            return $size !== null ? $size->title : '-';
                         }
 
                         return '-';
@@ -247,6 +248,7 @@ class OrderProductsRelationManager extends RelationManager
                         }
 
                         $ownerRecord = $this->getOwnerRecord();
+                        assert($ownerRecord instanceof Order);
                         DB::table('order_product')
                             ->where('order_id', $ownerRecord->id)
                             ->where('product_id', $record->id)

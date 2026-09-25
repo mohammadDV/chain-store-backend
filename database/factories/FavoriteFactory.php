@@ -2,17 +2,17 @@
 
 namespace Database\Factories;
 
-use App\Authentication;
+use Domain\Product\Models\Favorite;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Authentication>
+ * @extends Factory<Favorite>
  */
-class AuthenticationFactory extends Factory
+class FavoriteFactory extends Factory
 {
+    protected $model = Favorite::class;
+
     /**
-     * Define the model's default state.
-     *
      * @return array<string, mixed>
      */
     public function definition(): array

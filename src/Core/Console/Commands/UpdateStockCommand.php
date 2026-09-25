@@ -44,16 +44,16 @@ class UpdateStockCommand extends Command
                     ->where('active', 1);
             })
             ->orderBy('updated_at', 'asc')
-            ->limit($this->option('limit', 10))
+            ->limit((int) $this->option('limit'))
             ->get();
 
         $count = 0;
         foreach ($sizes as $size) {
 
             try {
-                $url = $size?->product?->url.'?forceSelSize='.str_replace(' ', '+', $size->code);
+                $url = $size->product->url.'?forceSelSize='.str_replace(' ', '+', $size->code);
                 // Get the appropriate brand service
-                $brandService = BrandServiceFactory::getService($size?->product?->brand);
+                $brandService = BrandServiceFactory::getService($size->product->brand);
                 $parsingKey = $brandService->getUpdateStockParsingKey();
 
                 $filters = $this->retryRequest($oxylabsService, $parsingKey, $url, 1);
@@ -63,7 +63,7 @@ class UpdateStockCommand extends Command
                 }
 
                 // Use brand service to clean product data
-                $productData = $brandService->cleanStockData($filters, $size?->product?->brand?->domain, $size->code);
+                $productData = $brandService->cleanStockData($filters, $size->product->brand->domain, $size->code);
 
                 if (! empty($productData['status']) && $productData['status'] == 2) {
                     continue;
@@ -82,9 +82,9 @@ class UpdateStockCommand extends Command
                     continue;
                 }
 
-                $product = $brandService->updateProduct($productData, $size?->product, $size);
+                $product = $brandService->updateProduct($productData, $size->product, $size);
 
-                if (! empty($product?->id)) {
+                if (! empty($product->id)) {
                     $count++;
                     $this->info('Products: '.$product->id);
                     $this->info('Size: '.$size->id);

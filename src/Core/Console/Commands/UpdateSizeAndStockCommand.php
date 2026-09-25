@@ -61,7 +61,7 @@ class UpdateSizeAndStockCommand extends Command
         $count = 0;
         foreach ($products as $product) {
             // Skip if brand is missing
-            if (! $product?->brand) {
+            if (! $product->brand) {
                 $this->error("Endpoint {$product->id} has no brand assigned");
 
                 continue;
@@ -79,7 +79,7 @@ class UpdateSizeAndStockCommand extends Command
                 }
 
                 // Use brand service to clean product data
-                $productData = $brandService->cleanProductData($filters, $product?->brand?->domain);
+                $productData = $brandService->cleanProductData($filters, $product->brand->domain);
 
                 if (! empty($productData['status']) && $productData['status'] == 2) {
                     continue;
@@ -104,11 +104,11 @@ class UpdateSizeAndStockCommand extends Command
 
                 $finalProduct = $brandService->updateProduct($productData, $product);
 
-                if (! empty($finalProduct?->id)) {
+                if (! empty($finalProduct->id)) {
                     $count++;
                     $this->info('Products: '.$product->url);
                     $this->info('Products: '.$finalProduct->id);
-                    $this->info('count: '.$count.' / '.$endpoints->count());
+                    $this->info('count: '.$count.' / '.$products->count());
                     $this->info('************************************************');
                 }
             } catch (\Exception $e) {

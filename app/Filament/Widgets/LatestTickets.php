@@ -40,10 +40,12 @@ class LatestTickets extends BaseWidget
                     ->color(fn (string $state): string => match ($state) {
                         'active' => 'warning',
                         'closed' => 'success',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'active' => __('site.active'),
                         'closed' => __('site.closed'),
+                        default => $state,
                     }),
                 TextColumn::make('created_at')
                     ->label(__('site.ticket_created_at'))

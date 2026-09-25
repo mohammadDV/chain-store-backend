@@ -60,7 +60,7 @@ class ProductSizeCommand extends Command
         $count = 0;
         foreach ($endpoints as $endpoint) {
 
-            $filters = $this->retryRequest($oxylabsService, 'adidas_product_size', $endpoint->url, 1, $endpoint?->brand?->domain);
+            $filters = $this->retryRequest($oxylabsService, 'adidas_product_size', $endpoint->url, 1);
             if (! empty($filters['status']) && in_array($filters['status'], [4, 2])) {
                 continue;
             }
@@ -90,7 +90,7 @@ class ProductSizeCommand extends Command
 
             $product = $this->storeProduct($productData, $endpoint);
 
-            if (! empty($product?->id)) {
+            if (! empty($product->id)) {
                 $count++;
                 $this->info('Products: '.$endpoint->url);
                 $this->info('Products: '.$product->id);
@@ -127,12 +127,9 @@ class ProductSizeCommand extends Command
     }
 
     /**
-     * Clean and normalize the Kaufland product data
+     * Clean and normalize the product size data
      *
-     * @param  array  $kauflandComProduct  The raw product data from API
-     * @param  string  $domain  The domain of the product
-     *
-     * @throws Exception If required product data is missing
+     * @param  array  $response  The raw product data from API
      */
     private function cleanProductData(array $response): array
     {

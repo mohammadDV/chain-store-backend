@@ -80,7 +80,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array
+     * @var list<string>
      */
     protected $visible = [
         'id', 'first_name', 'level', 'last_name', 'customer_number', 'nickname', 'biography', 'profile_photo_path', 'bg_photo_path', 'point', 'rate', 'role_id', 'is_private', 'is_report', 'email', 'mobile', 'status', 'created_at', 'verified_at', 'email_verified_at',
@@ -89,11 +89,9 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
-    protected $appends = [
-        'profile_photo_url',
-    ];
+    protected $appends = [];
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -102,11 +100,7 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
 
     public function getPermissionRoleNames()
     {
-        $permissions = $this->permissions;
-
-        if (method_exists($this, 'roles')) {
-            $permissions = $permissions->merge($this->getPermissionsViaRoles());
-        }
+        $permissions = $this->permissions->merge($this->getPermissionsViaRoles());
 
         return $permissions->sort()->values()->pluck('name');
     }

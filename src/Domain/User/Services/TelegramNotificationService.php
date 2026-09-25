@@ -11,7 +11,7 @@ class TelegramNotificationService
 
     public function __construct()
     {
-        $this->telegram = new Api(env('TELEGRAM_BOT_TOKEN'));
+        $this->telegram = new Api(config('telegram.bots.mybot.token'));
     }
 
     public function sendNotification($chatId, $message)

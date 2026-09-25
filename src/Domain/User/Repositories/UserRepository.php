@@ -125,8 +125,6 @@ class UserRepository implements IUserRepository
 
     /**
      * Update the user.
-     *
-     * @param  User  $user
      */
     public function update(UpdateUserRequest $request): array
     {
@@ -177,8 +175,6 @@ class UserRepository implements IUserRepository
 
     /**
      * Change the user password.
-     *
-     * @param  User  $user
      */
     public function changePassword(ChangePasswordRequest $request): array
     {

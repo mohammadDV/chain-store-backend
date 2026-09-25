@@ -4,6 +4,7 @@ namespace App\Filament\Resources\TicketResource\Pages;
 
 use App\Filament\Resources\TicketResource;
 use Domain\Notification\Services\NotificationService;
+use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketMessage;
 use Filament\Actions;
 use Filament\Forms;
@@ -57,6 +58,7 @@ class ViewTicket extends ViewRecord
         ];
 
         // Mark all pending messages as read when admin opens the ticket view
+        /** @var Ticket $ticket */
         $ticket = $this->getRecord();
         TicketMessage::query()
             ->where('ticket_id', $ticket->id)
@@ -67,8 +69,9 @@ class ViewTicket extends ViewRecord
 
     public function form(Form $form): Form
     {
+        /** @var Ticket $ticket */
         $ticket = $this->getRecord();
-        $isTicketClosed = $ticket && $ticket->status === 'closed';
+        $isTicketClosed = $ticket->status === 'closed';
 
         return $form
             ->schema([
@@ -111,10 +114,12 @@ class ViewTicket extends ViewRecord
                             ->color(fn (string $state): string => match ($state) {
                                 'active' => 'success',
                                 'closed' => 'danger',
+                                default => 'gray',
                             })
                             ->formatStateUsing(fn (string $state): string => match ($state) {
                                 'active' => __('site.active'),
                                 'closed' => __('site.closed'),
+                                default => $state,
                             }),
                         TextEntry::make('created_at')
                             ->label(__('site.ticket_created_at'))
@@ -141,10 +146,12 @@ class ViewTicket extends ViewRecord
                                     ->color(fn (string $state): string => match ($state) {
                                         'pending' => 'warning',
                                         'read' => 'success',
+                                        default => 'gray',
                                     })
                                     ->formatStateUsing(fn (string $state): string => match ($state) {
                                         'pending' => __('site.pending'),
                                         'read' => __('site.read'),
+                                        default => $state,
                                     }),
                                 TextEntry::make('created_at')
                                     ->label(__('site.sent_at'))
@@ -158,6 +165,7 @@ class ViewTicket extends ViewRecord
 
     public function sendMessage(): void
     {
+        /** @var Ticket $ticket */
         $ticket = $this->getRecord();
 
         // Check if ticket is closed
@@ -222,6 +230,7 @@ class ViewTicket extends ViewRecord
 
     public function changeStatus(string $status): void
     {
+        /** @var Ticket $ticket */
         $ticket = $this->getRecord();
         $ticket->update(['status' => $status]);
 
@@ -234,10 +243,11 @@ class ViewTicket extends ViewRecord
 
     protected function getViewData(): array
     {
+        /** @var Ticket $record */
         $record = $this->getRecord()->load(['user', 'subject', 'messages.user']);
 
         // Order messages by created_at in ascending order (oldest first)
-        $record->messages = $record->messages->sortBy('created_at');
+        $record->setRelation('messages', $record->messages->sortBy('created_at')->values());
 
         return [
             'record' => $record,

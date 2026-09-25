@@ -257,14 +257,12 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $product) {
-            $categoryId = $product['category_id'] ?? null;
+            $categoryId = $product['category_id'];
             unset($product['category_id']);
 
             $created = Product::create($product);
 
-            if ($categoryId) {
-                $created->categories()->attach($categoryId);
-            }
+            $created->categories()->attach($categoryId);
 
             $size = $created->sizes()->create([
                 'title' => 'Default',
@@ -272,7 +270,7 @@ class ProductSeeder extends Seeder
                 'status' => 1,
                 'priority' => 1,
             ]);
-            app(StockService::class)->setQuantity($size->id, 10);
+            app(StockService::class)->setQuantity((int) $size->getKey(), 10);
         }
     }
 }

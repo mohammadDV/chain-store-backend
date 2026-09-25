@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Ticket;
+use Domain\Ticket\Models\Ticket;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class TicketFactory extends Factory
 {
+    protected $model = Ticket::class;
+
     /**
      * Define the model's default state.
      *

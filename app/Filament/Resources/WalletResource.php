@@ -111,10 +111,12 @@ class WalletResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         '1' => 'success',
                         '0' => 'danger',
+                        default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         '1' => __('site.Active'),
                         '0' => __('site.Inactive'),
+                        default => $state,
                     }),
                 TextColumn::make('created_at')
                     ->label(__('site.created_at'))

@@ -52,18 +52,18 @@ class EditProduct extends EditRecord
     {
         // Merge image_upload or image_url into image field
         // Handle FileUpload - it can be an array or string
-        if (isset($data['image_upload']) && ! empty($data['image_upload'])) {
+        if (isset($data['image_upload']) && $data['image_upload'] !== '' && $data['image_upload'] !== []) {
             if (is_array($data['image_upload'])) {
                 // If it's an array, get the first element (the uploaded file path)
-                $data['image'] = ! empty($data['image_upload']) ? reset($data['image_upload']) : null;
+                $data['image'] = reset($data['image_upload']) ?: null;
             } else {
                 // If it's already a string (path), use it directly
                 $data['image'] = $data['image_upload'];
             }
-        } elseif (isset($data['image_url']) && ! empty($data['image_url'])) {
+        } elseif (isset($data['image_url']) && $data['image_url'] !== '') {
             // Use the URL directly
             $data['image'] = $data['image_url'];
-        } elseif (isset($data['image']) && ! empty($data['image'])) {
+        } elseif (isset($data['image']) && $data['image'] !== '' && $data['image'] !== []) {
             // Keep existing image if no new one is provided
             // This handles the case where user doesn't change the image
         }

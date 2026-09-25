@@ -56,7 +56,6 @@ class FilesRelationManager extends RelationManager
                     ->disk('s3')
                     ->directory('products/files')
                     ->visibility('public')
-                    ->image(fn (callable $get) => $get('type') === 'image')
                     ->imageEditor(fn (callable $get) => $get('type') === 'image')
                     ->acceptedFileTypes(fn (callable $get) => match ($get('type')) {
                         'image' => ['image/*'],

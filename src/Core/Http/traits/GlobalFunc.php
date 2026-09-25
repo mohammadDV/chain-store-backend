@@ -12,7 +12,6 @@ trait GlobalFunc
     /**
      * Check the level access
      *
-     * @param  bool  $conditions
      * @return void
      */
     public function checkLevelAccess(bool $condition = false)
@@ -24,9 +23,7 @@ trait GlobalFunc
     }
 
     /**
-     * Check the level access
-     *
-     * @param  bool  $conditions
+     * Check whether a nickname is available.
      */
     public function checkNickname(string $nickname, int $userId = 0): bool
     {

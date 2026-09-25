@@ -27,8 +27,6 @@ class PaymentController extends Controller
 
     /**
      * Get the transaction pagination.
-     *
-     * @return LengthAwarePaginator
      */
     public function index(TableRequest $request): JsonResponse
     {
@@ -77,7 +75,7 @@ class PaymentController extends Controller
             return $tomanRequest->pay(); // Redirect to payment URL
         }
 
-        return Redirect::to('http://localhost:3000/payment/result/'.$request->transactionId());
+        return Redirect::to('http://localhost:3000/payment/result/'.$request->input('transaction'));
 
     }
 
@@ -86,13 +84,16 @@ class PaymentController extends Controller
      */
     public function callback(CallbackRequest $request)
     {
+        // Read the stubbed/validated bank transaction id from PendingRequest data.
+        // Avoid transactionId() here: vendor @method PHPDoc types it as PendingRequest only.
+        $bankTransactionId = (string) $request->getRawData('transactionId');
 
-        $transaction = Transaction::where('bank_transaction_id', $request->transactionId())->first();
+        $transaction = Transaction::where('bank_transaction_id', $bankTransactionId)->first();
 
         if ($transaction) {
 
             if ($transaction->status === Transaction::COMPLETED) {
-                return Redirect::to('/payment/result/'.$request->transactionId());
+                return Redirect::to('/payment/result/'.$bankTransactionId);
             }
 
             $payment = $request->amount($transaction->amount)->verify();
@@ -131,7 +132,7 @@ class PaymentController extends Controller
             }
         }
 
-        return Redirect::to('/payment/result/'.$request->transactionId());
+        return Redirect::to('/payment/result/'.$bankTransactionId);
     }
 
     /**
@@ -142,14 +143,12 @@ class PaymentController extends Controller
         match ($transaction->model_type) {
             Transaction::WALLET => app(WalletRepository::class)->completeTopUp($transaction->model_id),
             Transaction::ORDER => app(OrderRepository::class)->completeOrder($transaction->model_id),
+            default => null,
         };
     }
 
     /**
      * Get the transaction result.
-     *
-     * @param  string  $bankTransactionId
-     * @return array
      */
     public function show(string $id): JsonResponse
     {

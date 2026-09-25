@@ -2,17 +2,15 @@
 
 namespace Application\Api\Payment\Controllers;
 
-use App\Domain\Transaction\Models\Transaction;
-use App\Domain\Transaction\Repositories\ITransactionRepository;
-use App\Domain\Wallet\Repositories\IWalletRepository;
 use Core\Http\Controllers\Controller;
+use Domain\Payment\Models\Transaction;
+use Domain\Wallet\Repositories\Contracts\IWalletRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     public function __construct(
-        private readonly ITransactionRepository $transactionRepository,
         private readonly IWalletRepository $walletRepository
     ) {}
 
@@ -23,13 +21,14 @@ class TransactionController extends Controller
     {
         $wallet = $this->walletRepository->findByUserId(auth()->id());
 
-        $transactions = $this->transactionRepository->findByWalletId($wallet->id, [
-            'type' => $request->type,
-            'status' => $request->status,
-            'date_from' => $request->date_from,
-            'date_to' => $request->date_to,
-            'per_page' => $request->per_page,
-        ]);
+        $transactions = Transaction::query()
+            ->where('user_id', $wallet->user_id)
+            ->when($request->filled('type'), fn ($query) => $query->where('model_type', $request->type))
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('date_from'), fn ($query) => $query->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->filled('date_to'), fn ($query) => $query->whereDate('created_at', '<=', $request->date_to))
+            ->orderByDesc('id')
+            ->paginate((int) $request->get('per_page', 25));
 
         return response()->json([
             'status' => 1,
@@ -50,21 +49,18 @@ class TransactionController extends Controller
      */
     public function show(Transaction $transaction): JsonResponse
     {
-        // Ensure the transaction belongs to the authenticated user
         $wallet = $this->walletRepository->findByUserId(auth()->id());
 
-        if ($transaction->wallet_id !== $wallet->id) {
+        if ($transaction->user_id !== $wallet->user_id) {
             return response()->json([
                 'status' => 0,
                 'message' => 'Transaction not found',
             ], 404);
         }
 
-        $transaction->load(['bankTransaction', 'recipientWallet.user']);
-
         return response()->json([
             'status' => 1,
-            'data' => $transaction,
+            'data' => $transaction->load('user'),
         ]);
     }
 

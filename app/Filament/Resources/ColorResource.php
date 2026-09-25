@@ -61,10 +61,10 @@ class ColorResource extends Resource
                                     ->required()
                                     ->maxLength(7)
                                     ->placeholder('#000000')
-                                    ->helperText(__('site.color_code_help') ?? 'Enter hex color code (e.g., #FF0000)')
+                                    ->helperText(__('site.color_code_help'))
                                     ->regex('/^#[0-9A-Fa-f]{6}$/')
                                     ->validationMessages([
-                                        'regex' => __('site.invalid_color_code') ?? 'Invalid color code format. Use #RRGGBB format.',
+                                        'regex' => __('site.invalid_color_code'),
                                     ]),
                             ]),
                         Grid::make(2)
@@ -107,7 +107,7 @@ class ColorResource extends Resource
                     ->badge()
                     ->color(fn (string $state): string => $state)
                     ->copyable()
-                    ->copyMessage(__('site.copied') ?? 'Copied!'),
+                    ->copyMessage(__('site.copied')),
                 TextColumn::make('status')
                     ->label(__('site.status'))
                     ->badge()

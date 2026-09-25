@@ -492,20 +492,13 @@ class OrderRepository implements IOrderRepository
             'user_id' => Auth::user()->id,
         ]);
 
-        $code = Transaction::generateHash($transaction->id);
-
-        if ($transaction) {
-            return response()->json([
-                'status' => 1,
-                'message' => __('site.The operation has been successfully'),
-                'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
-            ], Response::HTTP_OK);
-        }
+        $code = Transaction::generateHash((string) $transaction->id);
 
         return response()->json([
-            'status' => 0,
-            'message' => __('site.Top-up failed. Please try again.'),
-        ], 500);
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+            'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -573,7 +566,7 @@ class OrderRepository implements IOrderRepository
         $order->loadMissing(['products.brand']);
 
         foreach ($order->products as $product) {
-            if ($product?->brand?->has_stock_management && $product?->pivot?->size_id) {
+            if ($product->brand->has_stock_management && $product->pivot->size_id) {
                 $this->stockService->decrementForOrder(
                     (int) $product->pivot->size_id,
                     (int) $product->pivot->count,

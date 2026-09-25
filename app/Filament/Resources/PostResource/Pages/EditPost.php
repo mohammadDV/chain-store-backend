@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PostResource\Pages;
 
 use App\Filament\Resources\PostResource;
+use Domain\Post\Models\Post;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
@@ -35,8 +36,11 @@ class EditPost extends EditRecord
             $data['slide'] = str_replace($filename, 'slides/'.$filename, $image);
         }
 
+        /** @var Post $record */
+        $record = $this->getRecord();
+
         // Set default values
-        $data['view'] = $data['view'] ?? $this->record->view;
+        $data['view'] = $data['view'] ?? $record->view;
         $data['type'] = $data['type'] ?? 0;
         $data['special'] = $data['special'] ?? 0;
         $data['status'] = $data['status'] ?? 0;

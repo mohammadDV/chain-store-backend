@@ -6,7 +6,6 @@ use Application\Api\Product\Resources\CategoryResource;
 use Core\Http\Requests\TableRequest;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -31,8 +30,6 @@ interface ICategoryRepository
 
     /**
      * Get the children of a specific category.
-     *
-     * @return Collection
      */
     public function getCategoryChildren(Category $category);
 

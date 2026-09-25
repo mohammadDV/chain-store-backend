@@ -27,10 +27,10 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Mpdf\Mpdf;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderResource extends Resource
 {
@@ -403,9 +403,8 @@ class OrderResource extends Resource
      * Generate and download invoice PDF
      *
      * @param  Order  $order
-     * @return Response
      */
-    public static function generateInvoicePdf($order)
+    public static function generateInvoicePdf($order): StreamedResponse
     {
         // Load order with necessary relationships
         // Note: discount_amount may not exist in products table, so we don't eager load it

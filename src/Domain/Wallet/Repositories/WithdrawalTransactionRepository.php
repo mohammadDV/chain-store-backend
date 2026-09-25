@@ -132,9 +132,7 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
     }
 
     /**
-     * Withdraw from the wallet.
-     *
-     * @param  WithdrawRequest  $request
+     * Update withdrawal transaction status.
      */
     public function updateStatus(WithdrawalTransaction $withdrawalTransaction, WithdrawalStatusRequest $request): JsonResponse
     {

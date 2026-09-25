@@ -2,10 +2,14 @@
 
 namespace Application\Api\Product\Resources;
 
+use Domain\Product\Models\Discount;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Morilog\Jalali\Jalalian;
 
+/**
+ * @property-read Discount $resource
+ */
 class DiscountResource extends JsonResource
 {
     /**
@@ -16,12 +20,12 @@ class DiscountResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
-            'code' => $this->code,
-            'type' => $this->type,
-            'value' => $this->value.' '.($this->type === 'percentage' ? '%' : 'تومان'),
-            'max_value' => $this->max_value,
-            'expire_date' => $this->expire_date ? Jalalian::fromDateTime($this->expire_date)->format('Y/m/d') : null,
+            'id' => $this->resource->id,
+            'code' => $this->resource->code,
+            'type' => $this->resource->type,
+            'value' => $this->resource->value.' '.($this->resource->type === 'percentage' ? '%' : 'تومان'),
+            'max_value' => $this->resource->max_value,
+            'expire_date' => $this->resource->expire_date ? Jalalian::fromDateTime($this->resource->expire_date)->format('Y/m/d') : null,
         ];
     }
 }

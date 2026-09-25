@@ -12,8 +12,6 @@ class DiscountController extends Controller
 
     /**
      * Get the Discount.
-     *
-     * @param  Discount  $discount
      */
     public function getActiveDiscount(): JsonResponse
     {

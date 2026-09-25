@@ -5,10 +5,8 @@ namespace Domain\Payment\Repositories;
 use Application\Api\Payment\Requests\ManualPaymentRequest;
 use Application\Api\Payment\Resources\TransactionsResource;
 use Core\Http\Requests\TableRequest;
-use Domain\IdentityRecord\Models\IdentityRecord;
 use Domain\Payment\Models\Transaction;
 use Domain\Payment\Repositories\Contracts\IPaymentRepository;
-use Domain\Plan\Models\Plan;
 use Domain\User\Services\TelegramNotificationService;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -49,8 +47,6 @@ class PaymentRepository implements IPaymentRepository
 
     /**
      * Get the identityRecord.
-     *
-     * @param  IdentityRecord  $identityRecord
      */
     public function show(string $bankTransactionId): array
     {
@@ -85,40 +81,17 @@ class PaymentRepository implements IPaymentRepository
         $amount = intval($request->input('amount'));
 
         if ($request->input('type') == Transaction::IDENTITY) {
-            $identityRecord = IdentityRecord::where('user_id', Auth::user()->id)->first();
+            return [
+                'status' => 0,
+                'message' => __('site.identity_record_not_found'),
+            ];
+        }
 
-            if (! $identityRecord) {
-                return [
-                    'status' => 0,
-                    'message' => __('site.identity_record_not_found'),
-                ];
-            }
-
-            if ($identityRecord->status == IdentityRecord::INPROGRESS) {
-                return [
-                    'status' => 0,
-                    'message' => __('site.identity_record_is_already_in_progress'),
-                ];
-            }
-
-            if ($identityRecord->status != IdentityRecord::PENDING) {
-                return [
-                    'status' => 0,
-                    'message' => __('site.identity_record_is_already_paid'),
-                ];
-            }
-
-            $plan = Plan::find(config('plan.default_plan_id'));
-            $amount = intval($plan->amount);
-
-        } else {
-
-            if (empty(Auth::user()->verified_at)) {
-                return [
-                    'status' => 0,
-                    'message' => __('site.You must verify your account to top up your wallet'),
-                ];
-            }
+        if (empty(Auth::user()->verified_at)) {
+            return [
+                'status' => 0,
+                'message' => __('site.You must verify your account to top up your wallet'),
+            ];
         }
 
         $transaction = Transaction::create([
@@ -128,34 +101,22 @@ class PaymentRepository implements IPaymentRepository
             'image' => $request->input('image'),
             'user_id' => Auth::user()->id,
             'manual' => 1,
-            'model_id' => ! empty($identityRecord->id) ? $identityRecord->id : null,
+            'model_id' => null,
         ]);
 
-        if ($transaction) {
-            // update identity record status
-            if ($request->input('type') == Transaction::IDENTITY) {
-                $identityRecord->status = IdentityRecord::INPROGRESS;
-                $identityRecord->save();
-            }
-
-            $this->service->sendNotification(
-                config('telegram.chat_id'),
-                'پرداخت دستی جدید'.PHP_EOL.
-                'user_id '.Auth::user()->id.PHP_EOL.
-                'nickname '.Auth::user()->nickname.PHP_EOL.
-                'amount '.$amount.PHP_EOL.
-                'type '.$request->type
-            );
-
-            return [
-                'status' => 1,
-                'message' => __('site.transaction_created'),
-            ];
-        }
+        $this->service->sendNotification(
+            config('telegram.chat_id'),
+            'پرداخت دستی جدید'.PHP_EOL.
+            'user_id '.Auth::user()->id.PHP_EOL.
+            'nickname '.Auth::user()->nickname.PHP_EOL.
+            'amount '.$amount.PHP_EOL.
+            'type '.$request->type
+        );
 
         return [
-            'status' => 0,
-            'message' => __('site.transaction_failed'),
+            'status' => 1,
+            'message' => __('site.transaction_created'),
+            'transaction_id' => $transaction->id,
         ];
     }
 }

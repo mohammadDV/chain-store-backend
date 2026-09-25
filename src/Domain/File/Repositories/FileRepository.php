@@ -40,7 +40,7 @@ class FileRepository implements IFileRepository
             }
 
             return [
-                'status' => ! empty($imageResult) ? 1 : 0,
+                'status' => 1,
                 'url' => $imageResult,
             ];
         }
@@ -76,7 +76,7 @@ class FileRepository implements IFileRepository
             }
 
             return [
-                'status' => ! empty($videoResult) ? 1 : 0,
+                'status' => 1,
                 'url' => $videoResult,
             ];
         }
@@ -112,7 +112,7 @@ class FileRepository implements IFileRepository
             }
 
             return [
-                'status' => ! empty($fileResult) ? 1 : 0,
+                'status' => 1,
                 'url' => $fileResult,
             ];
         }

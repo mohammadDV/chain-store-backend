@@ -22,14 +22,13 @@ class NotificationService
 
     const WALLET = 'wallet';
 
+    const WITHDRAWAL = 'withdrawal';
+
     /**
      * Create and send notification
-     *
-     * @return LengthAwarePaginator
      */
-    public static function create(array $info, User $user, bool $hasEmail = true)
+    public static function create(array $info, User $user, bool $hasEmail = true): void
     {
-
         Notification::create([
             'title' => $info['title'],
             'content' => $info['content'],
@@ -43,6 +42,5 @@ class NotificationService
             $actionUrl = $info['action_url'] ?? null;
             $user->notify(new EmailNotification($info['title'], $info['content'], $actionUrl));
         }
-
     }
 }

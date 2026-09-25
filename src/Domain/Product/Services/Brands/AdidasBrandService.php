@@ -389,7 +389,7 @@ class AdidasBrandService implements BrandServiceInterface
         if (! empty($productData['images'])) {
 
             // Create or update images
-            foreach ($productData['images'] ?? [] as $key => $imagePath) {
+            foreach ($productData['images'] as $key => $imagePath) {
                 $product->files()->updateOrCreate(
                     [
                         'path' => $imagePath,
@@ -407,7 +407,7 @@ class AdidasBrandService implements BrandServiceInterface
         if (! empty($productData['size'])) {
 
             // Create or update sizes
-            foreach ($productData['size'] ?? [] as $key => $sizeTitle) {
+            foreach ($productData['size'] as $key => $sizeTitle) {
                 $size = $product->sizes()->updateOrCreate(
                     ['code' => trim($sizeTitle)],
                     [
@@ -417,7 +417,7 @@ class AdidasBrandService implements BrandServiceInterface
                     ]
                 );
                 $this->stockService->setQuantity(
-                    $size->id,
+                    (int) $size->getKey(),
                     (int) config('product.default_stock'),
                     InventoryTransactionSource::Scraper,
                     null,

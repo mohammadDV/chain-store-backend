@@ -87,7 +87,7 @@ class ProductCommand extends Command
 
                 $product = $brandService->storeProduct($productData, $endpoint->category_id, $endpoint->url, $endpoint->brand->id);
 
-                if (! empty($product?->id)) {
+                if (! empty($product->id)) {
                     $endpoint->update([
                         'status' => 1,
                     ]);

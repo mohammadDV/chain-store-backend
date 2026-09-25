@@ -34,6 +34,9 @@ class EditSetting extends EditRecord
 
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('edit', ['record' => $this->record->id]);
+        /** @var Setting $record */
+        $record = $this->getRecord();
+
+        return $this->getResource()::getUrl('edit', ['record' => $record->id]);
     }
 }

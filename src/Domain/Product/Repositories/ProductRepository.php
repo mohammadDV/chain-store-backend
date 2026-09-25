@@ -58,7 +58,9 @@ class ProductRepository implements IProductRepository
 
         $reviews = $this->getReviewsByRate($product->id);
 
-        $relatedProducts = json_decode($product->related_products, true);
+        $relatedProducts = is_array($product->related_products)
+            ? $product->related_products
+            : [];
         $relatedProducts = Product::query()
             ->active()
             ->whereIn('url', ! empty($relatedProducts) ? $relatedProducts : [])
@@ -171,8 +173,8 @@ class ProductRepository implements IProductRepository
 
         $categories = Category::query()
             ->whereIn('id', $product->categories->pluck('id'))
-            ?->pluck('id')
-            ?->toArray();
+            ->pluck('id')
+            ->toArray();
 
         $similarProducts = Product::query()
             ->active()

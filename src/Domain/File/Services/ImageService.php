@@ -57,13 +57,6 @@ class ImageService extends ImageToolsService
         // $result = Storage::disk('liara')->put($this->getFinalImageDirectory(), $image);
         // return  $S3Path = str_replace('https://storage.iran.liara.space', 'https://cdn.varzeshpod.com/' , Storage::disk('liara')->url($result));
         return $result;
-        // }else{
-        //     $result = Image::make($image->getRealPath())->save(public_path($this->getImageAddress()), null, $this->getImageFormat());
-        // }
-        // }
-
-        // return explode(config('filesystems.disks.s3.bucket') . "/",$S3Path)[1];
-        return env('APP_ENV') == 'production' ? explode(config('filesystems.disks.s3.bucket').'/', $S3Path)[1] : $this->getImageAddress();
     }
 
     public function fitAndSave($image, $width, $height)
@@ -73,11 +66,11 @@ class ImageService extends ImageToolsService
         // execute provider
         $this->provider();
         // save image
-        $result = $this->manager()->read($image->getRealPath())
+        $this->manager()->read($image->getRealPath())
             ->cover($width, $height)
             ->save(public_path($this->getImageAddress()));
 
-        return $result ? $this->getImageAddress() : false;
+        return $this->getImageAddress();
     }
 
     public function createIndexAndSave($image)
@@ -107,14 +100,10 @@ class ImageService extends ImageToolsService
             $this->provider();
 
             // save image
-            $result = $this->manager()->read($image->getRealPath())
+            $this->manager()->read($image->getRealPath())
                 ->cover($imageSize['width'], $imageSize['height'])
                 ->save(public_path($this->getImageAddress()));
-            if ($result) {
-                $indexArray[$sizeAlias] = $this->getImageAddress();
-            } else {
-                return false;
-            }
+            $indexArray[$sizeAlias] = $this->getImageAddress();
 
         }
         $images['indexArray'] = $indexArray;

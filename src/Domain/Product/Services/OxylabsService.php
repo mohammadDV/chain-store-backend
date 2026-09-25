@@ -11,20 +11,14 @@ class OxylabsService
     /**
      * Fetch product data from Oxylabs
      *
-     * @param  string  $identifier  The ASIN (Amazon) or Product ID (Bol.com)
-     * @param  string  $marketplace  The marketplace (e.g., 'amazon', 'bol')
-     * @param  ?string  $host  The host of the marketplace (e.g., 'kaufland.de')
+     * @param  string  $key  The Oxylabs parsing config key
+     * @param  string  $url  The product URL to scrape
      * @return array|null The product data or null on failure
      */
     public function fetchRequest($key, $url): ?array
     {
         // Build the parameters for the Oxylabs API
         $params = $this->buildParams($key, $url);
-
-        // if there
-        if (! $params) {
-            return null;
-        }
 
         try {
             $response = Http::withHeaders([
@@ -85,13 +79,12 @@ class OxylabsService
     }
 
     /**
-     * Build parameters for Oxylabs API based on marketplace
+     * Build parameters for Oxylabs API based on parsing key
      *
-     * @param  string  $identifier
-     * @param  string  $marketplace
-     * @param  ?string  $host
+     * @param  string  $key
+     * @param  string  $url
      */
-    private function buildParams($key, $url): ?array
+    private function buildParams($key, $url): array
     {
 
         $config = [

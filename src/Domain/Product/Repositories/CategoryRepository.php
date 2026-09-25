@@ -9,7 +9,6 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\ICategoryRepository;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -27,7 +26,7 @@ class CategoryRepository implements ICategoryRepository
     {
         $search = $request->get('query');
         $categories = Category::query()
-            ->with(['brand', 'childrenRecursive', 'parentRecursive'])
+            ->with(['brands', 'childrenRecursive', 'parentRecursive'])
             ->when(! empty($search), function ($query) use ($search) {
                 return $query->where('title', 'like', '%'.$search.'%');
             })
@@ -39,10 +38,8 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories.
-     *
-     * @return Collection
      */
-    public function activeProductCategories(?Brand $brand = null)
+    public function activeProductCategories(?Brand $brand = null): AnonymousResourceCollection
     {
         $categories = Category::query()
             // ->select('id', 'title', 'image')
@@ -70,10 +67,8 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the productCategories with all nested children recursively.
-     *
-     * @return Collection
      */
-    public function allCategories(?Brand $brand = null)
+    public function allCategories(?Brand $brand = null): AnonymousResourceCollection
     {
         $categories = Category::query()
             ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')
@@ -94,11 +89,8 @@ class CategoryRepository implements ICategoryRepository
 
     /**
      * Get the children of a specific category.
-     *
-     * @param  Brand  $brand
-     * @return Collection|AnonymousResourceCollection
      */
-    public function getCategoryChildren(Category $category)
+    public function getCategoryChildren(Category $category): AnonymousResourceCollection
     {
         $categories = Category::query()
             ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')

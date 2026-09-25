@@ -16,6 +16,9 @@ use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
+/**
+ * @property-read Form $form
+ */
 class AutoUpdateProducts extends Page implements HasForms
 {
     use InteractsWithForms;

@@ -90,20 +90,12 @@ class WalletRepository implements IWalletRepository
             'user_id' => Auth::user()->id,
         ]);
 
-        $code = Transaction::generateHash($transaction->id);
+        $code = Transaction::generateHash((string) $transaction->id);
 
-        if ($transaction) {
-            return [
-                'status' => 1,
-                'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
-            ];
-        }
-
-        return response()->json([
-            'status' => 0,
-            'message' => __('site.Top-up failed. Please try again.'),
-        ], Response::HTTP_BAD_REQUEST);
-
+        return [
+            'status' => 1,
+            'url' => route('user.payment').'?transaction='.$transaction->id.'&sign='.$code,
+        ];
     }
 
     /**
@@ -135,7 +127,7 @@ class WalletRepository implements IWalletRepository
                     'content' => __('site.wallet_topup_content'),
                     'id' => $walletTransaction->wallet->id,
                     'type' => NotificationService::WALLET,
-                ], $walletTransaction?->wallet?->user);
+                ], $walletTransaction->wallet->user);
 
                 return $walletTransaction->fresh(['wallet.user']);
             });
@@ -250,7 +242,9 @@ class WalletRepository implements IWalletRepository
      */
     public function incrementBalance(Wallet $wallet, float $amount): bool
     {
-        return $wallet->increment('balance', $amount);
+        $wallet->increment('balance', $amount);
+
+        return true;
     }
 
     /**
@@ -258,7 +252,9 @@ class WalletRepository implements IWalletRepository
      */
     public function decrementBalance(Wallet $wallet, float $amount): bool
     {
-        return $wallet->decrement('balance', $amount);
+        $wallet->decrement('balance', $amount);
+
+        return true;
     }
 
     /**
@@ -291,7 +287,7 @@ class WalletRepository implements IWalletRepository
                     wallet: $wallet,
                     amount: -$amount,
                     type: WalletTransaction::WITHDRAWAL,
-                    description: $description ?? __('site.wallet_transaction_wallet_withdrawal'),
+                    description: $description,
                     status: WalletTransaction::COMPLETED
                 );
 
