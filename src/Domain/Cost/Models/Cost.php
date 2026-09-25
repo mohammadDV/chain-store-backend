@@ -2,17 +2,12 @@
 
 namespace Domain\Cost\Models;
 
-use Database\Factories\ClaimFactory;
 use Domain\User\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Cost extends Model
 {
-    /** @use HasFactory<ClaimFactory> */
-    use HasFactory;
-
     const PENDING = 'pending';
 
     const PAID = 'paid';

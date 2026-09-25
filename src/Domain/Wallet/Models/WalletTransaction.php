@@ -2,12 +2,17 @@
 
 namespace Domain\Wallet\Models;
 
+use Database\Factories\WalletTransactionFactory;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WalletTransaction extends Model
 {
+    /** @use HasFactory<WalletTransactionFactory> */
+    use HasFactory;
+
     const PENDING = 'pending';
 
     const COMPLETED = 'completed';
@@ -73,5 +78,10 @@ class WalletTransaction extends Model
         } while ($exists);
 
         return (string) $reference;
+    }
+
+    protected static function newFactory(): WalletTransactionFactory
+    {
+        return WalletTransactionFactory::new();
     }
 }

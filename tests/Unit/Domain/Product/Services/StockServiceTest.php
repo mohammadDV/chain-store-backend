@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\Product\Services;
 
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;

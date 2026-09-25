@@ -42,4 +42,9 @@ class WithdrawalTransaction extends Model
 
         return (string) $reference;
     }
+
+    protected static function newFactory(): WithdrawalTransactionFactory
+    {
+        return WithdrawalTransactionFactory::new();
+    }
 }

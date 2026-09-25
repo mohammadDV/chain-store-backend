@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Notification;
+use Domain\Notification\Models\Notification;
+use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,15 +11,18 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class NotificationFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
+    protected $model = Notification::class;
+
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->sentence(3),
+            'content' => fake()->sentence(),
+            'user_id' => User::factory(),
+            'status' => 1,
+            'read' => 0,
+            'model_id' => null,
+            'model_type' => null,
         ];
     }
 }

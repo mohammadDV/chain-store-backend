@@ -15,6 +15,11 @@ class Category extends Model
 
     protected $guarded = [];
 
+    protected static function newFactory(): CategoryFactory
+    {
+        return CategoryFactory::new();
+    }
+
     /**
      * Get the brands that belong to the category.
      */

@@ -12,6 +12,7 @@ class File extends Model
     use HasFactory;
 
     protected $fillable = [
+        'product_id',
         'path',
         'type',
         'status',
@@ -29,5 +30,10 @@ class File extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    protected static function newFactory(): FileFactory
+    {
+        return FileFactory::new();
     }
 }

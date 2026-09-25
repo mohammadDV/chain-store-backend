@@ -3,13 +3,10 @@
 namespace Domain\Setting\Models;
 
 use Domain\Setting\Services\SettingService;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'profit_rate',
         'exchange_rate',

@@ -5,6 +5,7 @@ namespace Domain\Product\Models;
 use Database\Factories\DiscountFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Discount extends Model
 {
@@ -36,7 +37,7 @@ class Discount extends Model
             return false;
         }
 
-        if ($this->expire_date && $this->expire_date < now()) {
+        if ($this->expire_date && $this->expire_date < Carbon::now()) {
             return false;
         }
 
@@ -60,5 +61,10 @@ class Discount extends Model
         }
 
         return $this->value;
+    }
+
+    protected static function newFactory(): DiscountFactory
+    {
+        return DiscountFactory::new();
     }
 }

@@ -17,6 +17,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -346,7 +347,7 @@ class AuthController extends Controller
         }
 
         // Check if token is expired (60 minutes)
-        if (now()->diffInMinutes($resetRecord->created_at) > 60) {
+        if (Carbon::parse($resetRecord->created_at)->lt(now()->subMinutes(60))) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
             return response([
@@ -392,7 +393,7 @@ class AuthController extends Controller
         }
 
         // Check if token is expired (60 minutes)
-        if (now()->diffInMinutes($resetRecord->created_at) > 60) {
+        if (Carbon::parse($resetRecord->created_at)->lt(now()->subMinutes(60))) {
             DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
             return response([

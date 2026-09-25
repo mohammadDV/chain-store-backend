@@ -38,6 +38,7 @@ class Order extends Model
 
     protected $casts = [
         'active' => 'integer',
+        'expire_date' => 'datetime',
     ];
 
     public function products(): BelongsToMany

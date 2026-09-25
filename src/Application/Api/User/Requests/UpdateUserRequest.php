@@ -31,7 +31,7 @@ class UpdateUserRequest extends FormRequest
             'profile_photo_path' => ['nullable', 'string'],
             'bg_photo_path' => ['nullable', 'string'],
             'mobile' => ['required', 'string', 'min:11', 'max:15'],
-            'status' => ['required', 'in:0,1'],
+            'status' => ['sometimes', 'in:0,1'],
         ];
     }
 }

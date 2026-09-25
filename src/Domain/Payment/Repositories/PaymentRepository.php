@@ -29,8 +29,10 @@ class PaymentRepository implements IPaymentRepository
         $transactions = Transaction::query()
             ->where('user_id', Auth::user()->id)
             ->when(! empty($search), function ($query) use ($search) {
-                return $query->where('bank_transaction_id', 'like', '%'.$search.'%')
-                    ->orWhere('reference', 'like', '%'.$search.'%');
+                return $query->where(function ($nested) use ($search) {
+                    $nested->where('bank_transaction_id', 'like', '%'.$search.'%')
+                        ->orWhere('reference', 'like', '%'.$search.'%');
+                });
             })
             ->when(! empty($type), function ($query) use ($type) {
                 return $query->where('model_type', $type);
