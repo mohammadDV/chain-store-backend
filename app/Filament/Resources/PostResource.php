@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\PostResource\Pages\CreatePost;
 use App\Filament\Resources\PostResource\Pages\EditPost;
 use App\Filament\Resources\PostResource\Pages\ListPosts;
@@ -31,7 +32,14 @@ use Morilog\Jalali\Jalalian;
 
 class PostResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Post::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'posts';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-document-text';
 

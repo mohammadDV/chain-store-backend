@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\NotificationResource\Pages\ListNotifications;
 use App\Filament\Resources\NotificationResource\Pages\ViewNotification;
@@ -25,7 +26,14 @@ use Morilog\Jalali\Jalalian;
 
 class NotificationResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Notification::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'notifications';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell';
 

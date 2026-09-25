@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletResource\Pages\ListWallets;
 use App\Filament\Resources\WalletResource\Pages\ViewWallet;
@@ -26,7 +27,14 @@ use Morilog\Jalali\Jalalian;
 
 class WalletResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Wallet::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'wallets';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-wallet';
 

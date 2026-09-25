@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
 use App\Filament\Resources\ProductResource\Pages\ListProducts;
@@ -9,9 +11,11 @@ use App\Filament\Resources\ProductResource\Pages\ViewProduct;
 use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\ProductAttributeRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
+use Domain\User\Models\User;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -32,11 +36,25 @@ use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
 class ProductResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Product::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'products';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'brand_id';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cube';
 
@@ -132,7 +150,19 @@ class ProductResource extends Resource
                             ->schema([
                                 Select::make('brand_id')
                                     ->label(__('site.brand'))
-                                    ->relationship('brand', 'title')
+                                    ->relationship(
+                                        name: 'brand',
+                                        titleAttribute: 'title',
+                                        modifyQueryUsing: function (Builder $query): Builder {
+                                            $user = Auth::user();
+                                            if (! $user instanceof User) {
+                                                return $query->whereRaw('1 = 0');
+                                            }
+
+                                            return app(AdminAccessService::class)
+                                                ->scopeBrandQuery($query, $user, 'id');
+                                        }
+                                    )
                                     ->searchable()
                                     ->required(),
                                 Select::make('categories')

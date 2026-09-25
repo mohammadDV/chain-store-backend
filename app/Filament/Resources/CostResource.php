@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\CostResource\Pages\CreateCost;
 use App\Filament\Resources\CostResource\Pages\EditCost;
 use App\Filament\Resources\CostResource\Pages\ListCosts;
@@ -29,7 +30,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CostResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Cost::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'costs';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 

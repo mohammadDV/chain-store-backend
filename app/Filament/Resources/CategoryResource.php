@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\CategoryResource\Pages\CreateCategory;
 use App\Filament\Resources\CategoryResource\Pages\EditCategory;
 use App\Filament\Resources\CategoryResource\Pages\ListCategories;
@@ -26,7 +28,20 @@ use Filament\Tables\Table;
 
 class CategoryResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Category::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'categories';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'brands';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-group';
 

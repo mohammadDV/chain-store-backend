@@ -3,10 +3,12 @@
 namespace App\Filament\Pages;
 
 use App\Filament\Resources\ProductResource;
-use Domain\Brand\Models\Brand;
+use Domain\AdminAccess\AdminPermission;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Product\Exceptions\ProductScraperException;
 use Domain\Product\Models\Category as ProductCategory;
 use Domain\Product\Services\ProductScraperService;
+use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Select;
@@ -18,6 +20,7 @@ use Filament\Pages\Page;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @property-read Schema $form
@@ -50,6 +53,18 @@ class AutoUpdateProducts extends Page implements HasForms
         return __('site.auto_update_products');
     }
 
+    public static function canAccess(): bool
+    {
+        $user = Auth::user();
+
+        return $user instanceof User && $user->can(AdminPermission::PRODUCTS_AUTO_UPDATE);
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return static::canAccess();
+    }
+
     public function getTitle(): string
     {
         return __('site.auto_update_products');
@@ -57,6 +72,8 @@ class AutoUpdateProducts extends Page implements HasForms
 
     public function mount(): void
     {
+        abort_unless(static::canAccess(), 403);
+
         $this->form->fill([
             'mode' => 'url',
         ]);
@@ -80,7 +97,16 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->required(),
                         Select::make('brand_id')
                             ->label(__('site.brand'))
-                            ->options(fn () => Brand::query()->orderBy('title')->pluck('title', 'id'))
+                            ->options(function () {
+                                $user = Auth::user();
+                                if (! $user instanceof User) {
+                                    return [];
+                                }
+
+                                return app(AdminAccessService::class)
+                                    ->brandsQueryFor($user)
+                                    ->pluck('title', 'id');
+                            })
                             ->searchable()
                             ->preload()
                             ->required()

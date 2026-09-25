@@ -2,16 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderProductsRelationManager;
 use Core\Helpers\HelperClass;
+use Domain\AdminAccess\AdminPermission;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Notification\Services\NotificationService;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Size;
+use Domain\User\Models\User;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Actions\Action;
@@ -32,6 +36,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Mpdf\Mpdf;
@@ -39,7 +44,14 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Order::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'orders';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-cart';
 
@@ -288,25 +300,63 @@ class OrderResource extends Resource
                     ->label(__('site.change_status'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('info')
+                    ->visible(function (): bool {
+                        $user = Auth::user();
+
+                        return $user instanceof User
+                            && ($user->can(AdminPermission::ORDERS_CHANGE_STATUS) || $user->can(AdminPermission::ORDERS_REFUND));
+                    })
                     ->schema([
                         Select::make('status')
                             ->label(__('site.status'))
-                            ->options([
-                                Order::PENDING => __('site.pending'),
-                                Order::PAID => __('site.paid'),
-                                Order::CANCELLED => __('site.cancelled'),
-                                Order::SHIPPED => __('site.shipped'),
-                                Order::DELIVERED => __('site.delivered'),
-                                Order::RETURNED => __('site.returned'),
-                                Order::REFUNDED => __('site.refunded'),
-                                Order::FAILED => __('site.failed'),
-                                Order::EXPIRED => __('site.expired'),
-                            ])
+                            ->options(function (): array {
+                                $options = [
+                                    Order::PENDING => __('site.pending'),
+                                    Order::PAID => __('site.paid'),
+                                    Order::CANCELLED => __('site.cancelled'),
+                                    Order::SHIPPED => __('site.shipped'),
+                                    Order::DELIVERED => __('site.delivered'),
+                                    Order::RETURNED => __('site.returned'),
+                                    Order::FAILED => __('site.failed'),
+                                    Order::EXPIRED => __('site.expired'),
+                                ];
+
+                                $user = Auth::user();
+                                if ($user instanceof User && $user->can(AdminPermission::ORDERS_REFUND)) {
+                                    $options[Order::REFUNDED] = __('site.refunded');
+                                }
+
+                                return $options;
+                            })
                             ->default(fn ($record) => $record->status)
                             ->required()
                             ->native(false),
                     ])
                     ->action(function ($record, array $data) {
+                        $user = Auth::user();
+                        if (! $user instanceof User) {
+                            return;
+                        }
+
+                        if ($data['status'] === Order::REFUNDED) {
+                            if (! $user->can(AdminPermission::ORDERS_REFUND)) {
+                                Notification::make()
+                                    ->title(__('site.error'))
+                                    ->body(__('site.unauthorized'))
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+                        } elseif (! $user->can(AdminPermission::ORDERS_CHANGE_STATUS)) {
+                            Notification::make()
+                                ->title(__('site.error'))
+                                ->body(__('site.unauthorized'))
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
 
                         $exists = DB::table('order_product')
                             ->where('order_id', $record->id)
@@ -400,8 +450,15 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->with(['user:id,nickname,first_name,last_name', 'products:id,title,code,image,url,status']);
+
+        $user = Auth::user();
+        if (! $user instanceof User) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return app(AdminAccessService::class)->scopeBrandQuery($query, $user, 'products');
     }
 
     /**

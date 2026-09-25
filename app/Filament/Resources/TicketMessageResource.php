@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\TicketMessageResource\Pages\CreateTicketMessage;
 use App\Filament\Resources\TicketMessageResource\Pages\EditTicketMessage;
 use App\Filament\Resources\TicketMessageResource\Pages\ListTicketMessages;
@@ -23,7 +24,14 @@ use Filament\Tables\Table;
 
 class TicketMessageResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = TicketMessage::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'ticket_messages';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left';
 

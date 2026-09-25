@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\SettingResource\Pages\EditSetting;
 use App\Filament\Resources\SettingResource\Pages\ListSettings;
 use Closure;
@@ -14,7 +15,14 @@ use Filament\Tables\Table;
 
 class SettingResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Setting::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'settings';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 

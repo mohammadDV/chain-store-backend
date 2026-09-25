@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\CostCategoryResource\Pages\CreateCostCategory;
 use App\Filament\Resources\CostCategoryResource\Pages\EditCostCategory;
 use App\Filament\Resources\CostCategoryResource\Pages\ListCostCategories;
@@ -24,7 +25,14 @@ use Filament\Tables\Table;
 
 class CostCategoryResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = CostCategory::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'cost_categories';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 

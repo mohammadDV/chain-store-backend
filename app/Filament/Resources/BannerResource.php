@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\BannerResource\Pages\CreateBanner;
 use App\Filament\Resources\BannerResource\Pages\EditBanner;
 use App\Filament\Resources\BannerResource\Pages\ListBanners;
 use App\Filament\Resources\BannerResource\Pages\ViewBanner;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Brand\Models\Banner;
+use Domain\User\Models\User;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -21,10 +25,25 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class BannerResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Banner::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'banners';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'brand_id';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-photo';
 
@@ -66,7 +85,19 @@ class BannerResource extends Resource
                             ->schema([
                                 Select::make('brand_id')
                                     ->label(__('site.brand'))
-                                    ->relationship('brand', 'title')
+                                    ->relationship(
+                                        name: 'brand',
+                                        titleAttribute: 'title',
+                                        modifyQueryUsing: function (Builder $query): Builder {
+                                            $user = Auth::user();
+                                            if (! $user instanceof User) {
+                                                return $query->whereRaw('1 = 0');
+                                            }
+
+                                            return app(AdminAccessService::class)
+                                                ->scopeBrandQuery($query, $user, 'id');
+                                        }
+                                    )
                                     ->searchable()
                                     ->preload()
                                     ->nullable()

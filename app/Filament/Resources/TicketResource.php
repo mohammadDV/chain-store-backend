@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TicketResource\Pages\EditTicket;
 use App\Filament\Resources\TicketResource\Pages\ListTickets;
@@ -23,7 +24,14 @@ use Filament\Tables\Table;
 
 class TicketResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Ticket::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'tickets';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
 

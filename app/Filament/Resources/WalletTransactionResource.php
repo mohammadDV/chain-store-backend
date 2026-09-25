@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletTransactionResource\Pages\ListWalletTransactions;
 use App\Filament\Resources\WalletTransactionResource\Pages\ViewWalletTransaction;
@@ -21,7 +22,14 @@ use Morilog\Jalali\Jalalian;
 
 class WalletTransactionResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = WalletTransaction::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'wallet_transactions';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 

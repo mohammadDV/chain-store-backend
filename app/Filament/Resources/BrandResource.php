@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\BrandResource\Pages\CreateBrand;
 use App\Filament\Resources\BrandResource\Pages\EditBrand;
 use App\Filament\Resources\BrandResource\Pages\ListBrands;
@@ -27,7 +29,20 @@ use Filament\Tables\Table;
 
 class BrandResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Brand::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'brands';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'id';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
