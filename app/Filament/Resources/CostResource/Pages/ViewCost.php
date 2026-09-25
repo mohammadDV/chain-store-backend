@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\CostResource\Pages;
 
-use Filament\Actions\EditAction;
 use App\Filament\Resources\CostResource;
-use Filament\Actions;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewCost extends ViewRecord

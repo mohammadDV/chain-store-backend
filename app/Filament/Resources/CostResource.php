@@ -2,26 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\Action;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\CostResource\Pages\ListCosts;
 use App\Filament\Resources\CostResource\Pages\CreateCost;
-use App\Filament\Resources\CostResource\Pages\ViewCost;
 use App\Filament\Resources\CostResource\Pages\EditCost;
-use App\Filament\Resources\CostResource\Pages;
+use App\Filament\Resources\CostResource\Pages\ListCosts;
+use App\Filament\Resources\CostResource\Pages\ViewCost;
 use Domain\Cost\Models\Cost;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
@@ -33,9 +31,9 @@ class CostResource extends Resource
 {
     protected static ?string $model = Cost::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-banknotes';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Cost';
+    protected static string|\UnitEnum|null $navigationGroup = 'Cost';
 
     protected static ?int $navigationSort = 1;
 

@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\DiscountResource\Pages;
 
-use Filament\Actions\ViewAction;
 use App\Filament\Resources\DiscountResource;
-use Filament\Actions;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditDiscount extends EditRecord

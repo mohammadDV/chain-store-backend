@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\InventoryTransactionResource\Pages;
 
-use Filament\Schemas\Schema;
 use App\Filament\Resources\InventoryTransactionResource;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
@@ -11,6 +10,7 @@ use Domain\Product\Models\Size;
 use Domain\Product\Services\StockService;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
+use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;

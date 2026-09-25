@@ -2,28 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletResource\Pages\ListWallets;
 use App\Filament\Resources\WalletResource\Pages\ViewWallet;
-use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\WalletResource\Pages;
 use App\Filament\Resources\WalletResource\RelationManagers\WalletTransactionsRelationManager;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Morilog\Jalali\Jalalian;
 
@@ -31,9 +28,9 @@ class WalletResource extends Resource
 {
     protected static ?string $model = Wallet::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-wallet';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-wallet';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
+    protected static string|\UnitEnum|null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 1;
 

@@ -2,35 +2,32 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\FileUpload;
-use Filament\Support\Enums\TextSize;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\EditAction;
-use App\Filament\Resources\TicketMessageResource\Pages\ListTicketMessages;
 use App\Filament\Resources\TicketMessageResource\Pages\CreateTicketMessage;
 use App\Filament\Resources\TicketMessageResource\Pages\EditTicketMessage;
+use App\Filament\Resources\TicketMessageResource\Pages\ListTicketMessages;
 use App\Filament\Resources\TicketMessageResource\Pages\ViewTicketMessage;
-use App\Filament\Resources\TicketMessageResource\Pages;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketMessage;
 use Domain\User\Models\User;
-use Filament\Forms;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class TicketMessageResource extends Resource
 {
     protected static ?string $model = TicketMessage::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Support';
+    protected static string|\UnitEnum|null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 23;
 

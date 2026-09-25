@@ -2,26 +2,24 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\BrandResource\Pages\ListBrands;
 use App\Filament\Resources\BrandResource\Pages\CreateBrand;
-use App\Filament\Resources\BrandResource\Pages\ViewBrand;
 use App\Filament\Resources\BrandResource\Pages\EditBrand;
-use App\Filament\Resources\BrandResource\Pages;
+use App\Filament\Resources\BrandResource\Pages\ListBrands;
+use App\Filament\Resources\BrandResource\Pages\ViewBrand;
 use App\Filament\Resources\BrandResource\RelationManagers\BannersRelationManager;
 use Domain\Brand\Models\Brand;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -31,7 +29,7 @@ class BrandResource extends Resource
 {
     protected static ?string $model = Brand::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?int $navigationSort = 1;
 

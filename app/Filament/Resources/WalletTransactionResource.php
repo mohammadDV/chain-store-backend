@@ -2,22 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ViewAction;
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletTransactionResource\Pages\ListWalletTransactions;
 use App\Filament\Resources\WalletTransactionResource\Pages\ViewWalletTransaction;
-use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\WalletTransactionResource\Pages;
 use App\Filament\Resources\WalletTransactionResource\RelationManagers\WalletRelationManager;
 use Domain\Wallet\Models\WalletTransaction;
-use Filament\Forms;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
@@ -26,9 +23,9 @@ class WalletTransactionResource extends Resource
 {
     protected static ?string $model = WalletTransaction::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrows-right-left';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
+    protected static string|\UnitEnum|null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 10;
 

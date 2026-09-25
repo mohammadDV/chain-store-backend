@@ -2,22 +2,20 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\ColorResource\Pages\ListColors;
 use App\Filament\Resources\ColorResource\Pages\CreateColor;
-use App\Filament\Resources\ColorResource\Pages\ViewColor;
 use App\Filament\Resources\ColorResource\Pages\EditColor;
-use App\Filament\Resources\ColorResource\Pages;
+use App\Filament\Resources\ColorResource\Pages\ListColors;
+use App\Filament\Resources\ColorResource\Pages\ViewColor;
 use Domain\Product\Models\Color;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -27,7 +25,7 @@ class ColorResource extends Resource
 {
     protected static ?string $model = Color::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-swatch';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 
     protected static ?int $navigationSort = 12;
 

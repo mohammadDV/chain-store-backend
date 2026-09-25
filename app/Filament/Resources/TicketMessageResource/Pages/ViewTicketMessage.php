@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\TicketMessageResource\Pages;
 
-use Filament\Actions\EditAction;
 use App\Filament\Resources\TicketMessageResource;
-use Filament\Actions;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewTicketMessage extends ViewRecord

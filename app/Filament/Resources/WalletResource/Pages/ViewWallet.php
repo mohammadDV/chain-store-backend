@@ -2,12 +2,11 @@
 
 namespace App\Filament\Resources\WalletResource\Pages;
 
-use Filament\Actions\Action;
 use App\Filament\Resources\WalletResource;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;

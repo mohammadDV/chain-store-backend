@@ -2,22 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Support\Enums\TextSize;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\Action;
-use App\Filament\Resources\TicketResource\Pages\ListTickets;
-use App\Filament\Resources\TicketResource\Pages\EditTicket;
-use App\Filament\Resources\TicketResource\Pages\ViewTicket;
 use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\TicketResource\Pages;
+use App\Filament\Resources\TicketResource\Pages\EditTicket;
+use App\Filament\Resources\TicketResource\Pages\ListTickets;
+use App\Filament\Resources\TicketResource\Pages\ViewTicket;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketSubject;
 use Domain\User\Models\User;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -26,9 +25,9 @@ class TicketResource extends Resource
 {
     protected static ?string $model = Ticket::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-ticket';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Support';
+    protected static string|\UnitEnum|null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 4;
 

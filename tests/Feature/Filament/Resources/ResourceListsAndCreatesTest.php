@@ -24,6 +24,7 @@ use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\WalletTransactionResource\Pages\ListWalletTransactions;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
+use Domain\Setting\Models\Setting;
 use Domain\Ticket\Models\TicketSubject;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -107,7 +108,7 @@ it('redirects settings index to the single edit page', function () {
 });
 
 it('opens the settings edit page', function () {
-    $setting = \Domain\Setting\Models\Setting::getInstance();
+    $setting = Setting::getInstance();
 
     livewire(EditSetting::class, ['record' => $setting->getRouteKey()])
         ->assertSuccessful();

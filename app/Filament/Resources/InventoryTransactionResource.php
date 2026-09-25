@@ -2,29 +2,27 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\DatePicker;
-use Filament\Actions\ViewAction;
-use Filament\Schemas\Components\Utilities\Set;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Placeholder;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Forms\Components\Select;
-use App\Filament\Resources\InventoryTransactionResource\Pages\ListInventoryTransactions;
 use App\Filament\Resources\InventoryTransactionResource\Pages\CreateInventoryTransaction;
+use App\Filament\Resources\InventoryTransactionResource\Pages\ListInventoryTransactions;
 use App\Filament\Resources\InventoryTransactionResource\Pages\ViewInventoryTransaction;
-use App\Filament\Resources\InventoryTransactionResource\Pages;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
 use Domain\Product\Models\InventoryTransaction;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
-use Filament\Forms;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -36,7 +34,7 @@ class InventoryTransactionResource extends Resource
 {
     protected static ?string $model = InventoryTransaction::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 12;
 
@@ -300,7 +298,7 @@ class InventoryTransactionResource extends Resource
     /**
      * Schema used by the create / adjust page (not persisted directly).
      *
-     * @return array<int, \Filament\Schemas\Components\Component>
+     * @return array<int, Component>
      */
     public static function adjustFormSchema(): array
     {

@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\BrandResource\Pages;
 
-use Filament\Actions\EditAction;
 use App\Filament\Resources\BrandResource;
 use Filament\Actions;
+use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
 class ViewBrand extends ViewRecord

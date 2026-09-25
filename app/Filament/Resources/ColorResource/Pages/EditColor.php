@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\ColorResource\Pages;
 
-use Filament\Actions\ViewAction;
 use App\Filament\Resources\ColorResource;
-use Filament\Actions;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditColor extends EditRecord

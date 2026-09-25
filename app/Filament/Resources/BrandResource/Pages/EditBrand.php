@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\BrandResource\Pages;
 
-use Filament\Actions\ViewAction;
 use App\Filament\Resources\BrandResource;
 use Filament\Actions;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Str;
 

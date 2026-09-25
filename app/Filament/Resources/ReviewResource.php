@@ -2,27 +2,25 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\Action;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\ReviewResource\Pages\ListReviews;
-use App\Filament\Resources\ReviewResource\Pages\CreateReview;
-use App\Filament\Resources\ReviewResource\Pages\ViewReview;
-use App\Filament\Resources\ReviewResource\Pages\EditReview;
 use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\ReviewResource\Pages;
+use App\Filament\Resources\ReviewResource\Pages\CreateReview;
+use App\Filament\Resources\ReviewResource\Pages\EditReview;
+use App\Filament\Resources\ReviewResource\Pages\ListReviews;
+use App\Filament\Resources\ReviewResource\Pages\ViewReview;
 use Domain\Review\Models\Review;
 use Domain\User\Models\User;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -33,7 +31,7 @@ class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     protected static ?int $navigationSort = 14;
 

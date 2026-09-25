@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\CategoryResource\Pages;
 
-use Filament\Actions\ViewAction;
 use App\Filament\Resources\CategoryResource;
 use Filament\Actions;
+use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditCategory extends EditRecord

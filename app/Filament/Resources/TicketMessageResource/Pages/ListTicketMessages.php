@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\TicketMessageResource\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Resources\TicketMessageResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListTicketMessages extends ListRecords

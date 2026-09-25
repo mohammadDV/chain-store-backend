@@ -14,7 +14,7 @@ beforeEach(function () {
 });
 
 it('mounts the auto update products page', function () {
-    $scraper = \Mockery::mock(ProductScraperService::class);
+    $scraper = Mockery::mock(ProductScraperService::class);
     $this->app->instance(ProductScraperService::class, $scraper);
 
     livewire(AutoUpdateProducts::class)

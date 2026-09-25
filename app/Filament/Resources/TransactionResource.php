@@ -2,25 +2,23 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\Action;
+use App\Filament\Filters\UserIdFilter;
+use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
 use App\Filament\Resources\TransactionResource\Pages\ListTransactions;
 use App\Filament\Resources\TransactionResource\Pages\ViewTransaction;
-use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
-use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\TransactionResource\Pages;
 use Domain\Payment\Models\Transaction;
-use Filament\Forms;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Morilog\Jalali\Jalalian;
@@ -29,9 +27,9 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
+    protected static string|\UnitEnum|null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 1;
 

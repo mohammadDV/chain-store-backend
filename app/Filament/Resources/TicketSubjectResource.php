@@ -2,24 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Hidden;
-use Filament\Forms\Components\Select;
-use Filament\Support\Enums\TextSize;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\EditAction;
-use App\Filament\Resources\TicketSubjectResource\Pages\ListTicketSubjects;
 use App\Filament\Resources\TicketSubjectResource\Pages\CreateTicketSubject;
 use App\Filament\Resources\TicketSubjectResource\Pages\EditTicketSubject;
+use App\Filament\Resources\TicketSubjectResource\Pages\ListTicketSubjects;
 use App\Filament\Resources\TicketSubjectResource\Pages\ViewTicketSubject;
-use App\Filament\Resources\TicketSubjectResource\Pages;
 use Domain\Ticket\Models\TicketSubject;
-use Filament\Forms;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Enums\TextSize;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,9 +24,9 @@ class TicketSubjectResource extends Resource
 {
     protected static ?string $model = TicketSubject::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Support';
+    protected static string|\UnitEnum|null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 24;
 

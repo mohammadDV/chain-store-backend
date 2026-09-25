@@ -2,24 +2,22 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Actions\ViewAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Resources\CostCategoryResource\Pages\ListCostCategories;
 use App\Filament\Resources\CostCategoryResource\Pages\CreateCostCategory;
-use App\Filament\Resources\CostCategoryResource\Pages\ViewCostCategory;
 use App\Filament\Resources\CostCategoryResource\Pages\EditCostCategory;
-use App\Filament\Resources\CostCategoryResource\Pages;
+use App\Filament\Resources\CostCategoryResource\Pages\ListCostCategories;
+use App\Filament\Resources\CostCategoryResource\Pages\ViewCostCategory;
 use Domain\Cost\Models\CostCategory;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -28,9 +26,9 @@ class CostCategoryResource extends Resource
 {
     protected static ?string $model = CostCategory::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-folder';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Cost';
+    protected static string|\UnitEnum|null $navigationGroup = 'Cost';
 
     protected static ?int $navigationSort = 2;
 

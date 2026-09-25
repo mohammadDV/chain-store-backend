@@ -2,22 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Closure;
-use App\Filament\Resources\SettingResource\Pages\ListSettings;
 use App\Filament\Resources\SettingResource\Pages\EditSetting;
-use App\Filament\Resources\SettingResource\Pages;
+use App\Filament\Resources\SettingResource\Pages\ListSettings;
+use Closure;
 use Domain\Setting\Models\Setting;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 
 class SettingResource extends Resource
 {
     protected static ?string $model = Setting::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static ?int $navigationSort = 100;
 

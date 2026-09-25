@@ -2,32 +2,31 @@
 
 namespace App\Filament\Pages;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Actions\Action;
 use App\Filament\Resources\ProductResource;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Exceptions\ProductScraperException;
 use Domain\Product\Models\Category as ProductCategory;
 use Domain\Product\Services\ProductScraperService;
-use Filament\Forms;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 
 /**
- * @property-read \Filament\Schemas\Schema $form
+ * @property-read Schema $form
  */
 class AutoUpdateProducts extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 
     protected string $view = 'filament.pages.auto-update-products';
 

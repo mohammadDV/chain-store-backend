@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\CostResource\Pages;
 
-use Filament\Actions\CreateAction;
 use App\Filament\Resources\CostResource;
-use Filament\Actions;
+use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListCosts extends ListRecords

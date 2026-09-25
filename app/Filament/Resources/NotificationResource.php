@@ -2,20 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\DatePicker;
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\NotificationResource\Pages\ListNotifications;
 use App\Filament\Resources\NotificationResource\Pages\ViewNotification;
-use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\NotificationResource\Pages;
 use Domain\Notification\Models\Notification;
-use Filament\Forms;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -29,7 +27,7 @@ class NotificationResource extends Resource
 {
     protected static ?string $model = Notification::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bell';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell';
 
     protected static ?int $navigationSort = 19;
 

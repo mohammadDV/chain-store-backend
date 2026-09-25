@@ -2,28 +2,26 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Tables\Filters\SelectFilter;
-use Filament\Actions\ViewAction;
-use Filament\Actions\Action;
-use Exception;
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages\ListWithdrawalTransactions;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages\ViewWithdrawalTransaction;
-use App\Filament\Filters\UserIdFilter;
-use App\Filament\Resources\WithdrawalTransactionResource\Pages;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\WalletTransaction;
 use Domain\Wallet\Models\WithdrawalTransaction;
+use Exception;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
@@ -33,9 +31,9 @@ class WithdrawalTransactionResource extends Resource
 {
     protected static ?string $model = WithdrawalTransaction::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-down-tray';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
+    protected static string|\UnitEnum|null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 9;
 
