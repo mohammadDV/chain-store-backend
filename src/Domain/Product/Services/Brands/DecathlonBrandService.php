@@ -3,11 +3,11 @@
 namespace Domain\Product\Services\Brands;
 
 use Domain\Brand\Models\Brand;
+use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
-use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Services\StockService;
 
 /**
