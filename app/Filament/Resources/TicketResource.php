@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TicketResource\Pages;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketSubject;
@@ -115,6 +116,7 @@ class TicketResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                UserIdFilter::make(),
                 SelectFilter::make('status')
                     ->options([
                         'active' => __('site.active'),

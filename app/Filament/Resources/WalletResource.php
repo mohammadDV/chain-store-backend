@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletResource\Pages;
 use App\Filament\Resources\WalletResource\RelationManagers\WalletTransactionsRelationManager;
 use Domain\Notification\Services\NotificationService;
@@ -122,6 +123,7 @@ class WalletResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                UserIdFilter::make(),
                 Tables\Filters\SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
