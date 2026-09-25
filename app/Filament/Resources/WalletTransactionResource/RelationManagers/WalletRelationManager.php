@@ -2,8 +2,12 @@
 
 namespace App\Filament\Resources\WalletTransactionResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -16,11 +20,11 @@ class WalletRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'id';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('user_id')
+        return $schema
+            ->components([
+                TextInput::make('user_id')
                     ->label(__('site.user'))
                     ->formatStateUsing(function ($state, $record): string {
                         $user = $record?->user;
@@ -34,16 +38,16 @@ class WalletRelationManager extends RelationManager
                         return $name !== '' ? $name.' (#'.$user->id.')' : '#'.$user->id;
                     })
                     ->disabled(),
-                Forms\Components\TextInput::make('balance')
+                TextInput::make('balance')
                     ->label(__('site.balance'))
                     ->numeric()
                     ->disabled()
                     ->required(),
-                Forms\Components\TextInput::make('currency')
+                TextInput::make('currency')
                     ->label(__('site.currency'))
                     ->disabled()
                     ->required(),
-                Forms\Components\Toggle::make('status')
+                Toggle::make('status')
                     ->label(__('site.status'))
                     ->disabled()
                     ->default(true),
@@ -93,13 +97,13 @@ class WalletRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         1 => __('site.Active'),
                         0 => __('site.Inactive'),
                     ]),
-                Tables\Filters\SelectFilter::make('currency')
+                SelectFilter::make('currency')
                     ->label(__('site.currency'))
                     ->options([
                         'IRR' => 'IRR',
@@ -108,10 +112,10 @@ class WalletRelationManager extends RelationManager
             ->headerActions([
                 // No create action - read only
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - read only
             ])
             ->defaultSort('created_at', 'desc');

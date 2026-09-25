@@ -2,14 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\EditAction;
+use App\Filament\Resources\TicketSubjectResource\Pages\ListTicketSubjects;
+use App\Filament\Resources\TicketSubjectResource\Pages\CreateTicketSubject;
+use App\Filament\Resources\TicketSubjectResource\Pages\EditTicketSubject;
+use App\Filament\Resources\TicketSubjectResource\Pages\ViewTicketSubject;
 use App\Filament\Resources\TicketSubjectResource\Pages;
 use Domain\Ticket\Models\TicketSubject;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,9 +27,9 @@ class TicketSubjectResource extends Resource
 {
     protected static ?string $model = TicketSubject::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-tag';
 
-    protected static ?string $navigationGroup = 'Support';
+    protected static string | \UnitEnum | null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 24;
 
@@ -43,19 +53,19 @@ class TicketSubjectResource extends Resource
         return __('site.Ticket Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.ticket_subject_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.ticket_subject_information'))
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
                             ->label(__('site.ticket_subject_title'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Hidden::make('user_id')
+                        Hidden::make('user_id')
                             ->default(Auth::id()),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.ticket_subject_status'))
                             ->options([
                                 0 => __('site.inactive'),
@@ -98,18 +108,18 @@ class TicketSubjectResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('site.created_at'))
                     ->dateTime('Y/m/d H:i:s')
-                    ->size(TextColumnSize::Small)
+                    ->size(TextSize::Small)
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         0 => __('site.inactive'),
                         1 => __('site.active'),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ]);
     }
 
@@ -123,10 +133,10 @@ class TicketSubjectResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTicketSubjects::route('/'),
-            'create' => Pages\CreateTicketSubject::route('/create'),
-            'edit' => Pages\EditTicketSubject::route('/{record}/edit'),
-            'view' => Pages\ViewTicketSubject::route('/{record}'),
+            'index' => ListTicketSubjects::route('/'),
+            'create' => CreateTicketSubject::route('/create'),
+            'edit' => EditTicketSubject::route('/{record}/edit'),
+            'view' => ViewTicketSubject::route('/{record}'),
         ];
     }
 }

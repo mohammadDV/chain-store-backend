@@ -2,12 +2,21 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\Action;
+use App\Filament\Resources\TransactionResource\Pages\ListTransactions;
+use App\Filament\Resources\TransactionResource\Pages\ViewTransaction;
+use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TransactionResource\Pages;
 use Domain\Payment\Models\Transaction;
 use Filament\Forms;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -20,9 +29,9 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static ?string $navigationGroup = 'Financial';
+    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 1;
 
@@ -46,33 +55,33 @@ class TransactionResource extends Resource
         return __('site.Payment Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.transaction_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.transaction_information'))
                     ->schema([
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->label(__('site.user'))
                             ->relationship('user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                             ->searchable()
                             ->preload()
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('model_id')
+                        TextInput::make('model_id')
                             ->label(__('site.model_id'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('model_type')
+                        TextInput::make('model_type')
                             ->label(__('site.model_type'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->label(__('site.amount'))
                             ->numeric()
                             ->required()
                             ->minValue(0),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.status'))
                             ->options([
                                 Transaction::PENDING => __('site.pending'),
@@ -81,14 +90,14 @@ class TransactionResource extends Resource
                                 Transaction::FAILED => __('site.failed'),
                             ])
                             ->required(),
-                        Forms\Components\TextInput::make('reference')
+                        TextInput::make('reference')
                             ->label(__('site.reference')),
-                        Forms\Components\TextInput::make('bank_transaction_id')
+                        TextInput::make('bank_transaction_id')
                             ->label(__('site.bank_transaction_id')),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label(__('site.description'))
                             ->rows(3),
-                        Forms\Components\Textarea::make('message')
+                        Textarea::make('message')
                             ->label(__('site.message'))
                             ->rows(3),
                     ])->columns(2),
@@ -168,7 +177,7 @@ class TransactionResource extends Resource
             ])
             ->filters([
                 UserIdFilter::make(),
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         Transaction::PENDING => __('site.pending'),
@@ -176,14 +185,14 @@ class TransactionResource extends Resource
                         Transaction::CANCELLED => __('site.cancelled'),
                         Transaction::FAILED => __('site.failed'),
                     ]),
-                Tables\Filters\SelectFilter::make('model_type')
+                SelectFilter::make('model_type')
                     ->label(__('site.model_type'))
                     ->options([
                         Transaction::WALLET => __('site.wallet'),
                         Transaction::ORDER => __('site.order'),
                     ]),
                 Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         DatePicker::make('created_from')
                             ->label(__('site.created_from')),
                         DatePicker::make('created_until')
@@ -202,18 +211,18 @@ class TransactionResource extends Resource
                     }),
             ])
             ->headerActions([
-                Tables\Actions\Action::make('total_revenue')
+                Action::make('total_revenue')
                     ->label(fn ($livewire) => __('site.total_revenue').': '.number_format($livewire->getFilteredTableQuery()->where('status', Transaction::COMPLETED)->get()->sum('revenue')).' تومان')
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->disabled()
                     ->extraAttributes(['class' => 'cursor-default']),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\ViewAction::make(),
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - no delete operations
             ])
             ->defaultSort('created_at', 'desc');
@@ -229,14 +238,14 @@ class TransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTransactions::route('/'),
-            'view' => Pages\ViewTransaction::route('/{record}'),
-            'edit' => Pages\EditTransaction::route('/{record}/edit'),
+            'index' => ListTransactions::route('/'),
+            'view' => ViewTransaction::route('/{record}'),
+            'edit' => EditTransaction::route('/{record}/edit'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }

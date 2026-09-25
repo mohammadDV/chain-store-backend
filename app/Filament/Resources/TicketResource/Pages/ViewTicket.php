@@ -2,17 +2,22 @@
 
 namespace App\Filament\Resources\TicketResource\Pages;
 
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Support\Enums\TextSize;
 use App\Filament\Resources\TicketResource;
 use Domain\Notification\Services\NotificationService;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketMessage;
 use Filament\Actions;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Infolists\Components\RepeatableEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Auth;
@@ -23,19 +28,19 @@ class ViewTicket extends ViewRecord
 {
     protected static string $resource = TicketResource::class;
 
-    protected static string $view = 'filament.resources.ticket-resource.pages.view-ticket';
+    protected string $view = 'filament.resources.ticket-resource.pages.view-ticket';
 
     public ?array $data = [];
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
-            Actions\Action::make('changeStatus')
+            EditAction::make(),
+            Action::make('changeStatus')
                 ->label(__('site.change_status'))
                 ->color('warning')
-                ->form([
-                    Forms\Components\Select::make('status')
+                ->schema([
+                    Select::make('status')
                         ->label(__('site.new_status'))
                         ->options([
                             'active' => __('site.active'),
@@ -67,23 +72,23 @@ class ViewTicket extends ViewRecord
             ->update(['status' => 'read']);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
         /** @var Ticket $ticket */
         $ticket = $this->getRecord();
         $isTicketClosed = $ticket->status === 'closed';
 
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.send_message'))
+        return $schema
+            ->components([
+                Section::make(__('site.send_message'))
                     ->schema([
-                        Forms\Components\Textarea::make('message')
+                        Textarea::make('message')
                             ->label(__('site.ticket_message_content'))
                             ->required()
                             ->rows(4)
                             ->disabled($isTicketClosed)
                             ->helperText($isTicketClosed ? __('site.ticket_closed_no_messages') : ''),
-                        Forms\Components\FileUpload::make('file')
+                        FileUpload::make('file')
                             ->label(__('site.ticket_message_attachment'))
                             ->disk('s3')
                             ->directory('/ticket-messages')
@@ -96,10 +101,10 @@ class ViewTicket extends ViewRecord
             ]);
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.ticket_information'))
                     ->schema([
                         TextEntry::make('id')
@@ -133,7 +138,7 @@ class ViewTicket extends ViewRecord
                             ->schema([
                                 TextEntry::make('user.email')
                                     ->label(__('site.from'))
-                                    ->size(TextEntry\TextEntrySize::Small),
+                                    ->size(TextSize::Small),
                                 TextEntry::make('message')
                                     ->label(__('site.ticket_message_content'))
                                     ->markdown(),
@@ -156,7 +161,7 @@ class ViewTicket extends ViewRecord
                                 TextEntry::make('created_at')
                                     ->label(__('site.sent_at'))
                                     ->dateTime('Y/m/d H:i:s')
-                                    ->size(TextEntry\TextEntrySize::Small),
+                                    ->size(TextSize::Small),
                             ])
                             ->columns(5),
                     ]),

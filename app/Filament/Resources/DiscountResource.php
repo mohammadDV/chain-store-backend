@@ -2,15 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\DiscountResource\Pages\ListDiscounts;
+use App\Filament\Resources\DiscountResource\Pages\CreateDiscount;
+use App\Filament\Resources\DiscountResource\Pages\ViewDiscount;
+use App\Filament\Resources\DiscountResource\Pages\EditDiscount;
 use App\Filament\Resources\DiscountResource\Pages;
 use Domain\Product\Models\Discount;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -22,7 +29,7 @@ class DiscountResource extends Resource
 {
     protected static ?string $model = Discount::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-ticket';
 
     protected static ?int $navigationSort = 13;
 
@@ -41,10 +48,10 @@ class DiscountResource extends Resource
         return __('site.discounts');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.discount_information'))
                     ->schema([
                         Grid::make(2)
@@ -177,12 +184,12 @@ class DiscountResource extends Resource
                         0 => __('site.Inactive'),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -197,15 +204,15 @@ class DiscountResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDiscounts::route('/'),
-            'create' => Pages\CreateDiscount::route('/create'),
-            'view' => Pages\ViewDiscount::route('/{record}'),
-            'edit' => Pages\EditDiscount::route('/{record}/edit'),
+            'index' => ListDiscounts::route('/'),
+            'create' => CreateDiscount::route('/create'),
+            'view' => ViewDiscount::route('/{record}'),
+            'edit' => EditDiscount::route('/{record}/edit'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }

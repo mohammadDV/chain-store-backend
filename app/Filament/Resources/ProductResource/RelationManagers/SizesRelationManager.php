@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\CreateAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Services\StockService;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -37,10 +41,10 @@ class SizesRelationManager extends RelationManager
         return __('site.sizes');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('title')
                     ->label(__('site.title'))
                     ->required()
@@ -98,7 +102,7 @@ class SizesRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->using(function (array $data, string $model): Model {
                         $quantity = (int) ($data['quantity'] ?? 0);
                         unset($data['quantity']);
@@ -118,8 +122,8 @@ class SizesRelationManager extends RelationManager
                         });
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->mutateRecordDataUsing(function (array $data, Model $record): array {
                         $data['quantity'] = $record->stock->quantity ?? 0;
 
@@ -142,10 +146,10 @@ class SizesRelationManager extends RelationManager
                             return $record;
                         });
                     }),
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ])
             ->defaultSort('priority', 'desc');
     }

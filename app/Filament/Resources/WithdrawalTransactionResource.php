@@ -2,6 +2,16 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Exception;
+use App\Filament\Resources\WithdrawalTransactionResource\Pages\ListWithdrawalTransactions;
+use App\Filament\Resources\WithdrawalTransactionResource\Pages\ViewWithdrawalTransaction;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages;
 use Domain\Notification\Services\NotificationService;
@@ -10,11 +20,9 @@ use Domain\Wallet\Models\WithdrawalTransaction;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,9 +33,9 @@ class WithdrawalTransactionResource extends Resource
 {
     protected static ?string $model = WithdrawalTransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-down-tray';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
-    protected static ?string $navigationGroup = 'Financial';
+    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 9;
 
@@ -51,32 +59,32 @@ class WithdrawalTransactionResource extends Resource
         return __('site.Wallet Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.withdrawal_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.withdrawal_information'))
                     ->schema([
-                        Forms\Components\Select::make('wallet_id')
+                        Select::make('wallet_id')
                             ->label(__('site.wallet'))
                             ->relationship('wallet', 'id')
                             ->disabled()
                             ->required(),
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->label(__('site.user'))
                             ->relationship('wallet.user', 'nickname', fn ($query) => $query->whereNotNull('nickname'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->label(__('site.amount'))
                             ->numeric()
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('currency')
+                        TextInput::make('currency')
                             ->label(__('site.currency'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.status'))
                             ->options([
                                 WithdrawalTransaction::PENDING => __('site.pending'),
@@ -85,14 +93,14 @@ class WithdrawalTransactionResource extends Resource
                             ])
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('reference')
+                        TextInput::make('reference')
                             ->label(__('site.reference'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('card')
+                        TextInput::make('card')
                             ->label(__('site.card'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('sheba')
+                        TextInput::make('sheba')
                             ->label(__('site.sheba'))
                             ->disabled(),
                         Textarea::make('description')
@@ -184,7 +192,7 @@ class WithdrawalTransactionResource extends Resource
                     'wallet',
                     fn (Builder $walletQuery) => $walletQuery->where('user_id', $userId)
                 )),
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         WithdrawalTransaction::PENDING => __('site.pending'),
@@ -192,14 +200,14 @@ class WithdrawalTransactionResource extends Resource
                         WithdrawalTransaction::REJECT => __('site.reject'),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
                 Action::make('complete')
                     ->label(__('site.complete'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING)
-                    ->form([
+                    ->schema([
                         Textarea::make('reason')
                             ->label(__('site.completion_reason'))
                             ->placeholder(__('site.completion_reason_placeholder'))
@@ -252,7 +260,7 @@ class WithdrawalTransactionResource extends Resource
                                 ->title(__('site.withdrawal_completed_successfully'))
                                 ->success()
                                 ->send();
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             DB::rollBack();
                             Notification::make()
                                 ->title(__('site.withdrawal_completion_failed'))
@@ -265,7 +273,7 @@ class WithdrawalTransactionResource extends Resource
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING)
-                    ->form([
+                    ->schema([
                         Textarea::make('reason')
                             ->label(__('site.rejection_reason'))
                             ->placeholder(__('site.rejection_reason_placeholder'))
@@ -328,7 +336,7 @@ class WithdrawalTransactionResource extends Resource
                                 ->title(__('site.withdrawal_rejected_successfully'))
                                 ->success()
                                 ->send();
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             DB::rollBack();
                             Notification::make()
                                 ->title(__('site.withdrawal_rejection_failed'))
@@ -337,7 +345,7 @@ class WithdrawalTransactionResource extends Resource
                         }
                     }),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - individual processing required
             ])
             ->defaultSort('created_at', 'desc');
@@ -353,13 +361,13 @@ class WithdrawalTransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWithdrawalTransactions::route('/'),
-            'view' => Pages\ViewWithdrawalTransaction::route('/{record}'),
+            'index' => ListWithdrawalTransactions::route('/'),
+            'view' => ViewWithdrawalTransaction::route('/{record}'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', WithdrawalTransaction::PENDING)->count();
+        return (string) static::getModel()::where('status', WithdrawalTransaction::PENDING)->count();
     }
 }

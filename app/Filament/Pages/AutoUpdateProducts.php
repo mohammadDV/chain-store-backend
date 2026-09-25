@@ -2,6 +2,13 @@
 
 namespace App\Filament\Pages;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Actions\Action;
 use App\Filament\Resources\ProductResource;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Exceptions\ProductScraperException;
@@ -10,22 +17,19 @@ use Domain\Product\Services\ProductScraperService;
 use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Notifications\Actions\Action as NotificationAction;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 
 /**
- * @property-read Form $form
+ * @property-read \Filament\Schemas\Schema $form
  */
 class AutoUpdateProducts extends Page implements HasForms
 {
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static string $view = 'filament.pages.auto-update-products';
+    protected string $view = 'filament.pages.auto-update-products';
 
     protected static ?int $navigationSort = 14;
 
@@ -59,13 +63,13 @@ class AutoUpdateProducts extends Page implements HasForms
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.scraper_source'))
+        return $schema
+            ->components([
+                Section::make(__('site.scraper_source'))
                     ->schema([
-                        Forms\Components\Radio::make('mode')
+                        Radio::make('mode')
                             ->label(__('site.scraper_mode'))
                             ->options([
                                 'url' => __('site.scraper_mode_url'),
@@ -75,7 +79,7 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->live()
                             ->afterStateUpdated(fn () => $this->resetPreview())
                             ->required(),
-                        Forms\Components\Select::make('brand_id')
+                        Select::make('brand_id')
                             ->label(__('site.brand'))
                             ->options(fn () => Brand::query()->orderBy('title')->pluck('title', 'id'))
                             ->searchable()
@@ -83,7 +87,7 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->required()
                             ->live()
                             ->afterStateUpdated(fn () => $this->resetPreview()),
-                        Forms\Components\TextInput::make('url')
+                        TextInput::make('url')
                             ->label(__('site.url'))
                             ->url()
                             ->nullable()
@@ -93,7 +97,7 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->dehydrated(fn (Get $get) => $get('mode') === 'url')
                             ->live(onBlur: true)
                             ->afterStateUpdated(fn () => $this->resetPreview()),
-                        Forms\Components\Select::make('category_id')
+                        Select::make('category_id')
                             ->label(__('site.category'))
                             ->options(fn () => ProductCategory::query()->orderBy('title')->pluck('title', 'id'))
                             ->searchable()
@@ -103,7 +107,7 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->dehydrated(fn (Get $get) => $get('mode') === 'url')
                             ->live()
                             ->afterStateUpdated(fn () => $this->resetPreview()),
-                        Forms\Components\TextInput::make('code')
+                        TextInput::make('code')
                             ->label(__('site.code'))
                             ->maxLength(255)
                             ->visible(fn (Get $get) => $get('mode') === 'code')
@@ -161,7 +165,7 @@ class AutoUpdateProducts extends Page implements HasForms
 
             if ($storedId) {
                 $notification->actions([
-                    NotificationAction::make('view')
+                    Action::make('view')
                         ->label(__('site.view_product'))
                         ->url(ProductResource::getUrl('edit', ['record' => $storedId])),
                 ]);

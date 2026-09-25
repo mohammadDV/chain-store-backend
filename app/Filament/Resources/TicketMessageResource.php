@@ -2,25 +2,35 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\FileUpload;
+use Filament\Support\Enums\TextSize;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\EditAction;
+use App\Filament\Resources\TicketMessageResource\Pages\ListTicketMessages;
+use App\Filament\Resources\TicketMessageResource\Pages\CreateTicketMessage;
+use App\Filament\Resources\TicketMessageResource\Pages\EditTicketMessage;
+use App\Filament\Resources\TicketMessageResource\Pages\ViewTicketMessage;
 use App\Filament\Resources\TicketMessageResource\Pages;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketMessage;
 use Domain\User\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Table;
 
 class TicketMessageResource extends Resource
 {
     protected static ?string $model = TicketMessage::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left';
 
-    protected static ?string $navigationGroup = 'Support';
+    protected static string | \UnitEnum | null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 23;
 
@@ -44,34 +54,34 @@ class TicketMessageResource extends Resource
         return __('site.Ticket Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.ticket_message_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.ticket_message_information'))
                     ->schema([
-                        Forms\Components\Select::make('ticket_id')
+                        Select::make('ticket_id')
                             ->label(__('site.ticket_message_ticket'))
                             ->options(Ticket::with('subject')->get()->pluck('subject.title', 'id'))
                             ->searchable()
                             ->required(),
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->label(__('site.ticket_message_user'))
                             ->options(User::all()->mapWithKeys(function ($user) {
                                 return [$user->id => $user->getFilamentName()];
                             }))
                             ->searchable()
                             ->required(),
-                        Forms\Components\Textarea::make('message')
+                        Textarea::make('message')
                             ->label(__('site.ticket_message_content'))
                             ->required()
                             ->rows(4),
-                        Forms\Components\FileUpload::make('file')
+                        FileUpload::make('file')
                             ->label(__('site.ticket_message_attachment'))
                             ->directory('ticket-messages')
                             ->acceptedFileTypes(['image/*', 'application/pdf', 'text/*'])
                             ->maxSize(5120), // 5MB
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.ticket_message_status'))
                             ->options([
                                 'pending' => __('site.pending'),
@@ -121,18 +131,18 @@ class TicketMessageResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('site.ticket_message_created_at'))
                     ->dateTime('Y/m/d H:i:s')
-                    ->size(TextColumnSize::Small)
+                    ->size(TextSize::Small)
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'pending' => __('site.pending'),
                         'read' => __('site.read'),
                     ]),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ]);
     }
 
@@ -146,10 +156,10 @@ class TicketMessageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTicketMessages::route('/'),
-            'create' => Pages\CreateTicketMessage::route('/create'),
-            'edit' => Pages\EditTicketMessage::route('/{record}/edit'),
-            'view' => Pages\ViewTicketMessage::route('/{record}'),
+            'index' => ListTicketMessages::route('/'),
+            'create' => CreateTicketMessage::route('/create'),
+            'edit' => EditTicketMessage::route('/{record}/edit'),
+            'view' => ViewTicketMessage::route('/{record}'),
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\WalletResource\Pages;
 
+use Filament\Actions\Action;
 use App\Filament\Resources\WalletResource;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\Wallet;
@@ -21,11 +22,11 @@ class ViewWallet extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('adjust_balance')
+            Action::make('adjust_balance')
                 ->label(__('site.adjust_balance'))
                 ->icon('heroicon-o-currency-dollar')
                 ->color('warning')
-                ->form([
+                ->schema([
                     Select::make('adjustment_type')
                         ->label(__('site.adjustment_type'))
                         ->options([

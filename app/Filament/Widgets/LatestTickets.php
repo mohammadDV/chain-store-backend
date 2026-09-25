@@ -2,8 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use Filament\Actions\Action;
 use Domain\Ticket\Models\Ticket;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -52,7 +52,7 @@ class LatestTickets extends BaseWidget
                     ->dateTime('Y/m/d H:i:s')
                     ->sortable(),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('view')
                     ->url(fn (Ticket $record): string => route('filament.admin.resources.tickets.view', $record))
                     ->icon('heroicon-m-eye')

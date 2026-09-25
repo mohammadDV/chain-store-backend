@@ -2,8 +2,12 @@
 
 namespace App\Filament\Resources\WalletResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -16,32 +20,32 @@ class WalletTransactionsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'reference';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('type')
+        return $schema
+            ->components([
+                TextInput::make('type')
                     ->label(__('site.type'))
                     ->disabled()
                     ->required(),
-                Forms\Components\TextInput::make('amount')
+                TextInput::make('amount')
                     ->label(__('site.amount'))
                     ->numeric()
                     ->disabled()
                     ->required(),
-                Forms\Components\TextInput::make('currency')
+                TextInput::make('currency')
                     ->label(__('site.currency'))
                     ->disabled()
                     ->required(),
-                Forms\Components\TextInput::make('status')
+                TextInput::make('status')
                     ->label(__('site.status'))
                     ->disabled()
                     ->required(),
-                Forms\Components\TextInput::make('reference')
+                TextInput::make('reference')
                     ->label(__('site.reference'))
                     ->disabled()
                     ->required(),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->label(__('site.description'))
                     ->disabled()
                     ->rows(3),
@@ -121,7 +125,7 @@ class WalletTransactionsRelationManager extends RelationManager
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->label(__('site.type'))
                     ->options([
                         'deposit' => __('site.deposit'),
@@ -130,7 +134,7 @@ class WalletTransactionsRelationManager extends RelationManager
                         'purchase' => __('site.purchase'),
                         'refund' => __('site.refund'),
                     ]),
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         'completed' => __('site.completed'),
@@ -141,10 +145,10 @@ class WalletTransactionsRelationManager extends RelationManager
             ->headerActions([
                 // No create action - read only
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - read only
             ])
             ->defaultSort('created_at', 'desc');

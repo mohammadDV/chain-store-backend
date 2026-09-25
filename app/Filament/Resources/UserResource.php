@@ -2,10 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
+use App\Filament\Resources\UserResource\Pages\ViewUser;
 use App\Filament\Resources\UserResource\Pages;
 use Domain\User\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -19,7 +35,7 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-users';
 
     protected static ?int $navigationSort = 3;
 
@@ -98,38 +114,38 @@ class UserResource extends Resource
         ];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.personal_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.personal_information'))
                     ->schema([
-                        Forms\Components\TextInput::make('first_name')
+                        TextInput::make('first_name')
                             ->label(__('site.first_name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('last_name')
+                        TextInput::make('last_name')
                             ->label(__('site.last_name'))
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('nickname')
+                        TextInput::make('nickname')
                             ->label(__('site.nickname'))
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->label(__('site.email'))
                             ->email()
                             ->disabled()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('mobile')
+                        TextInput::make('mobile')
                             ->label(__('site.mobile'))
                             ->maxLength(15),
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->label(__('site.Password'))
                             ->password()
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create'),
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->label(__('site.status'))
                             ->options([
                                 1 => __('site.Active'),
@@ -137,16 +153,16 @@ class UserResource extends Resource
                             ])
                             ->default(1)
                             ->required(),
-                        Forms\Components\Toggle::make('is_private')
+                        Toggle::make('is_private')
                             ->label(__('site.is_private'))
                             ->default(false),
-                        Forms\Components\Toggle::make('is_report')
+                        Toggle::make('is_report')
                             ->label(__('site.is_report'))
                             ->default(false),
                     ])->columns(2),
-                Forms\Components\Section::make(__('site.images'))
+                Section::make(__('site.images'))
                     ->schema([
-                        Forms\Components\FileUpload::make('profile_photo_path')
+                        FileUpload::make('profile_photo_path')
                             ->label(__('site.profile_photo_path'))
                             ->placeholder(__('site.upload_profile_photo'))
                             ->image()
@@ -155,7 +171,7 @@ class UserResource extends Resource
                             ->directory('/users/profile-photos')
                             // ->previewable(false)
                             ->required(),
-                        Forms\Components\FileUpload::make('bg_photo_path')
+                        FileUpload::make('bg_photo_path')
                             ->label(__('site.bg_photo_path'))
                             ->placeholder(__('site.upload_bg_photo'))
                             ->disk('s3')
@@ -163,21 +179,21 @@ class UserResource extends Resource
                             ->directory('/users/bg-photos'),
                     ])->columns(2),
 
-                Forms\Components\Section::make(__('site.additional_information'))
+                Section::make(__('site.additional_information'))
                     ->schema([
-                        Forms\Components\TextInput::make('point')
+                        TextInput::make('point')
                             ->label(__('site.point'))
                             ->numeric()
                             ->default(0),
-                        Forms\Components\TextInput::make('rate')
+                        TextInput::make('rate')
                             ->label(__('site.rate'))
                             ->numeric()
                             ->default(0),
-                        Forms\Components\TextInput::make('customer_number')
+                        TextInput::make('customer_number')
                             ->label(__('site.customer_number'))
                             ->disabled()
                             ->dehydrated(false),
-                        Forms\Components\TextInput::make('google_id')
+                        TextInput::make('google_id')
                             ->label(__('site.google_id'))
                             ->maxLength(255),
                     ])->columns(2),
@@ -272,25 +288,25 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         1 => __('site.Active'),
                         0 => __('site.Inactive'),
                     ]),
-                Tables\Filters\SelectFilter::make('level')
+                SelectFilter::make('level')
                     ->label(__('site.level'))
                     ->options([
                         1 => __('site.user_level_1'),
                         2 => __('site.user_level_2'),
                         3 => __('site.user_level_3'),
                     ]),
-                Tables\Filters\Filter::make('created_at')
+                Filter::make('created_at')
                     ->label(__('site.created_at'))
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label(__('site.from_date')),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label(__('site.to_date')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -305,10 +321,10 @@ class UserResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make(
+            ->recordActions([
+                ActionGroup::make(
                     collect(static::relatedResourceLinks(0))
-                        ->map(fn (array $link, string $name): Tables\Actions\Action => Tables\Actions\Action::make('related_'.$name)
+                        ->map(fn (array $link, string $name): Action => Action::make('related_'.$name)
                             ->label($link['label'])
                             ->icon($link['icon'])
                             ->url(fn (User $record): string => static::relatedResourceLinks($record->id)[$name]['url']))
@@ -319,11 +335,11 @@ class UserResource extends Resource
                     ->icon('heroicon-o-squares-plus')
                     ->color('gray')
                     ->button(),
-                Tables\Actions\ViewAction::make()
+                ViewAction::make()
                     ->label(__('site.view_user')),
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label(__('site.edit_user')),
-                Tables\Actions\Action::make('verify_email')
+                Action::make('verify_email')
                     ->label(__('site.verify_email'))
                     ->icon('heroicon-o-envelope')
                     ->color('info')
@@ -344,7 +360,7 @@ class UserResource extends Resource
                             ->send();
                     })
                     ->visible(fn ($record) => ! $record->email_verified_at),
-                Tables\Actions\Action::make('verify_identity')
+                Action::make('verify_identity')
                     ->label(__('site.verify_identity'))
                     ->icon('heroicon-o-identification')
                     ->color('success')
@@ -366,7 +382,7 @@ class UserResource extends Resource
                     })
                     ->visible(fn ($record) => $record->email_verified_at && ! $record->verified_at),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // Delete actions removed to disable user deletion
             ])
             ->defaultSort('created_at', 'desc')
@@ -386,17 +402,17 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
-            'view' => Pages\ViewUser::route('/{record}'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
+            'view' => ViewUser::route('/{record}'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
         // Cache the user count for better performance
-        return Cache::remember('user_count', 300, function () {
+        return (string) Cache::remember('user_count', 300, function () {
             return static::getModel()::count();
         });
     }

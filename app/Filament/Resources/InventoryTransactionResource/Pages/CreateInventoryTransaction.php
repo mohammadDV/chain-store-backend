@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\InventoryTransactionResource\Pages;
 
+use Filament\Schemas\Schema;
 use App\Filament\Resources\InventoryTransactionResource;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
 use Domain\Product\Models\InventoryTransaction;
 use Domain\Product\Models\Size;
 use Domain\Product\Services\StockService;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
@@ -22,9 +22,9 @@ class CreateInventoryTransaction extends CreateRecord
 
     protected static bool $canCreateAnother = false;
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema(InventoryTransactionResource::adjustFormSchema());
+        return $schema->components(InventoryTransactionResource::adjustFormSchema());
     }
 
     public function getTitle(): string

@@ -16,7 +16,7 @@
         "aws/aws-sdk-php": "^3.368.0",
         "cviebrock/eloquent-sluggable": "^13.0",
         "evryn/laravel-toman": "dev-master#1ce7e22eb8951a86e51ac5fac42e973e48c3fa91",
-        "filament/filament": "^3.3.55",
+        "filament/filament": "^5.0",
         "google/apiclient": "^2.18",
         "guzzlehttp/guzzle": "^7.9",
         "intervention/image": "^3.11",
@@ -41,6 +41,7 @@
         "nunomaduro/collision": "^8.9.5",
         "pestphp/pest": "^4.7",
         "pestphp/pest-plugin-laravel": "^4.1",
+        "pestphp/pest-plugin-livewire": "^4.1",
         "phpunit/phpunit": "^12.5"
     },
     "autoload": {

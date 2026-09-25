@@ -2,16 +2,24 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\Action;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CostResource\Pages\ListCosts;
+use App\Filament\Resources\CostResource\Pages\CreateCost;
+use App\Filament\Resources\CostResource\Pages\ViewCost;
+use App\Filament\Resources\CostResource\Pages\EditCost;
 use App\Filament\Resources\CostResource\Pages;
 use Domain\Cost\Models\Cost;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\ImageColumn;
@@ -25,9 +33,9 @@ class CostResource extends Resource
 {
     protected static ?string $model = Cost::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationGroup = 'Cost';
+    protected static string | \UnitEnum | null $navigationGroup = 'Cost';
 
     protected static ?int $navigationSort = 1;
 
@@ -51,10 +59,10 @@ class CostResource extends Resource
         return __('site.costs');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.cost_information'))
                     ->schema([
                         Grid::make(2)
@@ -173,7 +181,7 @@ class CostResource extends Resource
                     ->searchable()
                     ->preload(),
                 Filter::make('created_at')
-                    ->form([
+                    ->schema([
                         DatePicker::make('created_from')
                             ->label(__('site.created_from')),
                         DatePicker::make('created_until')
@@ -192,19 +200,19 @@ class CostResource extends Resource
                     }),
             ])
             ->headerActions([
-                Tables\Actions\Action::make('total_amount')
+                Action::make('total_amount')
                     ->label(fn ($livewire) => __('site.total_amount').': '.number_format($livewire->getFilteredTableQuery()->sum('amount'), 0).' '.__('site.currency'))
                     ->icon('heroicon-o-calculator')
                     ->color('success')
                     ->disabled()
                     ->extraAttributes(['class' => 'cursor-default']),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -219,15 +227,15 @@ class CostResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCosts::route('/'),
-            'create' => Pages\CreateCost::route('/create'),
-            'view' => Pages\ViewCost::route('/{record}'),
-            'edit' => Pages\EditCost::route('/{record}/edit'),
+            'index' => ListCosts::route('/'),
+            'create' => CreateCost::route('/create'),
+            'view' => ViewCost::route('/{record}'),
+            'edit' => EditCost::route('/{record}/edit'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }

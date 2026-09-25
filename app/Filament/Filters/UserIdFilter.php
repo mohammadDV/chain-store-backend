@@ -17,7 +17,7 @@ final class UserIdFilter
     {
         return Filter::make('user_id')
             ->label(__('site.user_id'))
-            ->form([
+            ->schema([
                 TextInput::make('value')
                     ->label(__('site.user_id'))
                     ->numeric(),

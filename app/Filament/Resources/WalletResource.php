@@ -2,6 +2,13 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use App\Filament\Resources\WalletResource\Pages\ListWallets;
+use App\Filament\Resources\WalletResource\Pages\ViewWallet;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletResource\Pages;
 use App\Filament\Resources\WalletResource\RelationManagers\WalletTransactionsRelationManager;
@@ -13,11 +20,9 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Morilog\Jalali\Jalalian;
@@ -26,9 +31,9 @@ class WalletResource extends Resource
 {
     protected static ?string $model = Wallet::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wallet';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-wallet';
 
-    protected static ?string $navigationGroup = 'Financial';
+    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 1;
 
@@ -52,11 +57,11 @@ class WalletResource extends Resource
         return __('site.Wallet Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.wallet_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.wallet_information'))
                     ->schema([
                         Select::make('user_id')
                             ->label(__('site.user'))
@@ -126,25 +131,25 @@ class WalletResource extends Resource
             ])
             ->filters([
                 UserIdFilter::make(),
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         1 => __('site.Active'),
                         0 => __('site.Inactive'),
                     ]),
-                Tables\Filters\SelectFilter::make('currency')
+                SelectFilter::make('currency')
                     ->label(__('site.currency'))
                     ->options([
                         'IRR' => 'IRR',
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
                 Action::make('adjust_balance')
                     ->label(__('site.adjust_balance'))
                     ->icon('heroicon-o-currency-dollar')
                     ->color('warning')
-                    ->form([
+                    ->schema([
                         Select::make('adjustment_type')
                             ->label(__('site.adjustment_type'))
                             ->options([
@@ -220,7 +225,7 @@ class WalletResource extends Resource
                     ->modalSubmitActionLabel(__('site.confirm_adjustment'))
                     ->modalCancelActionLabel(__('site.cancel')),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - read only
             ])
             ->defaultSort('created_at', 'desc');
@@ -236,13 +241,13 @@ class WalletResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWallets::route('/'),
-            'view' => Pages\ViewWallet::route('/{record}'),
+            'index' => ListWallets::route('/'),
+            'view' => ViewWallet::route('/{record}'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }
