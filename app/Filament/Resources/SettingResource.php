@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Closure;
+use App\Filament\Resources\SettingResource\Pages\ListSettings;
+use App\Filament\Resources\SettingResource\Pages\EditSetting;
 use App\Filament\Resources\SettingResource\Pages;
 use Domain\Setting\Models\Setting;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
 
@@ -14,7 +17,7 @@ class SettingResource extends Resource
 {
     protected static ?string $model = Setting::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cog-6-tooth';
 
     protected static ?int $navigationSort = 100;
 
@@ -33,10 +36,10 @@ class SettingResource extends Resource
         return __('site.settings');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.setting_information'))
                     ->schema([
                         TextInput::make('profit_rate')
@@ -64,7 +67,7 @@ class SettingResource extends Resource
                                 function () {
                                     $securityCode = config('setting.security_code');
 
-                                    return function (string $attribute, $value, \Closure $fail) use ($securityCode) {
+                                    return function (string $attribute, $value, Closure $fail) use ($securityCode) {
                                         if ($value !== $securityCode) {
                                             $fail(__('site.invalid_security_code'));
                                         }
@@ -94,8 +97,8 @@ class SettingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSettings::route('/'),
-            'edit' => Pages\EditSetting::route('/1/edit'),
+            'index' => ListSettings::route('/'),
+            'edit' => EditSetting::route('/1/edit'),
         ];
     }
 

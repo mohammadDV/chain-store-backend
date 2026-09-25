@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\PostResource\Pages;
 
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\PostResource;
 use Domain\Post\Models\Post;
 use Filament\Actions;
@@ -14,8 +16,8 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 

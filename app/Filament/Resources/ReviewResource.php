@@ -2,20 +2,27 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\ReviewResource\Pages\ListReviews;
+use App\Filament\Resources\ReviewResource\Pages\CreateReview;
+use App\Filament\Resources\ReviewResource\Pages\ViewReview;
+use App\Filament\Resources\ReviewResource\Pages\EditReview;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\ReviewResource\Pages;
 use Domain\Review\Models\Review;
 use Domain\User\Models\User;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -26,7 +33,7 @@ class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
     protected static ?int $navigationSort = 14;
 
@@ -45,10 +52,10 @@ class ReviewResource extends Resource
         return __('site.reviews');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.review_information'))
                     ->schema([
                         Grid::make(2)
@@ -160,9 +167,9 @@ class ReviewResource extends Resource
                 TernaryFilter::make('active')
                     ->label(__('site.active')),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
                 Action::make('approve')
                     ->label(__('site.approve'))
                     ->icon('heroicon-m-check')
@@ -178,8 +185,8 @@ class ReviewResource extends Resource
                     ->requiresConfirmation()
                     ->action(fn (Review $record) => $record->update(['status' => Review::CANCELLED])),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
     }
@@ -194,10 +201,10 @@ class ReviewResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListReviews::route('/'),
-            'create' => Pages\CreateReview::route('/create'),
-            'view' => Pages\ViewReview::route('/{record}'),
-            'edit' => Pages\EditReview::route('/{record}/edit'),
+            'index' => ListReviews::route('/'),
+            'create' => CreateReview::route('/create'),
+            'view' => ViewReview::route('/{record}'),
+            'edit' => EditReview::route('/{record}/edit'),
         ];
     }
 

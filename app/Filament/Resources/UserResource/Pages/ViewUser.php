@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\UserResource\Pages;
 
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
 use App\Filament\Resources\UserResource;
 use Domain\User\Models\User;
 use Filament\Actions;
@@ -19,19 +22,19 @@ class ViewUser extends ViewRecord
 
         $relatedActions = [];
         foreach ($links as $name => $link) {
-            $relatedActions[] = Actions\Action::make('related_'.$name)
+            $relatedActions[] = Action::make('related_'.$name)
                 ->label($link['label'])
                 ->icon($link['icon'])
                 ->url($link['url']);
         }
 
         return [
-            Actions\ActionGroup::make($relatedActions)
+            ActionGroup::make($relatedActions)
                 ->label(__('site.user_related'))
                 ->icon('heroicon-o-squares-plus')
                 ->color('gray')
                 ->button(),
-            Actions\EditAction::make()
+            EditAction::make()
                 ->label(__('site.edit_user')),
         ];
     }

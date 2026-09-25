@@ -50,6 +50,19 @@ trait TestHelpers
         return $user;
     }
 
+    protected function actingAsAdmin(?User $user = null): User
+    {
+        $user ??= User::factory()->admin()->create([
+            'status' => 1,
+            'email_verified_at' => now(),
+            'verified_at' => now(),
+        ]);
+
+        $this->actingAs($user);
+
+        return $user;
+    }
+
     protected function createWalletFor(User $user, float $balance = 0): Wallet
     {
         return Wallet::factory()->for($user)->withBalance($balance)->create();

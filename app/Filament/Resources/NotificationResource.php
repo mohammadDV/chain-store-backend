@@ -2,6 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\DatePicker;
+use App\Filament\Resources\NotificationResource\Pages\ListNotifications;
+use App\Filament\Resources\NotificationResource\Pages\ViewNotification;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\NotificationResource\Pages;
 use Domain\Notification\Models\Notification;
@@ -10,7 +15,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
@@ -25,7 +29,7 @@ class NotificationResource extends Resource
 {
     protected static ?string $model = Notification::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-bell';
 
     protected static ?int $navigationSort = 19;
 
@@ -44,11 +48,11 @@ class NotificationResource extends Resource
         return __('site.notifications');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.notification_details'))
+        return $schema
+            ->components([
+                Section::make(__('site.notification_details'))
                     ->schema([
                         TextInput::make('title')
                             ->label(__('site.title'))
@@ -163,10 +167,10 @@ class NotificationResource extends Resource
                     ]),
                 Filter::make('created_at')
                     ->label(__('site.created_at'))
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label(__('site.from_date')),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label(__('site.to_date')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -181,11 +185,11 @@ class NotificationResource extends Resource
                             );
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\ViewAction::make()
                 //     ->label(__('site.view')),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions to prevent deletion
             ])
             ->defaultSort('created_at', 'desc');
@@ -201,14 +205,14 @@ class NotificationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListNotifications::route('/'),
-            'view' => Pages\ViewNotification::route('/{record}'),
+            'index' => ListNotifications::route('/'),
+            'view' => ViewNotification::route('/{record}'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 
     public static function canCreate(): bool

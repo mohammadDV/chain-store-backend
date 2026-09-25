@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ColorResource\Pages;
 
+use Filament\Actions\ViewAction;
 use App\Filament\Resources\ColorResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditColor extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
+            ViewAction::make(),
         ];
     }
 }

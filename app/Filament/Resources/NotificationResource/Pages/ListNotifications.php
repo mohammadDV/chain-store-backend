@@ -2,13 +2,15 @@
 
 namespace App\Filament\Resources\NotificationResource\Pages;
 
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Exception;
 use App\Filament\Resources\NotificationResource;
 use Domain\Notification\Services\NotificationService;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms;
 use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -29,7 +31,7 @@ class ListNotifications extends ListRecords
                 ->label(__('site.send_notification'))
                 ->icon('heroicon-o-paper-airplane')
                 ->color('primary')
-                ->form([
+                ->schema([
                     Section::make(__('site.notification_content'))
                         ->schema([
                             TextInput::make('title')
@@ -64,8 +66,8 @@ class ListNotifications extends ListRecords
                                 }))
                                 ->searchable()
                                 ->preload()
-                                ->visible(fn (Forms\Get $get): bool => $get('recipient_type') === 'specific')
-                                ->required(fn (Forms\Get $get): bool => $get('recipient_type') === 'specific'),
+                                ->visible(fn (Get $get): bool => $get('recipient_type') === 'specific')
+                                ->required(fn (Get $get): bool => $get('recipient_type') === 'specific'),
                         ]),
                     Section::make(__('site.email_settings'))
                         ->schema([
@@ -98,7 +100,7 @@ class ListNotifications extends ListRecords
                         try {
                             NotificationService::create($notificationData, $user, $data['send_email'] ?? true);
                             $sentCount++;
-                        } catch (\Exception $e) {
+                        } catch (Exception $e) {
                             // Log error but continue with other users
                             Log::error('Failed to send notification to user '.$user->id.': '.$e->getMessage());
                         }

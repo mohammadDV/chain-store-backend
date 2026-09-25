@@ -2,6 +2,20 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\ViewAction;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Select;
+use App\Filament\Resources\InventoryTransactionResource\Pages\ListInventoryTransactions;
+use App\Filament\Resources\InventoryTransactionResource\Pages\CreateInventoryTransaction;
+use App\Filament\Resources\InventoryTransactionResource\Pages\ViewInventoryTransaction;
 use App\Filament\Resources\InventoryTransactionResource\Pages;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
@@ -9,9 +23,6 @@ use Domain\Product\Models\InventoryTransaction;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -25,7 +36,7 @@ class InventoryTransactionResource extends Resource
 {
     protected static ?string $model = InventoryTransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?int $navigationSort = 12;
 
@@ -92,34 +103,34 @@ class InventoryTransactionResource extends Resource
         ];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.inventory_transaction_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.inventory_transaction_information'))
                     ->schema([
-                        Forms\Components\TextInput::make('product_id')
+                        TextInput::make('product_id')
                             ->label(__('site.product_id'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('size_id')
+                        TextInput::make('size_id')
                             ->label(__('site.size_id'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('type')
+                        TextInput::make('type')
                             ->label(__('site.type'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('source')
+                        TextInput::make('source')
                             ->label(__('site.source'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('quantity_change')
+                        TextInput::make('quantity_change')
                             ->label(__('site.quantity_change'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('previous_quantity')
+                        TextInput::make('previous_quantity')
                             ->label(__('site.previous_quantity'))
                             ->disabled(),
-                        Forms\Components\TextInput::make('resulting_quantity')
+                        TextInput::make('resulting_quantity')
                             ->label(__('site.resulting_quantity'))
                             ->disabled(),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label(__('site.description'))
                             ->disabled()
                             ->columnSpanFull(),
@@ -206,8 +217,8 @@ class InventoryTransactionResource extends Resource
                     ->options(static::sourceOptions()),
                 Filter::make('product_id')
                     ->label(__('site.product_id'))
-                    ->form([
-                        Forms\Components\TextInput::make('value')
+                    ->schema([
+                        TextInput::make('value')
                             ->label(__('site.product_id'))
                             ->numeric(),
                     ])
@@ -220,8 +231,8 @@ class InventoryTransactionResource extends Resource
                     }),
                 Filter::make('product_code')
                     ->label(__('site.product_code'))
-                    ->form([
-                        Forms\Components\TextInput::make('value')
+                    ->schema([
+                        TextInput::make('value')
                             ->label(__('site.product_code')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -240,8 +251,8 @@ class InventoryTransactionResource extends Resource
                     }),
                 Filter::make('size_id')
                     ->label(__('site.size_id'))
-                    ->form([
-                        Forms\Components\TextInput::make('value')
+                    ->schema([
+                        TextInput::make('value')
                             ->label(__('site.size_id'))
                             ->numeric(),
                     ])
@@ -259,10 +270,10 @@ class InventoryTransactionResource extends Resource
                     ->preload(false),
                 Filter::make('created_at')
                     ->label(__('site.created_at'))
-                    ->form([
-                        Forms\Components\DatePicker::make('from')
+                    ->schema([
+                        DatePicker::make('from')
                             ->label(__('site.from_date')),
-                        Forms\Components\DatePicker::make('until')
+                        DatePicker::make('until')
                             ->label(__('site.to_date')),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -277,10 +288,10 @@ class InventoryTransactionResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([])
+            ->toolbarActions([])
             ->defaultSort('id', 'desc')
             ->deferLoading()
             ->paginated([25, 50, 100]);
@@ -289,15 +300,15 @@ class InventoryTransactionResource extends Resource
     /**
      * Schema used by the create / adjust page (not persisted directly).
      *
-     * @return array<int, Forms\Components\Component>
+     * @return array<int, \Filament\Schemas\Components\Component>
      */
     public static function adjustFormSchema(): array
     {
         return [
-            Forms\Components\Section::make(__('site.adjust_inventory'))
+            Section::make(__('site.adjust_inventory'))
                 ->description(__('site.adjust_inventory_description'))
                 ->schema([
-                    Forms\Components\TextInput::make('product_ref')
+                    TextInput::make('product_ref')
                         ->label(__('site.product_ref'))
                         ->helperText(__('site.product_ref_help'))
                         ->required()
@@ -328,13 +339,13 @@ class InventoryTransactionResource extends Resource
                             $set('product_id', $product->id);
                             $set('product_label', "#{$product->id} — {$product->code} — {$product->title}");
                         }),
-                    Forms\Components\Hidden::make('product_id')
+                    Hidden::make('product_id')
                         ->required(),
-                    Forms\Components\Placeholder::make('product_label')
+                    Placeholder::make('product_label')
                         ->label(__('site.product'))
                         ->content(fn (Get $get): string => $get('product_label') ?: __('site.product_not_found'))
                         ->visible(fn (Get $get): bool => filled($get('product_ref'))),
-                    Forms\Components\Select::make('size_id')
+                    Select::make('size_id')
                         ->label(__('site.size'))
                         ->required()
                         ->searchable()
@@ -360,7 +371,7 @@ class InventoryTransactionResource extends Resource
                                 ->all();
                         })
                         ->disabled(fn (Get $get): bool => blank($get('product_id'))),
-                    Forms\Components\Select::make('type')
+                    Select::make('type')
                         ->label(__('site.type'))
                         ->options(static::typeOptions())
                         ->default(InventoryTransactionType::Adjust->value)
@@ -373,7 +384,7 @@ class InventoryTransactionResource extends Resource
                             }
                         })
                         ->helperText(__('site.inventory_manual_type_help')),
-                    Forms\Components\Select::make('direction')
+                    Select::make('direction')
                         ->label(__('site.adjustment_type'))
                         ->options([
                             'increase' => __('site.increase'),
@@ -387,13 +398,13 @@ class InventoryTransactionResource extends Resource
                         ->helperText(fn (Get $get): ?string => static::forcedDirectionForType($get('type')) !== null
                             ? __('site.inventory_direction_locked_help')
                             : null),
-                    Forms\Components\TextInput::make('quantity')
+                    TextInput::make('quantity')
                         ->label(__('site.quantity'))
                         ->numeric()
                         ->required()
                         ->minValue(1)
                         ->integer(),
-                    Forms\Components\Textarea::make('description')
+                    Textarea::make('description')
                         ->label(__('site.description'))
                         ->rows(3)
                         ->placeholder(__('site.inventory_adjustment_description_placeholder'))
@@ -406,9 +417,9 @@ class InventoryTransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListInventoryTransactions::route('/'),
-            'create' => Pages\CreateInventoryTransaction::route('/create'),
-            'view' => Pages\ViewInventoryTransaction::route('/{record}'),
+            'index' => ListInventoryTransactions::route('/'),
+            'create' => CreateInventoryTransaction::route('/create'),
+            'view' => ViewInventoryTransaction::route('/{record}'),
         ];
     }
 

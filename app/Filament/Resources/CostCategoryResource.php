@@ -2,15 +2,22 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CostCategoryResource\Pages\ListCostCategories;
+use App\Filament\Resources\CostCategoryResource\Pages\CreateCostCategory;
+use App\Filament\Resources\CostCategoryResource\Pages\ViewCostCategory;
+use App\Filament\Resources\CostCategoryResource\Pages\EditCostCategory;
 use App\Filament\Resources\CostCategoryResource\Pages;
 use Domain\Cost\Models\CostCategory;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -21,9 +28,9 @@ class CostCategoryResource extends Resource
 {
     protected static ?string $model = CostCategory::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-folder';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-folder';
 
-    protected static ?string $navigationGroup = 'Cost';
+    protected static string | \UnitEnum | null $navigationGroup = 'Cost';
 
     protected static ?int $navigationSort = 2;
 
@@ -47,10 +54,10 @@ class CostCategoryResource extends Resource
         return __('site.cost_categories');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.category_information'))
                     ->schema([
                         Grid::make(2)
@@ -129,12 +136,12 @@ class CostCategoryResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ])
             ->defaultSort('id', 'desc');
     }
@@ -149,10 +156,10 @@ class CostCategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCostCategories::route('/'),
-            'create' => Pages\CreateCostCategory::route('/create'),
-            'view' => Pages\ViewCostCategory::route('/{record}'),
-            'edit' => Pages\EditCostCategory::route('/{record}/edit'),
+            'index' => ListCostCategories::route('/'),
+            'create' => CreateCostCategory::route('/create'),
+            'view' => ViewCostCategory::route('/{record}'),
+            'edit' => EditCostCategory::route('/{record}/edit'),
         ];
     }
 }

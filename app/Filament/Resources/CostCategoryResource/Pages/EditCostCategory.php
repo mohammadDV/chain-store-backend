@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\CostCategoryResource\Pages;
 
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
 use App\Filament\Resources\CostCategoryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -26,8 +28,8 @@ class EditCostCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

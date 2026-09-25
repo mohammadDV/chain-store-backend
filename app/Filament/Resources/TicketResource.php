@@ -2,20 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Support\Enums\TextSize;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use App\Filament\Resources\TicketResource\Pages\ListTickets;
+use App\Filament\Resources\TicketResource\Pages\EditTicket;
+use App\Filament\Resources\TicketResource\Pages\ViewTicket;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TicketResource\Pages;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketSubject;
 use Domain\User\Models\User;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\Action;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\TextColumn\TextColumnSize;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -23,9 +26,9 @@ class TicketResource extends Resource
 {
     protected static ?string $model = Ticket::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-ticket';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-ticket';
 
-    protected static ?string $navigationGroup = 'Support';
+    protected static string | \UnitEnum | null $navigationGroup = 'Support';
 
     protected static ?int $navigationSort = 4;
 
@@ -49,10 +52,10 @@ class TicketResource extends Resource
         return __('site.Ticket Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make(__('site.ticket_information'))
                     ->schema([
                         Select::make('user_id')
@@ -114,7 +117,7 @@ class TicketResource extends Resource
                 TextColumn::make('created_at')
                     ->label(__('site.ticket_created_at'))
                     ->dateTime('Y/m/d H:i:s')
-                    ->size(TextColumnSize::Small)
+                    ->size(TextSize::Small)
                     ->sortable(),
             ])
             ->filters([
@@ -125,7 +128,7 @@ class TicketResource extends Resource
                         'closed' => __('site.closed'),
                     ]),
             ])
-            ->actions([
+            ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
                 Action::make('markAsActive')
@@ -163,9 +166,9 @@ class TicketResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTickets::route('/'),
-            'edit' => Pages\EditTicket::route('/{record}/edit'),
-            'view' => Pages\ViewTicket::route('/{record}'),
+            'index' => ListTickets::route('/'),
+            'edit' => EditTicket::route('/{record}/edit'),
+            'view' => ViewTicket::route('/{record}'),
         ];
     }
 

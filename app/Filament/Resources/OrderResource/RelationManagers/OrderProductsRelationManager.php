@@ -2,6 +2,10 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Domain\Notification\Services\NotificationService;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Order;
@@ -10,7 +14,6 @@ use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -41,10 +44,10 @@ class OrderProductsRelationManager extends RelationManager
         return __('site.products');
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('pivot.count')
                     ->label(__('site.count'))
                     ->numeric()
@@ -196,7 +199,7 @@ class OrderProductsRelationManager extends RelationManager
                     ->color('primary'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('pivot.status')
+                SelectFilter::make('pivot.status')
                     ->label(__('site.order_product_status'))
                     ->options([
                         'pending' => __('site.pending'),
@@ -213,12 +216,12 @@ class OrderProductsRelationManager extends RelationManager
             ->headerActions([
                 // No create action for order products
             ])
-            ->actions([
-                Tables\Actions\Action::make('change_status')
+            ->recordActions([
+                Action::make('change_status')
                     ->label(__('site.change_status'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('danger')
-                    ->form([
+                    ->schema([
                         Select::make('status')
                             ->label(__('site.status'))
                             ->options([
@@ -295,9 +298,9 @@ class OrderProductsRelationManager extends RelationManager
                             ->success()
                             ->send();
                     }),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions for order products
             ])
             ->defaultSort('products.id', 'desc');

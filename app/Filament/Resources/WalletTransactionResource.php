@@ -2,12 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use App\Filament\Resources\WalletTransactionResource\Pages\ListWalletTransactions;
+use App\Filament\Resources\WalletTransactionResource\Pages\ViewWalletTransaction;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WalletTransactionResource\Pages;
 use App\Filament\Resources\WalletTransactionResource\RelationManagers\WalletRelationManager;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -19,9 +26,9 @@ class WalletTransactionResource extends Resource
 {
     protected static ?string $model = WalletTransaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrows-right-left';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrows-right-left';
 
-    protected static ?string $navigationGroup = 'Financial';
+    protected static string | \UnitEnum | null $navigationGroup = 'Financial';
 
     protected static ?int $navigationSort = 10;
 
@@ -45,17 +52,17 @@ class WalletTransactionResource extends Resource
         return __('site.Wallet Management');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make(__('site.transaction_information'))
+        return $schema
+            ->components([
+                Section::make(__('site.transaction_information'))
                     ->schema([
-                        Forms\Components\TextInput::make('wallet_id')
+                        TextInput::make('wallet_id')
                             ->label(__('site.wallet'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('user_id')
+                        TextInput::make('user_id')
                             ->label(__('site.user'))
                             ->formatStateUsing(function ($state, $record): string {
                                 $user = $record?->user;
@@ -69,29 +76,29 @@ class WalletTransactionResource extends Resource
                                 return $name !== '' ? $name.' (#'.$user->id.')' : '#'.$user->id;
                             })
                             ->disabled(),
-                        Forms\Components\TextInput::make('type')
+                        TextInput::make('type')
                             ->label(__('site.type'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('amount')
+                        TextInput::make('amount')
                             ->label(__('site.amount'))
                             ->numeric()
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('currency')
+                        TextInput::make('currency')
                             ->label(__('site.currency'))
                             ->disabled()
                             ->required()
                             ->maxLength(3),
-                        Forms\Components\TextInput::make('status')
+                        TextInput::make('status')
                             ->label(__('site.status'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\TextInput::make('reference')
+                        TextInput::make('reference')
                             ->label(__('site.reference'))
                             ->disabled()
                             ->required(),
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label(__('site.description'))
                             ->disabled()
                             ->rows(3),
@@ -171,7 +178,7 @@ class WalletTransactionResource extends Resource
                     'wallet',
                     fn (Builder $walletQuery) => $walletQuery->where('user_id', $userId)
                 )),
-                Tables\Filters\SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->label(__('site.type'))
                     ->options([
                         'deposit' => __('site.deposit'),
@@ -180,23 +187,23 @@ class WalletTransactionResource extends Resource
                         'purchase' => __('site.purchase'),
                         'refund' => __('site.refund'),
                     ]),
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->label(__('site.status'))
                     ->options([
                         'completed' => __('site.completed'),
                         'pending' => __('site.pending'),
                         'failed' => __('site.failed'),
                     ]),
-                Tables\Filters\SelectFilter::make('currency')
+                SelectFilter::make('currency')
                     ->label(__('site.currency'))
                     ->options([
                         'IRR' => 'IRR',
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions - read only
             ])
             ->defaultSort('created_at', 'desc');
@@ -212,13 +219,13 @@ class WalletTransactionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListWalletTransactions::route('/'),
-            'view' => Pages\ViewWalletTransaction::route('/{record}'),
+            'index' => ListWalletTransactions::route('/'),
+            'view' => ViewWalletTransaction::route('/{record}'),
         ];
     }
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::count();
+        return (string) static::getModel()::count();
     }
 }
