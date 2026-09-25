@@ -49,20 +49,24 @@ class WalletTransactionResource extends Resource
             ->schema([
                 Forms\Components\Section::make(__('site.transaction_information'))
                     ->schema([
-                        Forms\Components\Select::make('wallet_id')
+                        Forms\Components\TextInput::make('wallet_id')
                             ->label(__('site.wallet'))
-                            ->relationship('wallet', 'id')
-                            ->searchable()
-                            ->preload()
                             ->disabled()
                             ->required(),
-                        Forms\Components\Select::make('user_id')
+                        Forms\Components\TextInput::make('user_id')
                             ->label(__('site.user'))
-                            ->relationship('user', 'first_name')
-                            ->searchable()
-                            ->preload()
-                            ->disabled()
-                            ->required(),
+                            ->formatStateUsing(function ($state, $record): string {
+                                $user = $record?->user;
+
+                                if (! $user) {
+                                    return filled($state) ? (string) $state : '-';
+                                }
+
+                                $name = trim((string) ($user->nickname ?: $user->first_name ?: ''));
+
+                                return $name !== '' ? $name.' (#'.$user->id.')' : '#'.$user->id;
+                            })
+                            ->disabled(),
                         Forms\Components\TextInput::make('type')
                             ->label(__('site.type'))
                             ->disabled()

@@ -20,13 +20,20 @@ class WalletRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('user_id')
+                Forms\Components\TextInput::make('user_id')
                     ->label(__('site.user'))
-                    ->relationship('user', 'first_name')
-                    ->searchable()
-                    ->preload()
-                    ->disabled()
-                    ->required(),
+                    ->formatStateUsing(function ($state, $record): string {
+                        $user = $record?->user;
+
+                        if (! $user) {
+                            return filled($state) ? (string) $state : '-';
+                        }
+
+                        $name = trim((string) ($user->nickname ?: $user->first_name ?: ''));
+
+                        return $name !== '' ? $name.' (#'.$user->id.')' : '#'.$user->id;
+                    })
+                    ->disabled(),
                 Forms\Components\TextInput::make('balance')
                     ->label(__('site.balance'))
                     ->numeric()

@@ -349,9 +349,14 @@ class InventoryTransactionResource extends Resource
                                 ->where('product_id', $productId)
                                 ->orderByDesc('priority')
                                 ->get(['id', 'title', 'code'])
-                                ->mapWithKeys(fn (Size $size) => [
-                                    $size->id => trim($size->title.($size->code ? " ({$size->code})" : '')),
-                                ])
+                                ->mapWithKeys(function (Size $size) {
+                                    $label = trim((string) ($size->title ?? ''));
+                                    if ($size->code) {
+                                        $label = trim($label.' ('.$size->code.')');
+                                    }
+
+                                    return [$size->id => $label !== '' ? $label : '#'.$size->id];
+                                })
                                 ->all();
                         })
                         ->disabled(fn (Get $get): bool => blank($get('product_id'))),
