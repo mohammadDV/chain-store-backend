@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\DiscountResource\Pages\CreateDiscount;
 use App\Filament\Resources\DiscountResource\Pages\EditDiscount;
 use App\Filament\Resources\DiscountResource\Pages\ListDiscounts;
@@ -25,7 +26,14 @@ use Filament\Tables\Table;
 
 class DiscountResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Discount::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'discounts';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-ticket';
 

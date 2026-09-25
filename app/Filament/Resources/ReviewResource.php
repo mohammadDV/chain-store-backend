@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\ReviewResource\Pages\CreateReview;
 use App\Filament\Resources\ReviewResource\Pages\EditReview;
 use App\Filament\Resources\ReviewResource\Pages\ListReviews;
 use App\Filament\Resources\ReviewResource\Pages\ViewReview;
+use Domain\AdminAccess\AdminPermission;
 use Domain\Review\Models\Review;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
@@ -29,7 +32,20 @@ use Filament\Tables\Table;
 
 class ReviewResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Review::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'reviews';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'product';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
@@ -172,14 +188,16 @@ class ReviewResource extends Resource
                     ->label(__('site.approve'))
                     ->icon('heroicon-m-check')
                     ->color('success')
-                    ->visible(fn (Review $record): bool => $record->status !== Review::APPROVED)
+                    ->visible(fn (Review $record): bool => $record->status !== Review::APPROVED
+                        && auth()->user()?->can(AdminPermission::REVIEWS_APPROVE))
                     ->requiresConfirmation()
                     ->action(fn (Review $record) => $record->update(['status' => Review::APPROVED])),
                 Action::make('reject')
                     ->label(__('site.reject'))
                     ->icon('heroicon-m-x-mark')
                     ->color('danger')
-                    ->visible(fn (Review $record): bool => $record->status !== Review::CANCELLED)
+                    ->visible(fn (Review $record): bool => $record->status !== Review::CANCELLED
+                        && auth()->user()?->can(AdminPermission::REVIEWS_APPROVE))
                     ->requiresConfirmation()
                     ->action(fn (Review $record) => $record->update(['status' => Review::CANCELLED])),
             ])

@@ -26,3 +26,15 @@ it('allows level-3 admins into the admin panel', function () {
 
     $this->get('/admin')->assertOk();
 });
+
+it('allows configured super admin email into the admin panel even without level 3', function () {
+    $user = User::factory()->create([
+        'email' => 'admin@gmail.com',
+        'level' => 0,
+        'status' => 1,
+    ]);
+
+    $this->actingAs($user)
+        ->get('/admin')
+        ->assertOk();
+});

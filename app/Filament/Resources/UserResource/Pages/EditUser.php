@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\UserResource\Pages;
 
 use App\Filament\Resources\UserResource;
+use Domain\User\Models\User;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
 class EditUser extends EditRecord
@@ -12,7 +14,12 @@ class EditUser extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            // Delete action removed to disable user deletion
+            Action::make('manage_permissions')
+                ->label(__('site.manage_permissions'))
+                ->icon('heroicon-o-shield-check')
+                ->color('warning')
+                ->url(fn (): string => UserResource::getUrl('permissions', ['record' => $this->record]))
+                ->visible(fn (): bool => auth()->user() instanceof User && auth()->user()->isSuperAdmin()),
         ];
     }
 

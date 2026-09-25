@@ -2,6 +2,7 @@
 
 namespace Core\Console\Commands;
 
+use Database\Seeders\AdminPermissionSeeder;
 use Domain\User\Models\Role;
 use Illuminate\Console\Command;
 
@@ -19,18 +20,20 @@ class AddPermissions extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Seed Spatie roles and Filament admin permissions';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
+        Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
 
-        // Add the lite and normal roles
-        $admin = Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        // $author = Role::updateOrCreate(['name' => 'author', 'guard_name' => 'web']);
-        // $operator = Role::updateOrCreate(['name' => 'operator', 'guard_name' => 'web']);
-        $user = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+        $this->callSilent('db:seed', ['--class' => AdminPermissionSeeder::class]);
+
+        $this->info('Roles and admin permissions synced.');
+
+        return self::SUCCESS;
     }
 }

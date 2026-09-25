@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\ManageUserPermissions;
 use App\Filament\Resources\UserResource\Pages\ViewUser;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
@@ -30,11 +32,18 @@ use Illuminate\Support\Facades\Cache;
 
 class UserResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = User::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?int $navigationSort = 3;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'users';
+    }
 
     public static function getNavigationLabel(): string
     {
@@ -338,6 +347,12 @@ class UserResource extends Resource
                     ->label(__('site.view_user')),
                 EditAction::make()
                     ->label(__('site.edit_user')),
+                Action::make('manage_permissions')
+                    ->label(__('site.manage_permissions'))
+                    ->icon('heroicon-o-shield-check')
+                    ->color('warning')
+                    ->url(fn (User $record): string => static::getUrl('permissions', ['record' => $record]))
+                    ->visible(fn (): bool => auth()->user() instanceof User && auth()->user()->isSuperAdmin()),
                 Action::make('verify_email')
                     ->label(__('site.verify_email'))
                     ->icon('heroicon-o-envelope')
@@ -405,6 +420,7 @@ class UserResource extends Resource
             'create' => CreateUser::route('/create'),
             'edit' => EditUser::route('/{record}/edit'),
             'view' => ViewUser::route('/{record}'),
+            'permissions' => ManageUserPermissions::route('/{record}/permissions'),
         ];
     }
 

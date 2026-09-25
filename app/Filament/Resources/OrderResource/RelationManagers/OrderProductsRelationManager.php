@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use Domain\AdminAccess\AdminPermission;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Notification\Services\NotificationService;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Size;
+use Domain\User\Models\User;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Filament\Actions\Action;
@@ -19,7 +22,9 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class OrderProductsRelationManager extends RelationManager
@@ -80,6 +85,14 @@ class OrderProductsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('title')
+            ->modifyQueryUsing(function (Builder $query): Builder {
+                $user = Auth::user();
+                if (! $user instanceof User) {
+                    return $query->whereRaw('1 = 0');
+                }
+
+                return app(AdminAccessService::class)->scopeBrandQuery($query, $user, 'brand_id');
+            })
             ->columns([
                 ImageColumn::make('image')
                     ->label(__('site.image'))
@@ -220,25 +233,64 @@ class OrderProductsRelationManager extends RelationManager
                     ->label(__('site.change_status'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('danger')
+                    ->visible(function (): bool {
+                        $user = Auth::user();
+
+                        return $user instanceof User
+                            && ($user->can(AdminPermission::ORDERS_CHANGE_STATUS) || $user->can(AdminPermission::ORDERS_REFUND));
+                    })
                     ->schema([
                         Select::make('status')
                             ->label(__('site.status'))
-                            ->options([
-                                'pending' => __('site.pending'),
-                                'expired' => __('site.expired'),
-                                'paid' => __('site.paid'),
-                                'cancelled' => __('site.cancelled'),
-                                'shipped' => __('site.shipped'),
-                                'delivered' => __('site.delivered'),
-                                'returned' => __('site.returned'),
-                                'refunded' => __('site.refunded'),
-                                'failed' => __('site.failed'),
-                            ])
+                            ->options(function (): array {
+                                $options = [
+                                    'pending' => __('site.pending'),
+                                    'expired' => __('site.expired'),
+                                    'paid' => __('site.paid'),
+                                    'cancelled' => __('site.cancelled'),
+                                    'shipped' => __('site.shipped'),
+                                    'delivered' => __('site.delivered'),
+                                    'returned' => __('site.returned'),
+                                    'failed' => __('site.failed'),
+                                ];
+
+                                $user = Auth::user();
+                                if ($user instanceof User && $user->can(AdminPermission::ORDERS_REFUND)) {
+                                    $options['refunded'] = __('site.refunded');
+                                }
+
+                                return $options;
+                            })
                             ->default(fn ($record) => $record->pivot->status)
                             ->required()
                             ->native(false),
                     ])
                     ->action(function ($record, array $data) {
+                        $user = Auth::user();
+                        if (! $user instanceof User) {
+                            return;
+                        }
+
+                        if ($data['status'] === 'refunded') {
+                            if (! $user->can(AdminPermission::ORDERS_REFUND)) {
+                                Notification::make()
+                                    ->title(__('site.error'))
+                                    ->body(__('site.unauthorized'))
+                                    ->danger()
+                                    ->send();
+
+                                return;
+                            }
+                        } elseif (! $user->can(AdminPermission::ORDERS_CHANGE_STATUS)) {
+                            Notification::make()
+                                ->title(__('site.error'))
+                                ->body(__('site.unauthorized'))
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
                         if ($record->status == 'refunded' || $record->pivot->status == 'refunded') {
                             Notification::make()
                                 ->title(__('site.error'))

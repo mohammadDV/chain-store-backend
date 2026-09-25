@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\InventoryTransactionResource\Pages\CreateInventoryTransaction;
 use App\Filament\Resources\InventoryTransactionResource\Pages\ListInventoryTransactions;
 use App\Filament\Resources\InventoryTransactionResource\Pages\ViewInventoryTransaction;
@@ -32,7 +34,20 @@ use Morilog\Jalali\Jalalian;
 
 class InventoryTransactionResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = InventoryTransaction::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'inventory_transactions';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'product';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 

@@ -4,6 +4,8 @@ namespace Domain\User\Models;
 
 use Application\Api\User\Notifications\CustomEmailVerificationNotification;
 use Database\Factories\UserFactory;
+use Domain\AdminAccess\Concerns\HasAdminBrands;
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Notification\Models\Notification;
 use Domain\Post\Models\Post;
 use Filament\Models\Contracts\FilamentUser;
@@ -20,7 +22,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements FilamentUser, HasName, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
-    use HasApiTokens, HasFactory, HasRoles, Notifiable;
+    use HasAdminBrands, HasApiTokens, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -95,7 +97,12 @@ class User extends Authenticatable implements FilamentUser, HasName, MustVerifyE
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->level == 3;
+        return app(AdminAccessService::class)->isSuperAdmin($this) || (int) $this->level === 3;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return app(AdminAccessService::class)->isSuperAdmin($this);
     }
 
     public function getPermissionRoleNames()

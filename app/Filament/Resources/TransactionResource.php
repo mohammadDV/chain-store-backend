@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
 use App\Filament\Resources\TransactionResource\Pages\ListTransactions;
@@ -25,7 +26,14 @@ use Morilog\Jalali\Jalalian;
 
 class TransactionResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = Transaction::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'transactions';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-path';
 

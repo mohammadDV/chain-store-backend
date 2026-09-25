@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\TicketSubjectResource\Pages\CreateTicketSubject;
 use App\Filament\Resources\TicketSubjectResource\Pages\EditTicketSubject;
 use App\Filament\Resources\TicketSubjectResource\Pages\ListTicketSubjects;
@@ -22,7 +23,14 @@ use Illuminate\Support\Facades\Auth;
 
 class TicketSubjectResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = TicketSubject::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'ticket_subjects';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-tag';
 

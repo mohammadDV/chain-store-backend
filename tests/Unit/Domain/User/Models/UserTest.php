@@ -89,12 +89,14 @@ it('builds filament display name from available fields', function () {
         ->and($fallback->getFilamentName())->toBe('User #99');
 });
 
-it('allows panel access only for level three users', function () {
-    $admin = User::factory()->make(['level' => 3]);
-    $user = User::factory()->make(['level' => 0]);
+it('allows panel access for level three users and configured super admins', function () {
+    $admin = User::factory()->make(['level' => 3, 'email' => 'ops@example.com']);
+    $super = User::factory()->make(['level' => 0, 'email' => 'admin@gmail.com']);
+    $user = User::factory()->make(['level' => 0, 'email' => 'user@example.com']);
     $panel = Mockery::mock(Panel::class);
 
     expect($admin->canAccessPanel($panel))->toBeTrue()
+        ->and($super->canAccessPanel($panel))->toBeTrue()
         ->and($user->canAccessPanel($panel))->toBeFalse();
 });
 

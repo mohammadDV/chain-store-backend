@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\ColorResource\Pages\CreateColor;
 use App\Filament\Resources\ColorResource\Pages\EditColor;
 use App\Filament\Resources\ColorResource\Pages\ListColors;
@@ -23,7 +25,20 @@ use Filament\Tables\Table;
 
 class ColorResource extends Resource
 {
+    use ChecksResourceAuthorization;
+    use ScopesQueryByAdminBrands;
+
     protected static ?string $model = Color::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'colors';
+    }
+
+    protected static function brandScopeStrategy(): string
+    {
+        return 'brands';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-swatch';
 

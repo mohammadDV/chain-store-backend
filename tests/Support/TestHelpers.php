@@ -2,6 +2,7 @@
 
 namespace Tests\Support;
 
+use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
@@ -58,6 +59,37 @@ trait TestHelpers
             'verified_at' => now(),
         ]);
 
+        config([
+            'admin.super_admin_emails' => [strtolower((string) $user->email)],
+        ]);
+
+        $this->actingAs($user);
+
+        return $user;
+    }
+
+    protected function actingAsSuperAdmin(?User $user = null): User
+    {
+        return $this->actingAsAdmin($user);
+    }
+
+    /**
+     * @param  list<string>  $permissions
+     * @param  list<int>  $brandIds
+     */
+    protected function actingAsAdminWithPermissions(array $permissions, array $brandIds = [], ?User $user = null): User
+    {
+        $this->seedAdminPermissions();
+
+        $user ??= User::factory()->admin()->create([
+            'status' => 1,
+            'email_verified_at' => now(),
+            'verified_at' => now(),
+        ]);
+
+        app(AdminAccessService::class)->syncForUser($user, $permissions, $brandIds);
+        $user->refresh();
+
         $this->actingAs($user);
 
         return $user;
@@ -70,21 +102,26 @@ trait TestHelpers
 
     protected function seedRoles(): void
     {
-        if (Role::query()->where('name', 'user')->exists()) {
-            return;
+        if (! Role::query()->where('name', 'user')->exists()) {
+            Role::create([
+                'id' => 1,
+                'name' => 'admin',
+                'guard_name' => 'web',
+            ]);
+
+            Role::create([
+                'id' => 2,
+                'name' => 'user',
+                'guard_name' => 'web',
+            ]);
         }
 
-        Role::create([
-            'id' => 1,
-            'name' => 'admin',
-            'guard_name' => 'web',
-        ]);
+        $this->seedAdminPermissions();
+    }
 
-        Role::create([
-            'id' => 2,
-            'name' => 'user',
-            'guard_name' => 'web',
-        ]);
+    protected function seedAdminPermissions(): void
+    {
+        app(AdminAccessService::class)->ensurePermissionsExist();
     }
 
     /**

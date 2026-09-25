@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages\ListWithdrawalTransactions;
 use App\Filament\Resources\WithdrawalTransactionResource\Pages\ViewWithdrawalTransaction;
+use Domain\AdminAccess\AdminPermission;
 use Domain\Notification\Services\NotificationService;
 use Domain\Wallet\Models\WalletTransaction;
 use Domain\Wallet\Models\WithdrawalTransaction;
@@ -29,7 +31,14 @@ use Morilog\Jalali\Jalalian;
 
 class WithdrawalTransactionResource extends Resource
 {
+    use ChecksResourceAuthorization;
+
     protected static ?string $model = WithdrawalTransaction::class;
+
+    protected static function permissionPrefix(): string
+    {
+        return 'withdrawals';
+    }
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-tray';
 
@@ -204,7 +213,8 @@ class WithdrawalTransactionResource extends Resource
                     ->label(__('site.complete'))
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
-                    ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING)
+                    ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING
+                        && auth()->user()?->can(AdminPermission::WITHDRAWALS_APPROVE))
                     ->schema([
                         Textarea::make('reason')
                             ->label(__('site.completion_reason'))
@@ -270,7 +280,8 @@ class WithdrawalTransactionResource extends Resource
                     ->label(__('site.reject'))
                     ->icon('heroicon-o-x-circle')
                     ->color('danger')
-                    ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING)
+                    ->visible(fn ($record) => $record->status === WithdrawalTransaction::PENDING
+                        && auth()->user()?->can(AdminPermission::WITHDRAWALS_REJECT))
                     ->schema([
                         Textarea::make('reason')
                             ->label(__('site.rejection_reason'))
