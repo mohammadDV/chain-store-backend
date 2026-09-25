@@ -59,54 +59,56 @@ class UserResource extends Resource
      */
     public static function relatedResourceLinks(int $userId): array
     {
+        // Filament v5 binds ListRecords::$tableFilters to the `filters` query string key.
         $userFilter = [
-            'tableFilters' => [
+            'filters' => [
                 'user_id' => [
                     'value' => $userId,
                 ],
             ],
         ];
 
+        // Relative URLs so links work behind docker/nginx on :80 even when APP_URL points at :8000.
         return [
             'wallet' => [
                 'label' => __('site.wallet'),
                 'icon' => 'heroicon-o-wallet',
-                'url' => WalletResource::getUrl('index', $userFilter),
+                'url' => WalletResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'wallet_transactions' => [
                 'label' => __('site.wallet_transactions'),
                 'icon' => 'heroicon-o-arrows-right-left',
-                'url' => WalletTransactionResource::getUrl('index', $userFilter),
+                'url' => WalletTransactionResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'withdrawals' => [
                 'label' => __('site.withdrawal_transactions'),
                 'icon' => 'heroicon-o-arrow-down-tray',
-                'url' => WithdrawalTransactionResource::getUrl('index', $userFilter),
+                'url' => WithdrawalTransactionResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'orders' => [
                 'label' => __('site.orders'),
                 'icon' => 'heroicon-o-shopping-bag',
-                'url' => OrderResource::getUrl('index', $userFilter),
+                'url' => OrderResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'transactions' => [
                 'label' => __('site.transactions'),
                 'icon' => 'heroicon-o-arrow-path',
-                'url' => TransactionResource::getUrl('index', $userFilter),
+                'url' => TransactionResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'reviews' => [
                 'label' => __('site.reviews'),
                 'icon' => 'heroicon-o-chat-bubble-bottom-center-text',
-                'url' => ReviewResource::getUrl('index', $userFilter),
+                'url' => ReviewResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'tickets' => [
                 'label' => __('site.tickets'),
                 'icon' => 'heroicon-o-ticket',
-                'url' => TicketResource::getUrl('index', $userFilter),
+                'url' => TicketResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
             'notifications' => [
                 'label' => __('site.notifications'),
                 'icon' => 'heroicon-o-bell',
-                'url' => NotificationResource::getUrl('index', $userFilter),
+                'url' => NotificationResource::getUrl('index', $userFilter, isAbsolute: false),
             ],
         ];
     }
