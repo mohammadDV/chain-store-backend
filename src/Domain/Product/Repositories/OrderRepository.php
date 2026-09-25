@@ -445,6 +445,8 @@ class OrderRepository implements IOrderRepository
             // Update order status
             $order->update(['status' => Order::PAID]);
 
+            $this->decrementStockForPaidOrder($order);
+
             WalletTransaction::createTransaction(
                 $wallet,
                 -$amount,
@@ -521,15 +523,7 @@ class OrderRepository implements IOrderRepository
             // Update order status
             $order->update(['status' => Order::PAID]);
 
-            // Update stock
-            foreach ($order->products as $product) {
-                if ($product?->brand?->has_stock_management && $product?->pivot?->size_id) {
-                    $this->stockService->decrementForOrder(
-                        (int) $product->pivot->size_id,
-                        (int) $product->pivot->count
-                    );
-                }
-            }
+            $this->decrementStockForPaidOrder($order);
 
             NotificationService::create([
                 'title' => __('site.order_paid_title'),
@@ -551,6 +545,26 @@ class OrderRepository implements IOrderRepository
 
         } catch (\Exception $e) {
             DB::rollBack();
+        }
+    }
+
+    /**
+     * Hard-decrement stock for paid order lines that use stock management.
+     * Must be called inside an open DB transaction.
+     */
+    private function decrementStockForPaidOrder(Order $order): void
+    {
+        $order->loadMissing(['products.brand']);
+
+        foreach ($order->products as $product) {
+            if ($product?->brand?->has_stock_management && $product?->pivot?->size_id) {
+                $this->stockService->decrementForOrder(
+                    (int) $product->pivot->size_id,
+                    (int) $product->pivot->count,
+                    $order->user_id,
+                    'Order '.$order->code,
+                );
+            }
         }
     }
 

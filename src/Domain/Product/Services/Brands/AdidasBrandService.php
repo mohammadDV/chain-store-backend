@@ -6,6 +6,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Services\StockService;
 
 /**
@@ -415,7 +416,13 @@ class AdidasBrandService implements BrandServiceInterface
                         'priority' => 100 - $key,
                     ]
                 );
-                $this->stockService->setQuantity($size->id, (int) config('product.default_stock'));
+                $this->stockService->setQuantity(
+                    $size->id,
+                    (int) config('product.default_stock'),
+                    InventoryTransactionSource::Scraper,
+                    null,
+                    'Adidas storeProduct',
+                );
             }
         }
 
@@ -499,7 +506,13 @@ class AdidasBrandService implements BrandServiceInterface
 
         if ($size) {
             $quantity = $productData['stock'] == 'notfound' ? 0 : (int) $productData['stock'];
-            $this->stockService->setQuantity($size->id, $quantity);
+            $this->stockService->setQuantity(
+                $size->id,
+                $quantity,
+                InventoryTransactionSource::Scraper,
+                null,
+                'Adidas updateProduct',
+            );
         }
 
         return $product;

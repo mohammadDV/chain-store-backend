@@ -2,8 +2,12 @@
 
 namespace Tests\Feature;
 
+use Application\Api\Product\Requests\PaymentRequest;
 use Application\Api\Product\Resources\SizeResource;
 use Domain\Brand\Models\Brand;
+use Domain\Product\Enums\InventoryTransactionSource;
+use Domain\Product\Enums\InventoryTransactionType;
+use Domain\Product\Models\InventoryTransaction;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
@@ -11,6 +15,7 @@ use Domain\Product\Repositories\OrderRepository;
 use Domain\Product\Services\StockService;
 use Domain\User\Models\User;
 use Domain\User\Services\TelegramNotificationService;
+use Domain\Wallet\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\Sanctum;
@@ -177,6 +182,73 @@ class StockOrderTest extends TestCase
         $this->assertSame(6, $size->stock->fresh()->quantity);
         $this->assertSame(0, $size->stock->fresh()->reserved);
         $this->assertSame(Order::PAID, $order->fresh()->status);
+        $this->assertDatabaseHas('inventory_transactions', [
+            'product_id' => $product->id,
+            'size_id' => $size->id,
+            'type' => InventoryTransactionType::Sale->value,
+            'source' => InventoryTransactionSource::Order,
+            'user_id' => $user->id,
+            'quantity_change' => -4,
+            'previous_quantity' => 10,
+            'resulting_quantity' => 6,
+        ]);
+    }
+
+    public function test_wallet_payment_decrements_stock_and_writes_sale(): void
+    {
+        [$user, $product, $size] = $this->seedProductWithStock(10, true);
+        Wallet::query()->create([
+            'user_id' => $user->id,
+            'balance' => 99_999_999_999,
+            'currency' => Wallet::IRR,
+            'status' => 1,
+        ]);
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/profile/orders', [
+            'products' => [
+                ['id' => $product->id, 'count' => 3, 'size_id' => $size->id],
+            ],
+        ])->assertCreated();
+
+        $order = Order::query()->where('user_id', $user->id)->where('status', Order::PENDING)->firstOrFail();
+
+        $paymentRequest = PaymentRequest::create(
+            "/api/profile/orders/{$order->id}/pay",
+            'POST',
+            [
+                'payment_method' => 'wallet',
+                'address' => 'Test address',
+                'postal_code' => '1234567890',
+                'phone' => '09120000000',
+            ]
+        );
+        $paymentRequest->setContainer($this->app);
+        $paymentRequest->setRedirector($this->app->make('redirect'));
+        // Bypass FormRequest validation; payOrder only reads inputs.
+
+        $response = app(OrderRepository::class)->payOrder($order, $paymentRequest);
+
+        $this->assertSame(201, $response->getStatusCode());
+        $this->assertSame(1, $response->getData(true)['status']);
+        $this->assertSame(Order::PAID, $order->fresh()->status);
+        $this->assertSame(7, $size->stock->fresh()->quantity);
+        $this->assertSame(
+            1,
+            InventoryTransaction::query()
+                ->where('size_id', $size->id)
+                ->where('type', InventoryTransactionType::Sale)
+                ->count()
+        );
+        $this->assertDatabaseHas('inventory_transactions', [
+            'product_id' => $product->id,
+            'size_id' => $size->id,
+            'type' => InventoryTransactionType::Sale->value,
+            'source' => InventoryTransactionSource::Order,
+            'quantity_change' => -3,
+            'previous_quantity' => 10,
+            'resulting_quantity' => 7,
+        ]);
     }
 
     public function test_complete_order_does_not_decrement_without_stock_management(): void

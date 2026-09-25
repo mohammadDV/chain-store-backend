@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ProductResource\RelationManagers;
 
+use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Services\StockService;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -12,6 +13,8 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SizesRelationManager extends RelationManager
 {
@@ -100,11 +103,19 @@ class SizesRelationManager extends RelationManager
                         $quantity = (int) ($data['quantity'] ?? 0);
                         unset($data['quantity']);
 
-                        /** @var Model $record */
-                        $record = $this->getRelationship()->create($data);
-                        app(StockService::class)->setQuantity($record->getKey(), $quantity);
+                        return DB::transaction(function () use ($data, $quantity) {
+                            /** @var Model $record */
+                            $record = $this->getRelationship()->create($data);
+                            app(StockService::class)->setQuantity(
+                                $record->getKey(),
+                                $quantity,
+                                InventoryTransactionSource::Admin,
+                                Auth::id(),
+                                'Admin size create',
+                            );
 
-                        return $record;
+                            return $record;
+                        });
                     }),
             ])
             ->actions([
@@ -118,10 +129,18 @@ class SizesRelationManager extends RelationManager
                         $quantity = (int) ($data['quantity'] ?? 0);
                         unset($data['quantity']);
 
-                        $record->update($data);
-                        app(StockService::class)->setQuantity($record->getKey(), $quantity);
+                        return DB::transaction(function () use ($record, $data, $quantity) {
+                            $record->update($data);
+                            app(StockService::class)->setQuantity(
+                                $record->getKey(),
+                                $quantity,
+                                InventoryTransactionSource::Admin,
+                                Auth::id(),
+                                'Admin size update',
+                            );
 
-                        return $record;
+                            return $record;
+                        });
                     }),
                 Tables\Actions\DeleteAction::make(),
             ])

@@ -7,6 +7,7 @@ use Domain\Product\Models\Category;
 use Domain\Product\Models\Endpoint;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Services\StockService;
 
 /**
@@ -444,7 +445,13 @@ class DecathlonBrandService implements BrandServiceInterface
                         'priority' => $priority,
                     ]
                 );
-                $this->stockService->setQuantity($size->id, (int) $stock);
+                $this->stockService->setQuantity(
+                    $size->id,
+                    (int) $stock,
+                    InventoryTransactionSource::Scraper,
+                    null,
+                    'Decathlon storeProduct',
+                );
                 $priority--;
             }
         }
@@ -532,7 +539,13 @@ class DecathlonBrandService implements BrandServiceInterface
                         'priority' => $priority,
                     ]
                 );
-                $this->stockService->setQuantity($sizeModel->id, (int) $stock);
+                $this->stockService->setQuantity(
+                    $sizeModel->id,
+                    (int) $stock,
+                    InventoryTransactionSource::Scraper,
+                    null,
+                    'Decathlon updateProduct',
+                );
                 $priority--;
             }
         }
