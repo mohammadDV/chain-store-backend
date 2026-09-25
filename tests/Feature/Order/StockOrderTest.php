@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Order;
 
 use Application\Api\Product\Requests\PaymentRequest;
 use Application\Api\Product\Resources\SizeResource;

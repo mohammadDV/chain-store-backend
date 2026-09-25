@@ -2,13 +2,18 @@
 
 namespace Domain\Wallet\Models;
 
+use Database\Factories\WalletFactory;
 use Domain\User\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Wallet extends Model
 {
+    /** @use HasFactory<WalletFactory> */
+    use HasFactory;
+
     const IRR = 'IRR';
 
     protected $fillable = [
@@ -36,5 +41,10 @@ class Wallet extends Model
     public function canWithdraw(float $amount): bool
     {
         return $this->balance >= $amount;
+    }
+
+    protected static function newFactory(): WalletFactory
+    {
+        return WalletFactory::new();
     }
 }

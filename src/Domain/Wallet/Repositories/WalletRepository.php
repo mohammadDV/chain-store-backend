@@ -111,25 +111,38 @@ class WalletRepository implements IWalletRepository
      */
     public function completeTopUp(int $walletTransactionId): void
     {
-        DB::beginTransaction();
         try {
+            $walletTransaction = DB::transaction(function () use ($walletTransactionId) {
+                $walletTransaction = WalletTransaction::query()->find($walletTransactionId);
 
-            // Create transaction record
-            $walletTransaction = WalletTransaction::find($walletTransactionId);
-            // Update wallet balance
-            $this->incrementBalance($walletTransaction->wallet, $walletTransaction->amount);
+                if (! $walletTransaction || $walletTransaction->status === WalletTransaction::COMPLETED) {
+                    return null;
+                }
 
-            // Update transaction status
-            $this->update($walletTransaction, ['status' => 'completed']);
+                $claimed = WalletTransaction::query()
+                    ->where('id', $walletTransaction->id)
+                    ->where('status', '!=', WalletTransaction::COMPLETED)
+                    ->update(['status' => WalletTransaction::COMPLETED]);
 
-            NotificationService::create([
-                'title' => __('site.wallet_topup_title'),
-                'content' => __('site.wallet_topup_content'),
-                'id' => $walletTransaction->wallet->id,
-                'type' => NotificationService::WALLET,
-            ], $walletTransaction?->wallet?->user);
+                if ($claimed === 0) {
+                    return null;
+                }
 
-            DB::commit();
+                $this->incrementBalance($walletTransaction->wallet, $walletTransaction->amount);
+
+                NotificationService::create([
+                    'title' => __('site.wallet_topup_title'),
+                    'content' => __('site.wallet_topup_content'),
+                    'id' => $walletTransaction->wallet->id,
+                    'type' => NotificationService::WALLET,
+                ], $walletTransaction?->wallet?->user);
+
+                return $walletTransaction->fresh(['wallet.user']);
+            });
+
+            if (! $walletTransaction) {
+                return;
+            }
 
             $this->service->sendNotification(
                 config('telegram.chat_id'),
@@ -139,9 +152,8 @@ class WalletRepository implements IWalletRepository
                 'amount '.$walletTransaction->amount.PHP_EOL.
                 'time '.now()
             );
-
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('Wallet top-up completion failed: '.$e->getMessage());
         }
     }
 
@@ -150,62 +162,56 @@ class WalletRepository implements IWalletRepository
      */
     public function transfer(TransferRequest $request): JsonResponse
     {
-        DB::beginTransaction();
-        try {
+        $senderWallet = $this->findByUserId(Auth::id());
+        $recipient = User::query()
+            ->where('customer_number', $request->input('customer_number'))
+            ->where('id', '!=', Auth::id())
+            ->firstOrFail();
 
-            $senderWallet = $this->findByUserId(Auth::id());
-            $recipient = User::query()
-                ->where('customer_number', $request->input('customer_number'))
-                ->where('id', '!=', Auth::id())
-                ->firstOrFail();
+        $recipientWallet = $this->findByUserId($recipient->id);
 
-            $recipientWallet = $this->findByUserId($recipient->id);
-
-            if (! $senderWallet->canWithdraw($request->input('amount'))) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => __('site.Insufficient funds'),
-                ], 422);
-            }
-
-            // Sender's transaction (Debit)
-            $senderTransaction = WalletTransaction::createTransaction(
-                wallet: $senderWallet,
-                amount: -$request->input('amount'),
-                type: WalletTransaction::TRANSFER,
-                description: $request->description ?? __('site.wallet_transaction_transfer_to', ['email' => $recipient->email, 'wallet_id' => $recipientWallet->customer_number]),
-            );
-
-            // Recipient's transaction (Credit)
-            WalletTransaction::createTransaction(
-                wallet: $recipientWallet,
-                amount: $request->input('amount'),
-                type: WalletTransaction::TRANSFER,
-                description: __('site.wallet_transaction_transfer_from', ['sender_number' => Auth::user()->customer_number, 'recipient_number' => $recipient->customer_number, 'transaction_id' => $senderTransaction->id]),
-            );
-
-            NotificationService::create([
-                'title' => __('site.wallet_transfer_title'),
-                'content' => __('site.wallet_transfer_content', ['user_nickname' => Auth::user()->nickname]),
-                'id' => $recipientWallet->id,
-                'type' => NotificationService::WALLET,
-            ], $recipient);
-
-            DB::commit();
-
-            $senderWallet->refresh();
-
+        if (! $senderWallet->canWithdraw($request->input('amount'))) {
             return response()->json([
-                'status' => 1,
-                'message' => __('site.Transfer successful'),
-                'data' => [
-                    'transaction_reference' => $senderTransaction->reference,
-                    'new_balance' => $senderWallet->balance,
-                ],
-            ]);
+                'status' => 0,
+                'message' => __('site.Insufficient funds'),
+            ], 422);
+        }
 
+        try {
+            return DB::transaction(function () use ($request, $senderWallet, $recipient, $recipientWallet) {
+                $senderTransaction = WalletTransaction::createTransaction(
+                    wallet: $senderWallet,
+                    amount: -$request->input('amount'),
+                    type: WalletTransaction::TRANSFER,
+                    description: $request->description ?? __('site.wallet_transaction_transfer_to', ['email' => $recipient->email, 'wallet_id' => $recipientWallet->id]),
+                );
+
+                WalletTransaction::createTransaction(
+                    wallet: $recipientWallet,
+                    amount: $request->input('amount'),
+                    type: WalletTransaction::TRANSFER,
+                    description: __('site.wallet_transaction_transfer_from', ['sender_number' => Auth::user()->customer_number, 'recipient_number' => $recipient->customer_number, 'transaction_id' => $senderTransaction->id]),
+                );
+
+                NotificationService::create([
+                    'title' => __('site.wallet_transfer_title'),
+                    'content' => __('site.wallet_transfer_content', ['user_nickname' => Auth::user()->nickname]),
+                    'id' => $recipientWallet->id,
+                    'type' => NotificationService::WALLET,
+                ], $recipient);
+
+                $senderWallet->refresh();
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => __('site.Transfer successful'),
+                    'data' => [
+                        'transaction_reference' => $senderTransaction->reference,
+                        'new_balance' => $senderWallet->balance,
+                    ],
+                ]);
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Wallet transfer failed: '.$e->getMessage());
 
             return response()->json([
@@ -268,53 +274,50 @@ class WalletRepository implements IWalletRepository
      */
     public function withdraw(WithdrawRequest $request): JsonResponse
     {
-        DB::beginTransaction();
-        try {
+        $wallet = $this->findByUserId(Auth::id());
+        $amount = $request->amount;
+        $description = $request->description ?? 'Wallet withdrawal';
 
-            $wallet = $this->findByUserId(Auth::id());
-            $amount = $request->amount;
-            $description = $request->description ?? 'Wallet withdrawal';
-
-            if (! $wallet->canWithdraw($amount)) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => __('site.Insufficient funds'),
-                ], Response::HTTP_BAD_REQUEST);
-            }
-
-            $transaction = WalletTransaction::createTransaction(
-                wallet: $wallet,
-                amount: -$amount,
-                type: WalletTransaction::WITHDRAWAL,
-                description: $description ?? __('site.wallet_transaction_wallet_withdrawal'),
-                status: WalletTransaction::COMPLETED
-            );
-
-            WithdrawalTransaction::create([
-                'wallet_id' => $wallet->id,
-                'amount' => $amount,
-                'currency' => $wallet->currency,
-                'status' => WithdrawalTransaction::PENDING,
-                'reference' => WithdrawalTransaction::generateReference(),
-                'description' => $description,
-                'card' => $request->card,
-                'sheba' => $request->sheba,
-            ]);
-
-            DB::commit();
-
-            $wallet->refresh();
-
+        if (! $wallet->canWithdraw($amount)) {
             return response()->json([
-                'status' => 1,
-                'message' => __('site.Withdrawal successful'),
-                'data' => [
-                    'transaction_reference' => $transaction->reference,
-                    'new_balance' => $wallet->balance,
-                ],
-            ]);
+                'status' => 0,
+                'message' => __('site.Insufficient funds'),
+            ], 422);
+        }
+
+        try {
+            return DB::transaction(function () use ($request, $wallet, $amount, $description) {
+                $transaction = WalletTransaction::createTransaction(
+                    wallet: $wallet,
+                    amount: -$amount,
+                    type: WalletTransaction::WITHDRAWAL,
+                    description: $description ?? __('site.wallet_transaction_wallet_withdrawal'),
+                    status: WalletTransaction::COMPLETED
+                );
+
+                WithdrawalTransaction::create([
+                    'wallet_id' => $wallet->id,
+                    'amount' => $amount,
+                    'currency' => $wallet->currency,
+                    'status' => WithdrawalTransaction::PENDING,
+                    'reference' => WithdrawalTransaction::generateReference(),
+                    'description' => $description,
+                    'card' => $request->card,
+                    'sheba' => $request->sheba,
+                ]);
+
+                $wallet->refresh();
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => __('site.Withdrawal successful'),
+                    'data' => [
+                        'transaction_reference' => $transaction->reference,
+                        'new_balance' => $wallet->balance,
+                    ],
+                ]);
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Wallet withdrawal failed: '.$e->getMessage());
 
             return response()->json([

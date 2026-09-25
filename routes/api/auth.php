@@ -19,10 +19,6 @@ Route::post('/login', [AuthController::class, 'login'])
     ->middleware('guest')
     ->name('login');
 
-Route::post('/google/verify', [AuthController::class, 'verify'])
-    ->middleware('guest')
-    ->name('verify');
-
 Route::post('/complete-register', [AuthController::class, 'completeRegister'])
     ->middleware('auth:sanctum')
     ->name('complete-register');

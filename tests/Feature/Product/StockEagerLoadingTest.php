@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Product;
 
 use Application\Api\Product\Resources\SizeResource;
 use Domain\Product\Models\Product;

@@ -25,6 +25,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class OrderRepository.
@@ -512,27 +513,43 @@ class OrderRepository implements IOrderRepository
      */
     public function completeOrder(int $orderId): void
     {
-        DB::beginTransaction();
-
         try {
+            $order = DB::transaction(function () use ($orderId) {
+                $order = Order::query()
+                    ->with(['products.brand', 'user'])
+                    ->find($orderId);
 
-            // Create transaction record
-            $order = Order::query()
-                ->with(['products.brand', 'user'])
-                ->find($orderId);
-            // Update order status
-            $order->update(['status' => Order::PAID]);
+                if (! $order || $order->status === Order::PAID) {
+                    return null;
+                }
 
-            $this->decrementStockForPaidOrder($order);
+                $claimed = Order::query()
+                    ->where('id', $order->id)
+                    ->where('status', '!=', Order::PAID)
+                    ->update(['status' => Order::PAID]);
 
-            NotificationService::create([
-                'title' => __('site.order_paid_title'),
-                'content' => __('site.order_paid_content', ['order_code' => $order->code]),
-                'id' => $order->id,
-                'type' => NotificationService::ORDER,
-            ], $order->user);
+                if ($claimed === 0) {
+                    return null;
+                }
 
-            DB::commit();
+                $order->refresh();
+                $order->load(['products.brand', 'user']);
+
+                $this->decrementStockForPaidOrder($order);
+
+                NotificationService::create([
+                    'title' => __('site.order_paid_title'),
+                    'content' => __('site.order_paid_content', ['order_code' => $order->code]),
+                    'id' => $order->id,
+                    'type' => NotificationService::ORDER,
+                ], $order->user);
+
+                return $order;
+            });
+
+            if (! $order) {
+                return;
+            }
 
             $this->service->sendNotification(
                 config('telegram.chat_id'),
@@ -542,9 +559,8 @@ class OrderRepository implements IOrderRepository
                 'order_amount '.$order->total_amount.PHP_EOL.
                 'order_time '.now()
             );
-
         } catch (\Exception $e) {
-            DB::rollBack();
+            Log::error('Order completion failed: '.$e->getMessage());
         }
     }
 
@@ -569,14 +585,12 @@ class OrderRepository implements IOrderRepository
     }
 
     /**
-     * Expire pending orders that have been created more than one hour ago.
+     * Expire pending orders whose expire_date has passed.
      *
      * @return int Number of expired orders
      */
     public function expirePendingOrders(): int
     {
-        $oneHourAgo = now()->subHour();
-
         $expiredCount = Order::query()
             ->whereDoesntHave('transactions', function ($query) {
                 $query->where('status', Transaction::PENDING)
@@ -584,7 +598,8 @@ class OrderRepository implements IOrderRepository
             })
             ->where('status', Order::PENDING)
             ->where('active', 1)
-            ->where('created_at', '<=', $oneHourAgo)
+            ->whereNotNull('expire_date')
+            ->where('expire_date', '<=', now())
             ->update(['status' => Order::EXPIRED]);
 
         return $expiredCount;

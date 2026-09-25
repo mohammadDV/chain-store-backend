@@ -91,6 +91,10 @@ class PaymentController extends Controller
 
         if ($transaction) {
 
+            if ($transaction->status === Transaction::COMPLETED) {
+                return Redirect::to('/payment/result/'.$request->transactionId());
+            }
+
             $payment = $request->amount($transaction->amount)->verify();
 
             if ($payment->successful()) {

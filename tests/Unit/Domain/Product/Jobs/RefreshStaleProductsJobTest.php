@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Domain\Product\Jobs;
 
 use Domain\Product\DTO\StaleProductRefreshResult;
 use Domain\Product\Jobs\RefreshStaleProductsJob;

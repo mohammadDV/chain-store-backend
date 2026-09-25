@@ -157,6 +157,8 @@ class ReviewRepository implements IReviewRepository
      */
     public function update(ReviewRequest $request, Review $review): JsonResponse
     {
+        $this->checkLevelAccess(Auth::user()->id == $review->user_id);
+
         $review->update([
             'comment' => $request->input('comment'),
             'rate' => $request->input('rate'),

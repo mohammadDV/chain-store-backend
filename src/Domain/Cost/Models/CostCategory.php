@@ -2,17 +2,12 @@
 
 namespace Domain\Cost\Models;
 
-use Database\Factories\ClaimFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CostCategory extends Model
 {
-    /** @use HasFactory<ClaimFactory> */
-    use HasFactory;
-
     /**
      * The attributes that are mass assignable.
      *

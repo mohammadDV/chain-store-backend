@@ -38,8 +38,10 @@ class NotificationRepository implements INotificationRepository
                     ->where('status', 1);
             })
             ->when(! empty($search), function ($query) use ($search) {
-                return $query->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('title', 'content', '%'.$search.'%');
+                return $query->where(function ($nested) use ($search) {
+                    $nested->where('title', 'like', '%'.$search.'%')
+                        ->orWhere('content', 'like', '%'.$search.'%');
+                });
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));

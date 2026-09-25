@@ -29,4 +29,9 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected static function newFactory(): NotificationFactory
+    {
+        return NotificationFactory::new();
+    }
 }

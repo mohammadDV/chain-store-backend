@@ -49,6 +49,8 @@ class TicketRepository implements ITicketRepository
      */
     public function show(Ticket $ticket): Ticket
     {
+        $this->checkLevelAccess(Auth::user()->id == $ticket->user_id);
+
         TicketMessage::query()
             ->where('user_id', '!=', Auth::user()->id)
             ->where('ticket_id', $ticket->id)
@@ -74,22 +76,22 @@ class TicketRepository implements ITicketRepository
             ->where('status', Ticket::STATUS_ACTIVE)
             ->orderBy('id', 'desc');
 
-        $createdAt = Carbon::parse($query->first()?->created_at);
+        $latestActive = $query->first();
+        $ticketTimeMin = (int) config('times.ticket_time_min', 5);
 
-        // Check if created_at is more than 5 minutes ago
-        if ($createdAt->diffInMinutes(Carbon::now()) < config('times.ticket_time_min')) {
+        // Rate-limit only when the user already has an active ticket.
+        if ($latestActive && Carbon::parse($latestActive->created_at)->diffInMinutes(Carbon::now()) < $ticketTimeMin) {
             return response()->json([
                 'status' => 0,
-                'message' => __('site.You are not allowed to resend messages. Please try again in 5 minutes.', ['number' => config('times.ticket_time_min')]),
-            ], Response::HTTP_CREATED);
+                'message' => __('site.You are not allowed to resend messages. Please try again in 5 minutes.', ['number' => $ticketTimeMin]),
+            ], Response::HTTP_TOO_MANY_REQUESTS);
         }
 
-        // Check if created_at is more than 5 minutes ago
         if ($query->count() > 2) {
             return response()->json([
                 'status' => 0,
-                'message' => __('site.You are not allowed to send new tickets because you have 3 active tickets.', ['number' => config('times.ticket_time_min')]),
-            ], Response::HTTP_CREATED);
+                'message' => __('site.You are not allowed to send new tickets because you have 3 active tickets.', ['number' => $ticketTimeMin]),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $ticket = Ticket::create([
@@ -163,7 +165,7 @@ class TicketRepository implements ITicketRepository
             ->orderBy('id', 'desc')
             ->first();
 
-        if ($exist->user_id == Auth::user()->id) {
+        if ($exist && $exist->user_id == Auth::user()->id) {
             return response()->json([
                 'status' => 0,
                 'message' => __('site.You are not allowed to resend messages. Please wait until the operator answers.'),

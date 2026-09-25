@@ -43,10 +43,12 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
                 return $query->where('status', $status);
             })
             ->when(! empty($search), function ($query) use ($search) {
-                return $query->where('description', 'like', '%'.$search.'%')
-                    ->orWhere('card', 'like', '%'.$search.'%')
-                    ->orWhere('sheba', 'like', '%'.$search.'%')
-                    ->orWhere('reference', 'like', '%'.$search.'%');
+                return $query->where(function ($nested) use ($search) {
+                    $nested->where('description', 'like', '%'.$search.'%')
+                        ->orWhere('card', 'like', '%'.$search.'%')
+                        ->orWhere('sheba', 'like', '%'.$search.'%')
+                        ->orWhere('reference', 'like', '%'.$search.'%');
+                });
             })
             ->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
             ->paginate($request->get('count', 25));
@@ -71,58 +73,55 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        DB::beginTransaction();
-        try {
+        $wallet = Wallet::query()
+            ->where('user_id', Auth::id())
+            ->where('currency', Wallet::IRR)
+            ->where('status', 1)
+            ->firstOrFail();
 
-            $wallet = Wallet::query()
-                ->where('user_id', Auth::id())
-                ->where('currency', Wallet::IRR)
-                ->where('status', 1)
-                ->firstOrFail();
+        $amount = $request->amount;
+        $description = $request->description ?? __('site.wallet_transaction_wallet_withdrawal');
 
-            $amount = $request->amount;
-            $description = $request->description ?? __('site.wallet_transaction_wallet_withdrawal');
-
-            if (! $wallet->canWithdraw($amount)) {
-                return response()->json([
-                    'status' => 0,
-                    'message' => __('site.Insufficient funds'),
-                ], 422);
-            }
-
-            $transaction = WalletTransaction::createTransaction(
-                wallet: $wallet,
-                amount: -$amount,
-                type: WalletTransaction::WITHDRAWAL,
-                description: $description,
-                status: WalletTransaction::COMPLETED
-            );
-
-            WithdrawalTransaction::create([
-                'wallet_id' => $wallet->id,
-                'amount' => $amount,
-                'currency' => $wallet->currency,
-                'status' => WithdrawalTransaction::PENDING,
-                'reference' => WithdrawalTransaction::generateReference(),
-                'description' => $description,
-                'card' => $request->card,
-                'sheba' => $request->sheba,
-            ]);
-
-            DB::commit();
-
-            $wallet->refresh();
-
+        if (! $wallet->canWithdraw($amount)) {
             return response()->json([
-                'status' => 1,
-                'message' => __('site.Withdrawal successful'),
-                'data' => [
-                    'transaction_reference' => $transaction->reference,
-                    'new_balance' => $wallet->balance,
-                ],
-            ]);
+                'status' => 0,
+                'message' => __('site.Insufficient funds'),
+            ], 422);
+        }
+
+        try {
+            return DB::transaction(function () use ($request, $wallet, $amount, $description) {
+                $transaction = WalletTransaction::createTransaction(
+                    wallet: $wallet,
+                    amount: -$amount,
+                    type: WalletTransaction::WITHDRAWAL,
+                    description: $description,
+                    status: WalletTransaction::COMPLETED
+                );
+
+                WithdrawalTransaction::create([
+                    'wallet_id' => $wallet->id,
+                    'amount' => $amount,
+                    'currency' => $wallet->currency,
+                    'status' => WithdrawalTransaction::PENDING,
+                    'reference' => WithdrawalTransaction::generateReference(),
+                    'description' => $description,
+                    'card' => $request->card,
+                    'sheba' => $request->sheba,
+                ]);
+
+                $wallet->refresh();
+
+                return response()->json([
+                    'status' => 1,
+                    'message' => __('site.Withdrawal successful'),
+                    'data' => [
+                        'transaction_reference' => $transaction->reference,
+                        'new_balance' => $wallet->balance,
+                    ],
+                ]);
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Wallet withdrawal failed: '.$e->getMessage());
 
             return response()->json([

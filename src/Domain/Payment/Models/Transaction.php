@@ -2,13 +2,18 @@
 
 namespace Domain\Payment\Models;
 
+use Database\Factories\TransactionFactory;
 use Domain\User\Models\User;
 use Domain\Wallet\Models\Wallet;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
+    /** @use HasFactory<TransactionFactory> */
+    use HasFactory;
+
     const PENDING = 'pending';
 
     const COMPLETED = 'completed';
@@ -22,6 +27,8 @@ class Transaction extends Model
     const BANK = 'bank';
 
     const ORDER = 'order';
+
+    const IDENTITY = 'identity';
 
     protected $fillable = [
         'model_id',
@@ -115,5 +122,10 @@ class Transaction extends Model
         }
 
         return $revenue;
+    }
+
+    protected static function newFactory(): TransactionFactory
+    {
+        return TransactionFactory::new();
     }
 }

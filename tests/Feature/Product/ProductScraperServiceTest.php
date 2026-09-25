@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\Product;
 
 use Domain\Product\Exceptions\ProductScraperException;
 use Domain\Product\Services\ProductScraperService;
