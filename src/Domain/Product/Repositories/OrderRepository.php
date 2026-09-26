@@ -596,7 +596,7 @@ class OrderRepository implements IOrderRepository
         $queued = [];
 
         foreach ($order->products as $product) {
-            if (! empty($product->brand?->has_stock_management)) {
+            if (! empty($product->brand->has_stock_management)) {
                 continue;
             }
 
