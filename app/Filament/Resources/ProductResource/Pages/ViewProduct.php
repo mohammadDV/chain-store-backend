@@ -13,6 +13,7 @@ class ViewProduct extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            ProductResource::queueRefreshAction(),
             EditAction::make(),
         ];
     }

@@ -12,11 +12,14 @@ use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager
 use App\Filament\Resources\ProductResource\RelationManagers\ProductAttributeRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
 use App\Filament\Support\CategorySelect;
+use Domain\AdminAccess\AdminPermission;
 use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
+use Domain\Product\Services\CartProductRefreshService;
 use Domain\User\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -26,6 +29,7 @@ use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -420,11 +424,60 @@ class ProductResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                static::queueRefreshAction(),
             ])
             ->toolbarActions([
                 DeleteBulkAction::make(),
             ])
             ->defaultSort('created_at', 'desc');
+    }
+
+    /**
+     * Queue a scraper refresh for this product (by code + brand) on the high queue.
+     */
+    public static function queueRefreshAction(): Action
+    {
+        return Action::make('queue_refresh')
+            ->label(__('site.scraper_queue_refresh'))
+            ->icon('heroicon-o-arrow-path')
+            ->color('warning')
+            ->requiresConfirmation()
+            ->modalHeading(__('site.scraper_queue_refresh'))
+            ->modalDescription(__('site.scraper_queue_refresh_confirm'))
+            ->visible(function (): bool {
+                $user = Auth::user();
+
+                return $user instanceof User
+                    && $user->can(AdminPermission::PRODUCTS_AUTO_UPDATE);
+            })
+            ->authorize(AdminPermission::PRODUCTS_AUTO_UPDATE)
+            ->disabled(function (Product $record): bool {
+                return trim((string) $record->code) === '' || (int) $record->brand_id < 1;
+            })
+            ->tooltip(function (Product $record): ?string {
+                if (trim((string) $record->code) === '' || (int) $record->brand_id < 1) {
+                    return __('site.scraper_queue_refresh_missing_code_brand');
+                }
+
+                return null;
+            })
+            ->action(function (Product $record): void {
+                $queued = app(CartProductRefreshService::class)->queueRefresh($record);
+
+                if (! $queued) {
+                    Notification::make()
+                        ->title(__('site.scraper_queue_refresh_missing_code_brand'))
+                        ->danger()
+                        ->send();
+
+                    return;
+                }
+
+                Notification::make()
+                    ->title(__('site.scraper_refresh_queued'))
+                    ->success()
+                    ->send();
+            });
     }
 
     public static function getRelations(): array

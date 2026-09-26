@@ -14,6 +14,7 @@ class EditProduct extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            ProductResource::queueRefreshAction(),
             ViewAction::make(),
             DeleteAction::make(),
         ];

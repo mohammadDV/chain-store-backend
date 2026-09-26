@@ -97,3 +97,31 @@ it('does not dispatch when the product is not eligible', function () {
     expect($queued)->toBeFalse();
     Queue::assertNothingPushed();
 });
+
+it('force-queues a refresh even when cart eligibility fails', function () {
+    Queue::fake();
+
+    $service = new CartProductRefreshService;
+    $queued = $service->queueRefresh(makeCartRefreshProduct([
+        'id' => 77,
+        'active' => false,
+        'updated_at' => now(),
+    ]));
+
+    expect($queued)->toBeTrue();
+
+    Queue::assertPushedOn('high', RefreshProductOnCartJob::class, function (RefreshProductOnCartJob $job) {
+        return $job->productId === 77;
+    });
+});
+
+it('does not force-queue when code or brand is missing', function () {
+    Queue::fake();
+
+    $service = new CartProductRefreshService;
+
+    expect($service->queueRefresh(makeCartRefreshProduct(['code' => ''])))->toBeFalse()
+        ->and($service->queueRefresh(makeCartRefreshProduct(['brand_id' => null])))->toBeFalse();
+
+    Queue::assertNothingPushed();
+});

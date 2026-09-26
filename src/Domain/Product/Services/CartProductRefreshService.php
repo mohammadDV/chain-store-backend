@@ -54,6 +54,28 @@ class CartProductRefreshService
             return false;
         }
 
+        return $this->queueRefresh($product, forced: false);
+    }
+
+    /**
+     * Force-queue a scraper refresh by product id (resolved to code + brand in the job).
+     * Used by admin actions; skips cart eligibility gates.
+     *
+     * @return bool False when code or brand_id is missing.
+     */
+    public function queueRefresh(Product $product, bool $forced = true): bool
+    {
+        $code = trim((string) $product->code);
+        $brandId = (int) $product->brand_id;
+
+        if ($code === '' || $brandId < 1) {
+            Log::debug('CartProductRefreshService: skipped (missing code or brand)', [
+                'product_id' => $product->id,
+            ]);
+
+            return false;
+        }
+
         $queue = (string) config('product_scraper.cart_refresh.queue', 'high');
 
         RefreshProductOnCartJob::dispatch((int) $product->id)
@@ -62,6 +84,7 @@ class CartProductRefreshService
         Log::info('CartProductRefreshService: queued', [
             'product_id' => $product->id,
             'queue' => $queue,
+            'forced' => $forced,
         ]);
 
         return true;
