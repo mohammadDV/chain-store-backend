@@ -438,10 +438,6 @@ class OrderStatusService
 
         $order->loadMissing('user');
 
-        if (! $order->user) {
-            throw new InvalidArgumentException('Order user not found for refund notification.');
-        }
-
         NotificationService::create([
             'title' => __('site.order_product_refunded_title'),
             'content' => __('site.order_product_refunded_content', [

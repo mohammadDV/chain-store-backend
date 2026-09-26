@@ -8,12 +8,11 @@ use Illuminate\Support\Facades\Cache;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    Cache::forget('app_settings');
+    app(SettingService::class)->clearCache();
 });
 
 it('returns settings from the singleton row', function () {
-    Setting::query()->create([
-        'id' => 1,
+    Setting::getInstance()->update([
         'profit_rate' => 25.5,
         'exchange_rate' => 4200.25,
     ]);
