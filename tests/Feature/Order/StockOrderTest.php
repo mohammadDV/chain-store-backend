@@ -7,6 +7,7 @@ use Application\Api\Product\Resources\SizeResource;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
+use Domain\Product\Jobs\RefreshProductOnCartJob;
 use Domain\Product\Models\InventoryTransaction;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
@@ -18,6 +19,7 @@ use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
 use Tests\TestCase;
@@ -166,6 +168,8 @@ class StockOrderTest extends TestCase
 
     public function test_complete_order_decrements_stock_when_stock_management_enabled(): void
     {
+        Queue::fake();
+
         [$user, $product, $size] = $this->seedProductWithStock(10, true);
         Sanctum::actingAs($user);
 
@@ -192,10 +196,13 @@ class StockOrderTest extends TestCase
             'previous_quantity' => 10,
             'resulting_quantity' => 6,
         ]);
+        Queue::assertNotPushed(RefreshProductOnCartJob::class);
     }
 
     public function test_wallet_payment_decrements_stock_and_writes_sale(): void
     {
+        Queue::fake();
+
         [$user, $product, $size] = $this->seedProductWithStock(10, true);
         Wallet::query()->create([
             'user_id' => $user->id,
@@ -249,10 +256,13 @@ class StockOrderTest extends TestCase
             'previous_quantity' => 10,
             'resulting_quantity' => 7,
         ]);
+        Queue::assertNotPushed(RefreshProductOnCartJob::class);
     }
 
-    public function test_complete_order_does_not_decrement_without_stock_management(): void
+    public function test_complete_order_decrements_and_queues_scraper_without_stock_management(): void
     {
+        Queue::fake();
+
         [$user, $product, $size] = $this->seedProductWithStock(10, false);
         Sanctum::actingAs($user);
 
@@ -265,7 +275,20 @@ class StockOrderTest extends TestCase
         $order = Order::query()->where('user_id', $user->id)->where('status', Order::PENDING)->firstOrFail();
         app(OrderRepository::class)->completeOrder($order->id);
 
-        $this->assertSame(10, $size->stock->fresh()->quantity);
+        $this->assertSame(6, $size->stock->fresh()->quantity);
+        $this->assertSame(Order::PAID, $order->fresh()->status);
+        $this->assertDatabaseHas('inventory_transactions', [
+            'product_id' => $product->id,
+            'size_id' => $size->id,
+            'type' => InventoryTransactionType::Sale->value,
+            'source' => InventoryTransactionSource::Order,
+            'quantity_change' => -4,
+            'previous_quantity' => 10,
+            'resulting_quantity' => 6,
+        ]);
+        Queue::assertPushedOn('high', RefreshProductOnCartJob::class, function (RefreshProductOnCartJob $job) use ($product) {
+            return $job->productId === $product->id;
+        });
     }
 
     public function test_size_resource_exposes_quantity_as_stock(): void

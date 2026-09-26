@@ -10,6 +10,7 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
+use Domain\Product\Jobs\RefreshProductOnCartJob;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
@@ -464,6 +465,8 @@ class OrderRepository implements IOrderRepository
 
             DB::commit();
 
+            $this->queueScraperRefreshForUnmanagedProducts($order);
+
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
@@ -544,6 +547,8 @@ class OrderRepository implements IOrderRepository
                 return;
             }
 
+            $this->queueScraperRefreshForUnmanagedProducts($order);
+
             $this->service->sendNotification(
                 config('telegram.chat_id'),
                 'سفارش با موفقیت پرداخت شد'.PHP_EOL.
@@ -558,22 +563,57 @@ class OrderRepository implements IOrderRepository
     }
 
     /**
-     * Hard-decrement stock for paid order lines that use stock management.
+     * Hard-decrement stock and write a Sale inventory transaction for every paid line.
      * Must be called inside an open DB transaction.
      */
     private function decrementStockForPaidOrder(Order $order): void
     {
-        $order->loadMissing(['products.brand']);
+        $order->loadMissing(['products']);
 
         foreach ($order->products as $product) {
-            if ($product->brand->has_stock_management && $product->pivot->size_id) {
-                $this->stockService->decrementForOrder(
-                    (int) $product->pivot->size_id,
-                    (int) $product->pivot->count,
-                    $order->user_id,
-                    'Order '.$order->code,
-                );
+            if (! $product->pivot->size_id) {
+                continue;
             }
+
+            $this->stockService->decrementForOrder(
+                (int) $product->pivot->size_id,
+                (int) $product->pivot->count,
+                $order->user_id,
+                'Order '.$order->code,
+            );
+        }
+    }
+
+    /**
+     * Re-scrape products from brands that do not manage stock locally,
+     * so quantity is synced from the upstream catalog after a sale.
+     */
+    private function queueScraperRefreshForUnmanagedProducts(Order $order): void
+    {
+        $order->loadMissing(['products.brand']);
+
+        $queue = (string) config('product_scraper.cart_refresh.queue', 'high');
+        $queued = [];
+
+        foreach ($order->products as $product) {
+            if (! empty($product->brand?->has_stock_management)) {
+                continue;
+            }
+
+            $productId = (int) $product->id;
+            if ($productId < 1 || isset($queued[$productId])) {
+                continue;
+            }
+
+            $queued[$productId] = true;
+
+            RefreshProductOnCartJob::dispatch($productId)->onQueue($queue);
+
+            Log::info('OrderRepository: queued scraper refresh after purchase', [
+                'order_id' => $order->id,
+                'product_id' => $productId,
+                'queue' => $queue,
+            ]);
         }
     }
 
