@@ -1017,4 +1017,6 @@ return [
     'permission_colors.delete' => 'Delete colors',
 
     'unauthorized' => 'Unauthorized',
+
+    'category_path' => 'Category path',
 ];

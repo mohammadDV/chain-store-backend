@@ -8,7 +8,9 @@ use App\Filament\Resources\CategoryResource\Pages\CreateCategory;
 use App\Filament\Resources\CategoryResource\Pages\EditCategory;
 use App\Filament\Resources\CategoryResource\Pages\ListCategories;
 use App\Filament\Resources\CategoryResource\Pages\ViewCategory;
+use App\Filament\Support\CategorySelect;
 use Domain\Product\Models\Category;
+use Domain\Product\Support\CategoryPathLabels;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
@@ -96,15 +98,17 @@ class CategoryResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->multiple(),
-                                Select::make('parent_id')
-                                    ->label(__('site.parent_category'))
-                                    ->relationship('parent', 'title')
-                                    ->searchable()
-                                    ->preload()
-                                    ->placeholder(__('site.select_parent_category'))
-                                    ->nullable()
-                                    ->default(null)
-                                    ->helperText(__('site.select_parent_category')),
+                                CategorySelect::withPathLabels(
+                                    Select::make('parent_id')
+                                        ->label(__('site.parent_category'))
+                                        ->relationship('parent', 'title')
+                                        ->searchable()
+                                        ->preload()
+                                        ->placeholder(__('site.select_parent_category'))
+                                        ->nullable()
+                                        ->default(null)
+                                        ->helperText(__('site.select_parent_category'))
+                                ),
                             ]),
                         TextInput::make('priority')
                             ->label(__('site.priority'))
@@ -155,6 +159,13 @@ class CategoryResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(50),
+                TextColumn::make('path')
+                    ->label(__('site.category_path'))
+                    ->state(fn (Category $record): string => CategoryPathLabels::for($record))
+                    ->searchable(false)
+                    ->sortable(false)
+                    ->wrap()
+                    ->toggleable(),
                 TagsColumn::make('brands.title')
                     ->label(__('site.brands'))
                     ->limit(3)

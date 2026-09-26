@@ -11,6 +11,7 @@ use App\Filament\Resources\ProductResource\Pages\ViewProduct;
 use App\Filament\Resources\ProductResource\RelationManagers\FilesRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\ProductAttributeRelationManager;
 use App\Filament\Resources\ProductResource\RelationManagers\SizesRelationManager;
+use App\Filament\Support\CategorySelect;
 use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
@@ -165,12 +166,14 @@ class ProductResource extends Resource
                                     )
                                     ->searchable()
                                     ->required(),
-                                Select::make('categories')
-                                    ->label(__('site.category'))
-                                    ->relationship('categories', 'title')
-                                    ->multiple()
-                                    ->searchable()
-                                    ->required(),
+                                CategorySelect::withPathLabels(
+                                    Select::make('categories')
+                                        ->label(__('site.category'))
+                                        ->relationship('categories', 'title')
+                                        ->multiple()
+                                        ->searchable()
+                                        ->required()
+                                ),
                                 Select::make('color_id')
                                     ->label(__('site.color'))
                                     ->relationship('color', 'title')
@@ -392,10 +395,12 @@ class ProductResource extends Resource
                     ->label(__('site.brand'))
                     ->options(fn () => Brand::query()->pluck('title', 'id')->all())
                     ->searchable(),
-                SelectFilter::make('categories')
-                    ->label(__('site.category'))
-                    ->relationship('categories', 'title')
-                    ->searchable(),
+                CategorySelect::filterWithPathLabels(
+                    SelectFilter::make('categories')
+                        ->label(__('site.category'))
+                        ->relationship('categories', 'title')
+                        ->searchable()
+                ),
                 SelectFilter::make('color_id')
                     ->label(__('site.color'))
                     ->options(fn () => Color::query()->pluck('title', 'id')->all())

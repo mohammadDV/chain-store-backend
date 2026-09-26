@@ -6,8 +6,8 @@ use App\Filament\Resources\ProductResource;
 use Domain\AdminAccess\AdminPermission;
 use Domain\AdminAccess\Services\AdminAccessService;
 use Domain\Product\Exceptions\ProductScraperException;
-use Domain\Product\Models\Category as ProductCategory;
 use Domain\Product\Services\ProductScraperService;
+use Domain\Product\Support\CategoryPathLabels;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Radio;
@@ -124,7 +124,7 @@ class AutoUpdateProducts extends Page implements HasForms
                             ->afterStateUpdated(fn () => $this->resetPreview()),
                         Select::make('category_id')
                             ->label(__('site.category'))
-                            ->options(fn () => ProductCategory::query()->orderBy('title')->pluck('title', 'id'))
+                            ->options(fn () => CategoryPathLabels::options())
                             ->searchable()
                             ->preload()
                             ->visible(fn (Get $get) => $get('mode') === 'url')

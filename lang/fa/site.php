@@ -1640,4 +1640,6 @@ return [
     'permission_colors.delete' => 'حذف رنگ',
 
     'unauthorized' => 'دسترسی غیرمجاز',
+
+    'category_path' => 'مسیر دسته‌بندی',
 ];
