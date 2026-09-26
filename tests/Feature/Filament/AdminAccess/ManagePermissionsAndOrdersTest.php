@@ -1,12 +1,16 @@
 <?php
 
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
+use App\Filament\Resources\OrderResource\Pages\ManageOrderLedgers;
 use App\Filament\Resources\UserResource;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\Pages\ManageUserPermissions;
 use Domain\AdminAccess\AdminPermission;
 use Domain\Brand\Models\Brand;
+use Domain\Product\Enums\OrderLedgerSource;
+use Domain\Product\Enums\OrderLedgerType;
 use Domain\Product\Models\Order;
+use Domain\Product\Models\OrderLedger;
 use Domain\Product\Models\Product;
 use Domain\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -102,6 +106,7 @@ it('blocks refund without refund permission while allowing status change', funct
     livewire(ListOrders::class)
         ->callTableAction('change_status', $order, data: [
             'status' => Order::REFUNDED,
+            'message' => 'should not refund',
         ]);
 
     expect($order->fresh()->status)->toBe(Order::PAID);
@@ -109,10 +114,12 @@ it('blocks refund without refund permission while allowing status change', funct
     livewire(ListOrders::class)
         ->callTableAction('change_status', $order, data: [
             'status' => Order::SHIPPED,
+            'message' => 'ship it',
         ])
         ->assertHasNoTableActionErrors();
 
-    expect($order->fresh()->status)->toBe(Order::SHIPPED);
+    expect($order->fresh()->status)->toBe(Order::SHIPPED)
+        ->and(OrderLedger::query()->where('order_id', $order->id)->where('message', 'ship it')->exists())->toBeTrue();
 });
 
 it('refunds when user has refund permission', function () {
@@ -139,10 +146,70 @@ it('refunds when user has refund permission', function () {
     livewire(ListOrders::class)
         ->callTableAction('change_status', $order, data: [
             'status' => Order::REFUNDED,
+            'message' => 'full refund',
         ])
         ->assertHasNoTableActionErrors();
 
     expect($order->fresh()->status)->toBe(Order::REFUNDED);
+});
+
+it('hides change_status for refunded orders and shows view_ledger', function () {
+    $brand = Brand::factory()->create();
+    $buyer = User::factory()->create(['status' => 1]);
+    $product = Product::factory()->create(['brand_id' => $brand->id]);
+    $order = Order::factory()->create([
+        'user_id' => $buyer->id,
+        'status' => Order::REFUNDED,
+    ]);
+    $order->products()->attach($product->id, [
+        'count' => 1,
+        'amount' => 1000,
+        'status' => Order::REFUNDED,
+    ]);
+
+    $this->actingAsAdminWithPermissions(
+        [AdminPermission::ORDERS_VIEW, AdminPermission::ORDERS_CHANGE_STATUS],
+        [$brand->id],
+    );
+
+    livewire(ListOrders::class)
+        ->assertSuccessful()
+        ->assertTableActionExists('view_ledger')
+        ->assertTableActionHidden('change_status', $order);
+});
+
+it('opens the order ledger as a dedicated table page', function () {
+    $brand = Brand::factory()->create();
+    $buyer = User::factory()->create(['status' => 1, 'nickname' => 'buyer-one']);
+    $admin = $this->actingAsAdminWithPermissions(
+        [AdminPermission::ORDERS_VIEW],
+        [$brand->id],
+    );
+    $product = Product::factory()->create(['brand_id' => $brand->id]);
+    $order = Order::factory()->create([
+        'user_id' => $buyer->id,
+        'status' => Order::PAID,
+    ]);
+    $order->products()->attach($product->id, [
+        'count' => 1,
+        'amount' => 1000,
+        'status' => Order::PAID,
+    ]);
+
+    OrderLedger::query()->create([
+        'order_id' => $order->id,
+        'type' => OrderLedgerType::StatusChanged,
+        'source' => OrderLedgerSource::Admin,
+        'user_id' => $admin->id,
+        'from_status' => Order::PAID,
+        'to_status' => Order::SHIPPED,
+        'message' => 'shipped now',
+    ]);
+
+    livewire(ManageOrderLedgers::class, ['record' => $order->id])
+        ->assertSuccessful()
+        ->assertCanSeeTableRecords($order->ledgers()->get())
+        ->assertSee('shipped now');
 });
 
 it('exposes the permissions page route for users resource', function () {

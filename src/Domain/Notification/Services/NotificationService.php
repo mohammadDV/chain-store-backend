@@ -40,7 +40,11 @@ class NotificationService
 
         if ($hasEmail) {
             $actionUrl = $info['action_url'] ?? null;
-            $user->notify(new EmailNotification($info['title'], $info['content'], $actionUrl));
+
+            // Persist DB row first; only queue the email after the surrounding DB transaction commits.
+            $user->notify(
+                (new EmailNotification($info['title'], $info['content'], $actionUrl))->afterCommit()
+            );
         }
     }
 }

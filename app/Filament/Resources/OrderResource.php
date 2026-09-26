@@ -6,18 +6,19 @@ use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Filters\UserIdFilter;
 use App\Filament\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
+use App\Filament\Resources\OrderResource\Pages\ManageOrderLedgers;
 use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderProductsRelationManager;
 use Core\Helpers\HelperClass;
 use Domain\AdminAccess\AdminPermission;
 use Domain\AdminAccess\Services\AdminAccessService;
-use Domain\Notification\Services\NotificationService;
+use Domain\Product\Enums\OrderLedgerSource;
+use Domain\Product\Exceptions\OrderAlreadyRefundedException;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Size;
+use Domain\Product\Services\OrderStatusService;
 use Domain\User\Models\User;
-use Domain\Wallet\Models\Wallet;
-use Domain\Wallet\Models\WalletTransaction;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -37,7 +38,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -296,10 +296,19 @@ class OrderResource extends Resource
                     ->action(function ($record) {
                         return static::generateInvoicePdf($record);
                     }),
+                Action::make('view_ledger')
+                    ->label(__('site.view_order_ledger'))
+                    ->icon('heroicon-o-clock')
+                    ->color('gray')
+                    ->url(fn (Order $record): string => static::getUrl('ledger', ['record' => $record])),
                 Action::make('change_status')
                     ->label(__('site.change_status'))
                     ->icon('heroicon-o-arrow-path')
                     ->color('info')
+                    ->hidden(fn (Order $record): bool => $record->status === Order::REFUNDED)
+                    ->requiresConfirmation()
+                    ->modalHeading(__('site.confirm_status_change'))
+                    ->modalDescription(__('site.confirm_status_change_description'))
                     ->visible(function (): bool {
                         $user = Auth::user();
 
@@ -328,11 +337,15 @@ class OrderResource extends Resource
 
                                 return $options;
                             })
-                            ->default(fn ($record) => $record->status)
+                            ->default(fn (Order $record) => $record->status)
                             ->required()
                             ->native(false),
+                        Textarea::make('message')
+                            ->label(__('site.ledger_message'))
+                            ->rows(3)
+                            ->maxLength(1000),
                     ])
-                    ->action(function ($record, array $data) {
+                    ->action(function (Order $record, array $data) {
                         $user = Auth::user();
                         if (! $user instanceof User) {
                             return;
@@ -358,63 +371,24 @@ class OrderResource extends Resource
                             return;
                         }
 
-                        $exists = DB::table('order_product')
-                            ->where('order_id', $record->id)
-                            ->where('status', 'refunded')
-                            ->exists();
-
-                        if ($exists) {
-                            Notification::make()
-                                ->title(__('site.error'))
-                                ->body(__('site.one_of_the_products_already_refunded'))
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-
-                        if ($record->status == 'refunded') {
-                            Notification::make()
-                                ->title(__('site.error'))
-                                ->body(__('site.product_already_refunded'))
-                                ->danger()
-                                ->send();
-
-                            return;
-                        }
-
-                        $record->update(['status' => $data['status']]);
-
-                        if ($data['status'] == 'refunded') {
-
-                            DB::table('order_product')
-                                ->where('order_id', $record->id)
-                                ->update(['status' => 'refunded']);
-
-                            $wallet = Wallet::query()
-                                ->where('user_id', $record->user_id)
-                                ->first();
-
-                            $amount = (float) $record->total_amount;
-                            $description = __('site.order_product_refunded');
-
-                            // Create transaction record
-                            WalletTransaction::createTransaction(
-                                wallet: $wallet,
-                                amount: $amount,
-                                type: WalletTransaction::DEPOSITE,
-                                description: $description,
-                                status: WalletTransaction::COMPLETED
+                        try {
+                            app(OrderStatusService::class)->transition(
+                                order: $record,
+                                toStatus: (string) $data['status'],
+                                source: OrderLedgerSource::Admin,
+                                actor: $user,
+                                message: $data['message'] ?? null,
                             );
+                        } catch (OrderAlreadyRefundedException|\InvalidArgumentException $e) {
+                            Notification::make()
+                                ->title(__('site.error'))
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
 
-                            NotificationService::create([
-                                'title' => __('site.order_product_refunded_title'),
-                                'content' => __('site.order_product_refunded_content', ['amount' => number_format($amount, 2), 'currency' => __('site.currency')]),
-                                'id' => $record->id,
-                                'type' => NotificationService::ORDER,
-                            ], $record->user);
-
+                            return;
                         }
+
                         Notification::make()
                             ->title(__('site.status_updated_successfully'))
                             ->success()
@@ -440,6 +414,7 @@ class OrderResource extends Resource
             'index' => ListOrders::route('/'),
             'view' => ViewOrder::route('/{record}'),
             'edit' => EditOrder::route('/{record}/edit'),
+            'ledger' => ManageOrderLedgers::route('/{record}/ledger'),
         ];
     }
 

@@ -10,11 +10,13 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
+use Domain\Product\Enums\OrderLedgerSource;
 use Domain\Product\Jobs\RefreshProductOnCartJob;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
+use Domain\Product\Services\OrderStatusService;
 use Domain\Product\Services\StockService;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Services\TelegramNotificationService;
@@ -39,7 +41,8 @@ class OrderRepository implements IOrderRepository
         protected TelegramNotificationService $service,
         protected IWalletRepository $walletRepository,
         protected SettingService $settingService,
-        protected StockService $stockService
+        protected StockService $stockService,
+        protected OrderStatusService $orderStatusService,
     ) {
         //
     }
@@ -316,6 +319,14 @@ class OrderRepository implements IOrderRepository
                 $product->increment('order_count', $productData['count']);
             }
 
+            if ($order->wasRecentlyCreated) {
+                $this->orderStatusService->recordCreated(
+                    order: $order,
+                    source: OrderLedgerSource::Customer,
+                    userId: Auth::id(),
+                );
+            }
+
             // Send notification
             // $this->service->sendNotification(
             //     config('telegram.chat_id'),
@@ -344,18 +355,21 @@ class OrderRepository implements IOrderRepository
      */
     public function payOrder(Order $order, PaymentRequest $request): JsonResponse
     {
+        $this->checkLevelAccess(Auth::user()->id == $order->user_id);
 
-        if ($order->status == Order::EXPIRED) {
+        if ($order->status === Order::EXPIRED) {
             return response()->json([
                 'status' => 0,
                 'message' => __('site.Order expired'),
             ], Response::HTTP_BAD_REQUEST);
         }
 
-        $this->checkLevelAccess(
-            Auth::user()->id == $order->user_id &&
-            $order->status == Order::PENDING
-        );
+        if ($order->status !== Order::PENDING) {
+            return response()->json([
+                'status' => 0,
+                'message' => __('site.order_already_paid_or_not_payable'),
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         $amount = $order->amount;
         $discountAmount = 0;
@@ -421,79 +435,162 @@ class OrderRepository implements IOrderRepository
      */
     private function payWithWallet(Order $order): JsonResponse
     {
-        DB::beginTransaction();
-
         try {
+            $result = DB::transaction(function () use ($order) {
+                /** @var Order $lockedOrder */
+                $lockedOrder = Order::query()
+                    ->whereKey($order->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
-            $wallet = $this->walletRepository->findByUserId(Auth::id());
+                if ($lockedOrder->status !== Order::PENDING) {
+                    return [
+                        'ok' => false,
+                        'status' => 0,
+                        'message' => __('site.order_already_paid_or_not_payable'),
+                        'http' => Response::HTTP_BAD_REQUEST,
+                    ];
+                }
 
-            $amount = $order->total_amount;
+                // Cancel any pending bank payment links so a later callback cannot double-charge.
+                Transaction::query()
+                    ->where('model_id', $lockedOrder->id)
+                    ->where('model_type', Transaction::ORDER)
+                    ->where('status', Transaction::PENDING)
+                    ->update([
+                        'status' => Transaction::CANCELLED,
+                        'message' => __('site.order_paid_with_wallet_bank_cancelled'),
+                    ]);
 
-            if ($wallet->balance < $amount) {
-                DB::rollBack();
+                $wallet = Wallet::query()
+                    ->where('currency', Wallet::IRR)
+                    ->where('user_id', Auth::id())
+                    ->lockForUpdate()
+                    ->firstOrFail();
 
+                $amount = (float) $lockedOrder->total_amount;
+
+                if ($wallet->balance < $amount) {
+                    return [
+                        'ok' => false,
+                        'status' => 0,
+                        'message' => __('site.Insufficient funds'),
+                        'http' => Response::HTTP_PAYMENT_REQUIRED,
+                    ];
+                }
+
+                $paidOrder = $this->orderStatusService->markPaid(
+                    order: $lockedOrder,
+                    source: OrderLedgerSource::Customer,
+                    userId: Auth::id(),
+                    meta: ['payment_method' => Transaction::WALLET],
+                    useExistingTransaction: true,
+                    allowedFromStatuses: [Order::PENDING],
+                );
+
+                if (! $paidOrder) {
+                    return [
+                        'ok' => false,
+                        'status' => 0,
+                        'message' => __('site.order_already_paid_or_not_payable'),
+                        'http' => Response::HTTP_BAD_REQUEST,
+                    ];
+                }
+
+                $this->decrementStockForPaidOrder($paidOrder);
+
+                WalletTransaction::createTransaction(
+                    $wallet,
+                    -$amount,
+                    WalletTransaction::PURCHASE,
+                    __('site.wallet_transaction_payment_order', ['order_id' => $paidOrder->code])
+                );
+
+                NotificationService::create([
+                    'title' => __('site.order_paid_title'),
+                    'content' => __('site.order_paid_content', ['order_code' => $paidOrder->code]),
+                    'id' => $paidOrder->id,
+                    'type' => NotificationService::ORDER,
+                ], $paidOrder->user);
+
+                return [
+                    'ok' => true,
+                    'order' => $paidOrder,
+                ];
+            });
+
+            if (! $result['ok']) {
                 return response()->json([
-                    'status' => 0,
-                    'message' => __('site.Insufficient funds'),
-                ], Response::HTTP_PAYMENT_REQUIRED);
+                    'status' => $result['status'],
+                    'message' => $result['message'],
+                ], $result['http']);
             }
 
-            // Get the wallet of the user that created this project
-            $wallet = Wallet::query()
-                ->where('currency', Wallet::IRR)
-                ->where('user_id', Auth::user()->id)
-                ->firstOrFail();
+            /** @var Order $paidOrder */
+            $paidOrder = $result['order'];
 
-            // Update order status
-            $order->update(['status' => Order::PAID]);
-
-            $this->decrementStockForPaidOrder($order);
-
-            WalletTransaction::createTransaction(
-                $wallet,
-                -$amount,
-                WalletTransaction::PURCHASE,
-                __('site.wallet_transaction_payment_order', ['order_id' => $order->code])
-            );
-
-            NotificationService::create([
-                'title' => __('site.order_paid_title'),
-                'content' => __('site.order_paid_content', ['order_code' => $order->code]),
-                'id' => $order->id,
-                'type' => NotificationService::ORDER,
-            ], $order->user);
-
-            DB::commit();
-
-            $this->queueScraperRefreshForUnmanagedProducts($order);
+            $this->queueScraperRefreshForUnmanagedProducts($paidOrder);
 
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
-                'order' => new OrderResource($order->load('products.color')),
+                'order' => new OrderResource($paidOrder->load('products.color')),
             ], Response::HTTP_CREATED);
         } catch (\Exception $e) {
-            DB::rollBack();
             throw $e;
         }
     }
 
     /**
-     * Pay with bank.
+     * Pay with bank. Reuses an existing pending transaction so double-clicks do not create duplicates.
      *
      * @throws \Exception
      */
-    private function payWithBank(Order $order)
+    private function payWithBank(Order $order): JsonResponse
     {
-        $amount = $order->total_amount;
+        $transaction = DB::transaction(function () use ($order) {
+            /** @var Order $lockedOrder */
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        $transaction = Transaction::create([
-            'status' => Transaction::PENDING,
-            'model_id' => $order->id,
-            'model_type' => Transaction::ORDER,
-            'amount' => $amount,
-            'user_id' => Auth::user()->id,
-        ]);
+            if ($lockedOrder->status !== Order::PENDING) {
+                return null;
+            }
+
+            $existing = Transaction::query()
+                ->where('model_id', $lockedOrder->id)
+                ->where('model_type', Transaction::ORDER)
+                ->where('status', Transaction::PENDING)
+                ->lockForUpdate()
+                ->latest('id')
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'amount' => $lockedOrder->total_amount,
+                    'user_id' => Auth::id(),
+                ]);
+
+                return $existing->fresh();
+            }
+
+            return Transaction::create([
+                'status' => Transaction::PENDING,
+                'model_id' => $lockedOrder->id,
+                'model_type' => Transaction::ORDER,
+                'amount' => $lockedOrder->total_amount,
+                'user_id' => Auth::id(),
+            ]);
+        });
+
+        if (! $transaction) {
+            return response()->json([
+                'status' => 0,
+                'message' => __('site.order_already_paid_or_not_payable'),
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
         $code = Transaction::generateHash((string) $transaction->id);
 
@@ -505,60 +602,79 @@ class OrderRepository implements IOrderRepository
     }
 
     /**
-     * Complete the order
+     * Complete the order after a successful bank payment.
+     *
+     * @return bool True when the order is paid after this call (including already-paid no-op).
      */
-    public function completeOrder(int $orderId): void
+    public function completeOrder(int $orderId): bool
     {
         try {
-            $order = DB::transaction(function () use ($orderId) {
+            $result = DB::transaction(function () use ($orderId) {
                 $order = Order::query()
                     ->with(['products.brand', 'user'])
+                    ->lockForUpdate()
                     ->find($orderId);
 
-                if (! $order || $order->status === Order::PAID) {
+                if (! $order) {
                     return null;
                 }
 
-                $claimed = Order::query()
-                    ->where('id', $order->id)
-                    ->where('status', '!=', Order::PAID)
-                    ->update(['status' => Order::PAID]);
+                if ($order->status === Order::PAID) {
+                    return ['order' => $order, 'newly_paid' => false];
+                }
 
-                if ($claimed === 0) {
+                $updated = $this->orderStatusService->markPaid(
+                    order: $order,
+                    source: OrderLedgerSource::System,
+                    userId: $order->user_id,
+                    meta: ['payment_method' => Transaction::BANK],
+                    useExistingTransaction: true,
+                    allowedFromStatuses: [Order::PENDING, Order::EXPIRED],
+                );
+
+                if (! $updated) {
                     return null;
                 }
 
-                $order->refresh();
-                $order->load(['products.brand', 'user']);
+                $updated->load(['products.brand', 'user']);
 
-                $this->decrementStockForPaidOrder($order);
+                $this->decrementStockForPaidOrder($updated);
 
                 NotificationService::create([
                     'title' => __('site.order_paid_title'),
-                    'content' => __('site.order_paid_content', ['order_code' => $order->code]),
-                    'id' => $order->id,
+                    'content' => __('site.order_paid_content', ['order_code' => $updated->code]),
+                    'id' => $updated->id,
                     'type' => NotificationService::ORDER,
-                ], $order->user);
+                ], $updated->user);
 
-                return $order;
+                return ['order' => $updated, 'newly_paid' => true];
             });
 
-            if (! $order) {
-                return;
+            if (! $result) {
+                return false;
             }
 
-            $this->queueScraperRefreshForUnmanagedProducts($order);
+            /** @var Order $order */
+            $order = $result['order'];
 
-            $this->service->sendNotification(
-                config('telegram.chat_id'),
-                'سفارش با موفقیت پرداخت شد'.PHP_EOL.
-                'order_id '.$order->id.PHP_EOL.
-                'order_code '.$order->code.PHP_EOL.
-                'order_amount '.$order->total_amount.PHP_EOL.
-                'order_time '.now()
-            );
+            if ($result['newly_paid']) {
+                $this->queueScraperRefreshForUnmanagedProducts($order);
+
+                $this->service->sendNotification(
+                    config('telegram.chat_id'),
+                    'سفارش با موفقیت پرداخت شد'.PHP_EOL.
+                    'order_id '.$order->id.PHP_EOL.
+                    'order_code '.$order->code.PHP_EOL.
+                    'order_amount '.$order->total_amount.PHP_EOL.
+                    'order_time '.now()
+                );
+            }
+
+            return true;
         } catch (\Exception $e) {
             Log::error('Order completion failed: '.$e->getMessage());
+
+            return false;
         }
     }
 
@@ -624,7 +740,7 @@ class OrderRepository implements IOrderRepository
      */
     public function expirePendingOrders(): int
     {
-        $expiredCount = Order::query()
+        $orderIds = Order::query()
             ->whereDoesntHave('transactions', function ($query) {
                 $query->where('status', Transaction::PENDING)
                     ->where('created_at', '>=', now()->subMinutes(15));
@@ -633,7 +749,17 @@ class OrderRepository implements IOrderRepository
             ->where('active', 1)
             ->whereNotNull('expire_date')
             ->where('expire_date', '<=', now())
-            ->update(['status' => Order::EXPIRED]);
+            ->pluck('id');
+
+        $expiredCount = 0;
+
+        foreach ($orderIds as $orderId) {
+            $order = Order::query()->find($orderId);
+
+            if ($order && $this->orderStatusService->expire($order)) {
+                $expiredCount++;
+            }
+        }
 
         return $expiredCount;
     }

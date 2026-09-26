@@ -2,7 +2,9 @@
 
 use Domain\Brand\Models\Brand;
 use Domain\Payment\Models\Transaction;
+use Domain\Product\Enums\OrderLedgerType;
 use Domain\Product\Models\Order;
+use Domain\Product\Models\OrderLedger;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
 use Domain\Product\Repositories\OrderRepository;
@@ -59,7 +61,8 @@ it('creates an order with a product size', function () {
     $line = $order->products()->where('products.id', $product->id)->firstOrFail();
 
     expect($line->pivot->size_id)->toBe($size->id)
-        ->and($line->pivot->count)->toBe(2);
+        ->and($line->pivot->count)->toBe(2)
+        ->and(OrderLedger::query()->where('order_id', $order->id)->where('type', OrderLedgerType::Created)->exists())->toBeTrue();
 });
 
 it('pays an order with wallet balance', function () {
@@ -77,7 +80,8 @@ it('pays an order with wallet balance', function () {
 
     expect($order->fresh()->status)->toBe(Order::PAID)
         ->and((float) $wallet->fresh()->balance)
-        ->toBe($initialBalance - (float) $order->fresh()->total_amount);
+        ->toBe($initialBalance - (float) $order->fresh()->total_amount)
+        ->and(OrderLedger::query()->where('order_id', $order->id)->where('type', OrderLedgerType::Paid)->exists())->toBeTrue();
 });
 
 it('rejects wallet payment with insufficient balance', function () {
@@ -145,13 +149,104 @@ it('returns a signed payment url for bank payment', function () {
         ->and($url)->toContain('sign='.Transaction::generateHash((string) $transaction->id));
 });
 
+it('does not charge wallet twice when pay is called twice', function () {
+    $customer = User::factory()->create();
+    $initialBalance = 99_999_999_999;
+    $wallet = $this->createWalletFor($customer, $initialBalance);
+    [$order] = createPendingOrderForPaymentTest($this, $customer, 2);
+    $payload = [
+        'payment_method' => Transaction::WALLET,
+        'fullname' => 'Test Customer',
+        'address' => 'Test address',
+        'postal_code' => '1234567890',
+    ];
+
+    $this->postJson("/api/profile/orders/{$order->id}/pay", $payload)
+        ->assertCreated()
+        ->assertJsonPath('status', 1);
+
+    $this->postJson("/api/profile/orders/{$order->id}/pay", $payload)
+        ->assertStatus(400)
+        ->assertJsonPath('status', 0);
+
+    $fresh = $order->fresh();
+
+    expect($fresh->status)->toBe(Order::PAID)
+        ->and((float) $wallet->fresh()->balance)->toBe($initialBalance - (float) $fresh->total_amount)
+        ->and(OrderLedger::query()->where('order_id', $order->id)->where('type', OrderLedgerType::Paid)->count())->toBe(1);
+});
+
+it('reuses the same pending bank transaction on repeated pay clicks', function () {
+    $customer = User::factory()->create();
+    [$order] = createPendingOrderForPaymentTest($this, $customer);
+    $payload = [
+        'payment_method' => Transaction::BANK,
+        'fullname' => 'Test Customer',
+        'address' => 'Test address',
+        'postal_code' => '1234567890',
+    ];
+
+    $first = $this->postJson("/api/profile/orders/{$order->id}/pay", $payload)
+        ->assertOk()
+        ->assertJsonPath('status', 1);
+
+    $second = $this->postJson("/api/profile/orders/{$order->id}/pay", $payload)
+        ->assertOk()
+        ->assertJsonPath('status', 1);
+
+    expect(Transaction::query()
+        ->where('model_type', Transaction::ORDER)
+        ->where('model_id', $order->id)
+        ->where('status', Transaction::PENDING)
+        ->count())->toBe(1)
+        ->and($first->json('url'))->toBe($second->json('url'));
+});
+
+it('cancels pending bank transactions when paying with wallet', function () {
+    $customer = User::factory()->create();
+    $initialBalance = 99_999_999_999;
+    $wallet = $this->createWalletFor($customer, $initialBalance);
+    [$order] = createPendingOrderForPaymentTest($this, $customer, 1);
+
+    $this->postJson("/api/profile/orders/{$order->id}/pay", [
+        'payment_method' => Transaction::BANK,
+        'fullname' => 'Test Customer',
+        'address' => 'Test address',
+        'postal_code' => '1234567890',
+    ])->assertOk();
+
+    expect(Transaction::query()
+        ->where('model_id', $order->id)
+        ->where('status', Transaction::PENDING)
+        ->count())->toBe(1);
+
+    $this->postJson("/api/profile/orders/{$order->id}/pay", [
+        'payment_method' => Transaction::WALLET,
+        'fullname' => 'Test Customer',
+        'address' => 'Test address',
+        'postal_code' => '1234567890',
+    ])->assertCreated();
+
+    expect($order->fresh()->status)->toBe(Order::PAID)
+        ->and(Transaction::query()
+            ->where('model_id', $order->id)
+            ->where('status', Transaction::PENDING)
+            ->count())->toBe(0)
+        ->and(Transaction::query()
+            ->where('model_id', $order->id)
+            ->where('status', Transaction::CANCELLED)
+            ->count())->toBe(1)
+        ->and((float) $wallet->fresh()->balance)
+        ->toBe($initialBalance - (float) $order->fresh()->total_amount);
+});
+
 it('does not decrement stock twice when completing an order twice', function () {
     $customer = User::factory()->create();
     [$order, , , $stock] = createPendingOrderForPaymentTest($this, $customer, 3, 10);
 
     $repository = $this->app->make(OrderRepository::class);
-    $repository->completeOrder($order->id);
-    $repository->completeOrder($order->id);
+    expect($repository->completeOrder($order->id))->toBeTrue()
+        ->and($repository->completeOrder($order->id))->toBeTrue();
 
     expect($order->fresh()->status)->toBe(Order::PAID)
         ->and($stock->fresh()->quantity)->toBe(7);

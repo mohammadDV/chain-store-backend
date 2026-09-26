@@ -1,7 +1,9 @@
 <?php
 
 use App\Filament\Resources\OrderResource\Pages\ListOrders;
+use Domain\Product\Enums\OrderLedgerType;
 use Domain\Product\Models\Order;
+use Domain\Product\Models\OrderLedger;
 use Domain\User\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -28,8 +30,14 @@ it('changes an order status from the list table', function () {
     livewire(ListOrders::class)
         ->callTableAction('change_status', $order, data: [
             'status' => Order::PAID,
+            'message' => 'marked paid by admin',
         ])
         ->assertHasNoTableActionErrors();
 
-    expect($order->fresh()->status)->toBe(Order::PAID);
+    expect($order->fresh()->status)->toBe(Order::PAID)
+        ->and(OrderLedger::query()
+            ->where('order_id', $order->id)
+            ->where('type', OrderLedgerType::Paid)
+            ->where('message', 'marked paid by admin')
+            ->exists())->toBeTrue();
 });

@@ -40,6 +40,7 @@ use Illuminate\Support\Carbon;
  * @property-read User $user
  * @property-read Discount|null $discount
  * @property-read Collection<int, Transaction> $transactions
+ * @property-read Collection<int, OrderLedger> $ledgers
  */
 class Order extends Model
 {
@@ -76,7 +77,16 @@ class Order extends Model
      */
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')->withPivot('count', 'amount', 'status', 'color_id', 'size_id');
+        return $this->belongsToMany(Product::class, 'order_product', 'order_id', 'product_id')
+            ->withPivot('id', 'count', 'amount', 'status', 'color_id', 'size_id');
+    }
+
+    /**
+     * @return HasMany<OrderLedger, $this>
+     */
+    public function ledgers(): HasMany
+    {
+        return $this->hasMany(OrderLedger::class)->orderBy('created_at')->orderBy('id');
     }
 
     /**

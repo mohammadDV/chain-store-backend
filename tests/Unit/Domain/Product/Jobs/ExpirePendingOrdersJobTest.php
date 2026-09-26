@@ -1,8 +1,10 @@
 <?php
 
 use Domain\Payment\Models\Transaction;
+use Domain\Product\Enums\OrderLedgerType;
 use Domain\Product\Jobs\ExpirePendingOrdersJob;
 use Domain\Product\Models\Order;
+use Domain\Product\Models\OrderLedger;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +39,8 @@ it('expires pending orders past expire_date', function () {
         ->and($expired->fresh()->status)->toBe(Order::EXPIRED)
         ->and($stillValid->fresh()->status)->toBe(Order::PENDING)
         ->and($paid->fresh()->status)->toBe(Order::PAID)
-        ->and($inactive->fresh()->status)->toBe(Order::PENDING);
+        ->and($inactive->fresh()->status)->toBe(Order::PENDING)
+        ->and(OrderLedger::query()->where('order_id', $expired->id)->where('type', OrderLedgerType::Expired)->exists())->toBeTrue();
 });
 
 it('skips pending orders with a recent pending payment transaction', function () {
