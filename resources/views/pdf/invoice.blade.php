@@ -2,432 +2,408 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فاکتور - {{ $order->code }}</title>
     <style>
-        /* Remove @font-face as mpdf may not support it well - use built-in fonts instead */
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            font-family: 'dejavusans', 'Tahoma', 'Arial', sans-serif;
+            font-family: vazirmatn, dejavusans, sans-serif;
             direction: rtl;
-            font-size: 12px;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        .invoice-container {
-            max-width: 210mm;
-            margin: 0 auto;
-            padding: 20px;
-            background: #fff;
-        }
-
-        .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #0066cc;
-            padding-bottom: 20px;
-        }
-
-        .invoice-title {
-            font-size: 32px;
-            font-weight: 700;
-            color: #000;
-        }
-
-        .invoice-info {
-            text-align: right;
             font-size: 11px;
+            color: #1a202c;
+            line-height: 1.7;
+            background: #ffffff;
         }
 
-        .invoice-info-row {
-            margin-bottom: 5px;
+        .page {
+            width: 100%;
         }
 
-        .store-header {
-            background: #0066cc;
-            color: #fff;
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 600;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            border-bottom: 3px solid #1a365d;
+            padding-bottom: 12px;
         }
 
-        .store-logo {
+        .brand {
+            font-size: 22px;
+            font-weight: bold;
+            color: #1a365d;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            color: #718096;
+            margin-top: 2px;
+        }
+
+        .doc-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1a365d;
             text-align: left;
         }
 
-        .logo-text {
-            font-size: 24px;
-            font-weight: 700;
-            color: #0066cc;
+        .meta-box {
+            text-align: left;
+            font-size: 10px;
+            color: #2d3748;
+            margin-top: 6px;
         }
 
-        .customer-info {
-            background: #f5f5f5;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
+        .meta-box .label {
+            color: #718096;
         }
 
-        .customer-info-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+        .meta-value {
+            font-weight: bold;
+            color: #1a365d;
+        }
+
+        .section-title {
+            background: #1a365d;
+            color: #ffffff;
             font-size: 11px;
+            font-weight: bold;
+            padding: 8px 12px;
+            margin: 0 0 0 0;
         }
 
-        .customer-info-row:last-child {
-            margin-bottom: 0;
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
         }
 
-        .customer-info-icon {
-            width: 8px;
-            height: 8px;
-            margin-left: 10px;
-            margin-right: 5px;
-            background-color: #0066cc;
-            border-radius: 50%;
-            display: inline-block;
-            vertical-align: middle;
+        .info-table td {
+            padding: 8px 12px;
+            vertical-align: top;
+            font-size: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .info-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .info-label {
+            width: 90px;
+            color: #718096;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .info-value {
+            color: #1a202c;
         }
 
         .products-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        .products-table th {
-            background: #0066cc;
-            color: #fff;
-            padding: 10px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 11px;
-        }
-
-        .products-table td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
+        .products-table thead th {
+            background: #1a365d;
+            color: #ffffff;
+            padding: 9px 6px;
             font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid #1a365d;
         }
 
-        .products-table tr:nth-child(even) {
-            background: #f9f9f9;
+        .products-table tbody td {
+            padding: 10px 6px;
+            font-size: 10px;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid #e2e8f0;
+        }
+
+        .products-table tbody tr:nth-child(even) td {
+            background: #f7fafc;
         }
 
         .product-image {
-            width: 60px;
-            height: 60px;
+            width: 72px;
+            height: 72px;
             object-fit: cover;
-            border-radius: 5px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .image-placeholder {
+            width: 72px;
+            height: 72px;
+            background: #edf2f7;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            line-height: 72px;
+            color: #a0aec0;
+            font-size: 9px;
         }
 
         .product-title {
             text-align: right;
-            max-width: 250px;
+            padding-right: 8px !important;
         }
 
-        .summary-section {
-            background: #f5f5f5;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        .product-name {
+            font-weight: bold;
+            color: #1a202c;
+            font-size: 10px;
+            margin-bottom: 3px;
         }
 
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 11px;
+        .product-meta {
+            color: #718096;
+            font-size: 9px;
         }
 
-        .summary-row:last-child {
-            margin-bottom: 0;
+        .totals-wrap {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .totals-box {
+            width: 55%;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+        }
+
+        .totals-box td {
+            padding: 7px 12px;
+            font-size: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .totals-box tr:last-child td {
+            border-bottom: none;
+        }
+
+        .totals-label {
+            color: #4a5568;
+            text-align: right;
+        }
+
+        .totals-value {
+            text-align: left;
+            font-weight: bold;
+            color: #1a202c;
+            white-space: nowrap;
         }
 
         .final-amount {
-            background: #0066cc;
-            color: #fff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 16px;
-            font-weight: 700;
+            background: #1a365d;
+            color: #ffffff;
+            padding: 12px 16px;
             text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
         }
 
-        .amount-in-words {
+        .amount-words {
             text-align: center;
-            font-size: 12px;
-            color: #666;
+            font-size: 10px;
+            color: #4a5568;
+            padding: 8px 12px;
+            background: #edf2f7;
             margin-bottom: 20px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
+            border: 1px solid #e2e8f0;
         }
 
         .footer {
             width: 100%;
-            background: #0066cc;
-            color: #fff;
-            padding: 15px;
+            border-collapse: collapse;
+            background: #1a365d;
+            color: #ffffff;
+            margin-top: 10px;
+        }
+
+        .footer td {
+            padding: 10px 12px;
+            font-size: 9px;
             text-align: center;
-            font-size: 11px;
-            margin-top: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            flex-wrap: wrap;
         }
 
-        .footer-row {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        .muted {
+            color: #718096;
         }
 
-        .footer-row span:first-child {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #fff;
-            border-radius: 50%;
-            flex-shrink: 0;
-        }
-
-        .footer-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .text-bold {
-            font-weight: 700;
-        }
-
-        .text-number {
-            font-family: 'dejavusans', 'Tahoma', monospace;
+        .nowrap {
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
-    <div class="invoice-container">
-        <!-- Header -->
-        <div class="invoice-header">
-            <div>
-                <div class="invoice-title">فاکتور | فروشگاه بوف استور</div>
-                <div class="invoice-info" style="margin-top: 15px;">
-                    <div class="invoice-info-row">
-                        <span class="text-bold">تاریخ چاپ:</span>
-                        <span class="text-number">{{ \Morilog\Jalali\Jalalian::fromDateTime($order->created_at)->format('Y/m/d H:i') }}</span>
+@php
+    $orderJalali = \Morilog\Jalali\Jalalian::fromDateTime($order->created_at);
+    $printedJalali = \Morilog\Jalali\Jalalian::now();
+    $customerName = $order->fullname
+        ?: ($order->user ? trim(($order->user->first_name ?? '') . ' ' . ($order->user->last_name ?? '')) : '')
+        ?: '-';
+@endphp
+<div class="page">
+    <table class="header-table">
+        <tr>
+            <td width="55%" style="vertical-align: top;">
+                <div class="brand">BOOFSTORE</div>
+                <div class="brand-sub">فروشگاه اینترنتی بوف استور</div>
+            </td>
+            <td width="45%" style="vertical-align: top;">
+                <div class="doc-title">فاکتور فروش</div>
+                <div class="meta-box">
+                    <div>
+                        <span class="label">شناسه سفارش:</span>
+                        <span class="meta-value">{{ $order->code }}</span>
                     </div>
-                    <div class="invoice-info-row" style="margin-top: 5px;">
-                        <span class="text-bold">شناسه سفارش:</span>
-                        <span class="text-number">{{ $order->code }}</span>
+                    <div>
+                        <span class="label">تاریخ سفارش:</span>
+                        <span class="meta-value">{{ $orderJalali->format('Y/m/d') }} — {{ $orderJalali->format('H:i') }}</span>
+                    </div>
+                    <div>
+                        <span class="label">تاریخ چاپ:</span>
+                        <span>{{ $printedJalali->format('Y/m/d H:i') }}</span>
                     </div>
                 </div>
-            </div>
-            <div class="store-logo">
-                <div class="logo-text">BOOFSTORE</div>
-            </div>
-        </div>
+            </td>
+        </tr>
+    </table>
 
-        <!-- Store Header Bar -->
-        <div class="store-header">
-            <span>مشخصات سفارش</span>
-        </div>
+    <div class="section-title">مشخصات گیرنده</div>
+    <table class="info-table">
+        <tr>
+            <td class="info-label">نام کامل</td>
+            <td class="info-value" width="40%">{{ $customerName }}</td>
+            <td class="info-label">تلفن</td>
+            <td class="info-value">{{ $order->user?->mobile ?? '-' }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">کدپستی</td>
+            <td class="info-value">{{ $order->postal_code ?? '-' }}</td>
+            <td class="info-label">تعداد اقلام</td>
+            <td class="info-value">{{ $order->product_count ?? $order->products->count() }}</td>
+        </tr>
+        <tr>
+            <td class="info-label">آدرس</td>
+            <td class="info-value" colspan="3">{{ $order->address ?? '-' }}</td>
+        </tr>
+    </table>
 
-        <!-- Customer Information -->
-        <div class="customer-info">
-            <div class="customer-info-row">
-                <span class="customer-info-icon"></span>
-                <span class="text-bold">نام کامل:</span>
-                <span>
-                    @if($order->fullname)
-                        {{ $order->fullname }}
-                    @elseif($order->user && ($order->user->first_name || $order->user->last_name))
-                        {{ trim($order->user->first_name . ' ' . $order->user->last_name) }}
-                    @else
-                        -
-                    @endif
-                </span>
-            </div>
-            <div class="customer-info-row">
-                <span class="customer-info-icon"></span>
-                <span class="text-bold">گیرنده:</span>
-                <span>{{ $order->address ?? '-' }}</span>
-            </div>
-            <div class="customer-info-row">
-                <span class="customer-info-icon"></span>
-                <span class="text-bold">کدپستی:</span>
-                <span class="text-number">{{ $order->postal_code ?? '-' }}</span>
-            </div>
-            <div class="customer-info-row">
-                <span class="customer-info-icon"></span>
-                <span class="text-bold">تلفن:</span>
-                <span class="text-number">{{ $order->user?->mobile ?? '-' }}</span>
-            </div>
-            <div class="customer-info-row">
-                <span class="customer-info-icon"></span>
-                <span class="text-bold">تاریخ سفارش:</span>
-                <span class="text-number">{{ \Morilog\Jalali\Jalalian::fromDateTime($order->created_at)->format('H:i d-m-Y') }}</span>
-            </div>
-        </div>
+    <div class="section-title">اقلام سفارش</div>
+    <table class="products-table">
+        <thead>
+            <tr>
+                <th width="6%">ردیف</th>
+                <th width="14%">تصویر</th>
+                <th width="34%">محصول</th>
+                <th width="14%">قیمت واحد</th>
+                <th width="8%">تخفیف</th>
+                <th width="8%">تعداد</th>
+                <th width="16%">مبلغ کل</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($order->products as $index => $product)
+                @php
+                    $pivot = $product->pivot;
+                    $unitPrice = $pivot->amount ?? ($product->amount ?? 0);
+                    $quantity = $pivot->count ?? 1;
+                    $finalItemTotal = $unitPrice * $quantity;
 
-        <!-- Products Table -->
-        <table class="products-table">
-            <thead>
+                    $colorName = ($pivot->color_id && isset($colors[$pivot->color_id]))
+                        ? $colors[$pivot->color_id]
+                        : '';
+                    $sizeName = ($pivot->size_id && isset($sizes[$pivot->size_id]))
+                        ? $sizes[$pivot->size_id]
+                        : '';
+
+                    $productImage = $productImages[$product->id] ?? null;
+
+                    $metaParts = array_filter([
+                        $colorName ? 'رنگ: ' . $colorName : null,
+                        $sizeName ? 'سایز: ' . $sizeName : null,
+                        $product->brand ? 'برند: ' . $product->brand->title : null,
+                        $product->code ? 'کد: ' . $product->code : null,
+                    ]);
+                @endphp
                 <tr>
-                    <th>ردیف</th>
-                    <th>شناسه</th>
-                    <th>تصویر</th>
-                    <th>محصول</th>
-                    <th>قیمت</th>
-                    <th>درصد تخفیف</th>
-                    <th>تعداد</th>
-                    <th>مبلغ کل</th>
+                    <td>{{ $index + 1 }}</td>
+                    <td>
+                        @if($productImage)
+                            <img src="{{ $productImage }}" class="product-image" alt="{{ $product->title }}">
+                        @else
+                            <div class="image-placeholder">بدون تصویر</div>
+                        @endif
+                    </td>
+                    <td class="product-title">
+                        <div class="product-name">{{ $product->title }}</div>
+                        @if(count($metaParts))
+                            <div class="product-meta">{{ implode(' | ', $metaParts) }}</div>
+                        @endif
+                    </td>
+                    <td class="nowrap">{{ number_format($unitPrice, 0) }}</td>
+                    <td>
+                        @if($product->discount)
+                            {{ $product->discount }}٪
+                        @else
+                            —
+                        @endif
+                    </td>
+                    <td>{{ $quantity }}</td>
+                    <td class="nowrap">{{ number_format($finalItemTotal, 0) }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($order->products as $index => $product)
-                    @php
-                        $pivot = $product->pivot;
-                        $productPrice = $product->amount ?? 0;
+            @endforeach
+        </tbody>
+    </table>
 
-                        $unitPrice = $pivot->amount ?? $productPrice;
-                        $quantity = $pivot->count ?? 1;
-                        $finalItemTotal = $unitPrice * $quantity;
-
-
-                        // Get color and size from pre-loaded arrays to avoid N+1 queries
-                        $colorName = '';
-                        $sizeName = '';
-                        if ($pivot->color_id && isset($colors[$pivot->color_id])) {
-                            $colorName = $colors[$pivot->color_id];
-                        }
-                        if ($pivot->size_id && isset($sizes[$pivot->size_id])) {
-                            $sizeName = $sizes[$pivot->size_id];
-                        }
-
-                        // Product image - handle S3 or local storage
-                        $productImage = '';
-                        if ($product->image) {
-                            if (str_starts_with($product->image, 'http')) {
-                                $productImage = $product->image;
-                            } elseif (config('filesystems.default') === 's3') {
-                                try {
-                                    $productImage = \Storage::disk('s3')->url($product->image);
-                                } catch (\Exception $e) {
-                                    // Fallback if S3 is not configured
-                                    $productImage = '';
-                                }
-                            } else {
-                                // For local storage, use full URL path
-                                $productImage = url('storage/' . $product->image);
-                            }
-                        }
-                    @endphp
+    <table class="totals-wrap">
+        <tr>
+            <td></td>
+            <td class="totals-box">
+                <table width="100%" style="border-collapse: collapse;">
                     <tr>
-                        <td class="text-number">{{ $index + 1 }}</td>
-                        <td class="text-number">{{ $product->id }}</td>
-                        <td>
-                            @if($product->image)
-                                <img src="{{ $productImage }}" class="product-image" alt="{{ $product->title }}">
-                            @else
-                                <div style="width: 60px; height: 60px; background: #ddd; border-radius: 5px;"></div>
-                            @endif
-                        </td>
-                        <td class="product-title">
-                            {{ $product->title }}
-                            @if($colorName)
-                                - {{ $colorName }}
-                            @endif
-                            @if($sizeName)
-                                | سایز {{ $sizeName }}
-                            @endif
-                            @if($product->brand)
-                                | برند {{ $product->brand->title }}
-                            @endif
-                        </td>
-                        <td class="text-number">{{ number_format($unitPrice, 0) }} تومان</td>
-                        <td class="text-number">
-                            @if($product->discount)
-                                {{ $product->discount }}%
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="text-number">{{ $quantity }}</td>
-                        <td class="text-number">{{ number_format($finalItemTotal, 0) }} تومان</td>
+                        <td class="totals-label">جمع مبلغ کالاها</td>
+                        <td class="totals-value">{{ number_format($order->total_amount ?? 0, 0) }} تومان</td>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    <tr>
+                        <td class="totals-label">
+                            مبلغ تخفیف
+                            @if($order->discount)
+                                <span class="muted">({{ $order->discount->code }})</span>
+                            @endif
+                        </td>
+                        <td class="totals-value">{{ number_format($order->discount_amount ?? 0, 0) }} تومان</td>
+                    </tr>
+                    <tr>
+                        <td class="totals-label">هزینه ارسال</td>
+                        <td class="totals-value">رایگان</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
-        <!-- Summary Section -->
-        <div class="summary-section">
-            <div class="summary-row">
-                <span>تعداد کل محصولات خریداری شده:</span>
-                <span class="text-number">{{ $order->product_count }}</span>
-            </div>
-        </div>
-
-        <div class="summary-section">
-            <div class="summary-row">
-                <span>مبلغ کل:</span>
-                <span class="text-number text-bold">{{ number_format($order->total_amount ?? 0, 0) }} تومان</span>
-            </div>
-            <div class="summary-row">
-                <span>مبلغ تخفیف:</span>
-                <span class="text-number">{{ number_format($order->discount_amount ?? 0, 0) }} تومان</span>
-                @if($order->discount)
-                    <span style="font-size: 10px; color: #666;">(کوپنها: {{ $order->discount->code }})</span>
-                @endif
-            </div>
-            <div class="summary-row">
-                <span>مبلغ حمل و نقل:</span>
-                <span>حمل و نقل رایگان</span>
-            </div>
-        </div>
-
-        <!-- Final Amount -->
-        <div class="final-amount">
-            مبلغ نهایی: {{ number_format($order->amount ?? 0, 0) }} تومان
-        </div>
-
-        <!-- Amount in Words -->
-        <div class="amount-in-words">
-            {{ $amountInWords }}
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-row">
-                <span></span>
-                <span class="text-number">09123456789</span>
-            </div>
-            <div class="footer-row">
-                <span></span>
-                <span>info@boofstore.com</span>
-            </div>
-            <div class="footer-row">
-                <span></span>
-                <span>boofstore.com</span>
-            </div>
-        </div>
+    <div class="final-amount">
+        مبلغ قابل پرداخت: {{ number_format($order->amount ?? 0, 0) }} تومان
     </div>
+
+    <div class="amount-words">
+        {{ $amountInWords }}
+    </div>
+
+    <table class="footer">
+        <tr>
+            <td>۰۹۱۲۳۴۵۶۷۸۹</td>
+            <td>info@boofstore.com</td>
+            <td>boofstore.com</td>
+        </tr>
+    </table>
+</div>
 </body>
 </html>
-

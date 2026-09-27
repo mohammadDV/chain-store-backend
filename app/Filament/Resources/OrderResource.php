@@ -38,9 +38,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use Morilog\Jalali\Jalalian;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Throwable;
 
 class OrderResource extends Resource
 {
@@ -483,6 +488,21 @@ class OrderResource extends Resource
             }
         }
 
+        $tempDir = storage_path('app/tmp');
+        if (! file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $productImages = [];
+        $tempImageFiles = [];
+        foreach ($order->products as $product) {
+            $imagePath = static::resolveProductImagePath($product->image, $tempDir);
+            if ($imagePath) {
+                $productImages[$product->id] = $imagePath;
+                $tempImageFiles[] = $imagePath;
+            }
+        }
+
         // Convert amount to Persian words
         $amountInWords = HelperClass::numberToPersianWords((float) ($order->amount ?? 0));
 
@@ -492,15 +512,16 @@ class OrderResource extends Resource
             'amountInWords' => $amountInWords,
             'colors' => $colors,
             'sizes' => $sizes,
+            'productImages' => $productImages,
         ])->render();
 
-        // Ensure temp directory exists for mpdf
-        $tempDir = storage_path('app/tmp');
-        if (! file_exists($tempDir)) {
-            mkdir($tempDir, 0755, true);
-        }
+        $defaultConfig = (new ConfigVariables)->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
 
-        // Configure mpdf
+        $defaultFontConfig = (new FontVariables)->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        // Configure mpdf with Vazirmatn (Persian digits) for proper RTL typography
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
@@ -509,21 +530,163 @@ class OrderResource extends Resource
             'margin_right' => 10,
             'margin_top' => 10,
             'margin_bottom' => 10,
-            'default_font' => 'dejavusans',
+            'fontDir' => array_merge($fontDirs, [
+                resource_path('fonts/vazirmatn'),
+            ]),
+            'fontdata' => $fontData + [
+                'vazirmatn' => [
+                    'R' => 'Vazirmatn-FD-Regular.ttf',
+                    'B' => 'Vazirmatn-FD-Bold.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 75,
+                ],
+            ],
+            'default_font' => 'vazirmatn',
             'directionality' => 'rtl',
             'tempDir' => $tempDir,
         ]);
 
-        // Write HTML content - use full document mode to parse CSS
-        $mpdf->WriteHTML($html);
+        try {
+            if (preg_match('/<style\b[^>]*>(.*?)<\/style>/is', $html, $styleMatch)) {
+                $mpdf->WriteHTML($styleMatch[1], \Mpdf\HTMLParserMode::HEADER_CSS);
+            }
 
-        // Output PDF
-        $filename = 'invoice-'.$order->code.'.pdf';
+            if (preg_match('/<body\b[^>]*>(.*)<\/body>/is', $html, $bodyMatch)) {
+                $mpdf->WriteHTML($bodyMatch[1], \Mpdf\HTMLParserMode::HTML_BODY);
+            } else {
+                $mpdf->WriteHTML($html);
+            }
 
-        return response()->streamDownload(function () use ($mpdf) {
-            echo $mpdf->Output('', 'S');
+            $pdfContent = $mpdf->Output('', 'S');
+        } finally {
+            foreach ($tempImageFiles as $tempImageFile) {
+                if (is_file($tempImageFile)) {
+                    @unlink($tempImageFile);
+                }
+            }
+        }
+
+        $jalaliDate = Jalalian::fromDateTime($order->created_at)->format('Y-m-d');
+        $filename = 'invoice-'.$jalaliDate.'-'.$order->code.'.pdf';
+
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
         }, $filename, [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    /**
+     * Resolve a product image to a local temp file path for reliable mPDF embedding.
+     */
+    protected static function resolveProductImagePath(?string $image, string $tempDir): ?string
+    {
+        if (! $image) {
+            return null;
+        }
+
+        try {
+            $contents = static::fetchProductImageBinary($image);
+            if (! $contents) {
+                return null;
+            }
+
+            $contents = static::compressImageForPdf($contents) ?? $contents;
+            $path = $tempDir.'/invoice-img-'.uniqid('', true).'.jpg';
+
+            if (file_put_contents($path, $contents) === false) {
+                return null;
+            }
+
+            return $path;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    protected static function fetchProductImageBinary(string $image): ?string
+    {
+        if (str_starts_with($image, 'http://') || str_starts_with($image, 'https://')) {
+            $url = html_entity_decode($image, ENT_QUOTES | ENT_HTML5);
+            $context = stream_context_create([
+                'http' => [
+                    'timeout' => 8,
+                    'follow_location' => 1,
+                    'user_agent' => 'BoofstoreInvoice/1.0',
+                ],
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ],
+            ]);
+
+            $contents = @file_get_contents($url, false, $context);
+
+            return $contents === false ? null : $contents;
+        }
+
+        foreach (['s3', 'public', 'liara', 'digitalocean'] as $disk) {
+            try {
+                if (Storage::disk($disk)->exists($image)) {
+                    $contents = Storage::disk($disk)->get($image);
+
+                    return $contents === false ? null : $contents;
+                }
+            } catch (Throwable) {
+                continue;
+            }
+        }
+
+        $localPath = storage_path('app/public/'.ltrim($image, '/'));
+        if (is_file($localPath)) {
+            $contents = file_get_contents($localPath);
+
+            return $contents === false ? null : $contents;
+        }
+
+        return null;
+    }
+
+    /**
+     * Downscale/re-encode images for smaller PDF payloads.
+     */
+    protected static function compressImageForPdf(string $binary): ?string
+    {
+        if (! function_exists('imagecreatefromstring')) {
+            return null;
+        }
+
+        $source = @imagecreatefromstring($binary);
+        if ($source === false) {
+            return null;
+        }
+
+        $maxSide = 180;
+        $width = imagesx($source);
+        $height = imagesy($source);
+
+        if ($width <= 0 || $height <= 0) {
+            imagedestroy($source);
+
+            return null;
+        }
+
+        $scale = min(1, $maxSide / max($width, $height));
+        $targetWidth = max(1, (int) round($width * $scale));
+        $targetHeight = max(1, (int) round($height * $scale));
+
+        $canvas = imagecreatetruecolor($targetWidth, $targetHeight);
+        $white = imagecolorallocate($canvas, 255, 255, 255);
+        imagefill($canvas, 0, 0, $white);
+        imagecopyresampled($canvas, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        ob_start();
+        imagejpeg($canvas, null, 80);
+        $compressed = ob_get_clean() ?: null;
+
+        imagedestroy($source);
+        imagedestroy($canvas);
+
+        return $compressed ?: null;
     }
 }
