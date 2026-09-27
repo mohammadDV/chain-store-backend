@@ -275,13 +275,9 @@ class ProductResource extends Resource
                             ->visibility('public')
                             ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
                             ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $imagePath = is_array($state) ? reset($state) : $state;
-                                    $set('image', $imagePath);
-                                }
-                            })
-                            ->dehydrated(false),
+                            // Must dehydrate so Filament stores the file on the s3 disk on save.
+                            // Mapping to `image` happens in EditProduct/CreateProduct mutateFormDataBeforeSave.
+                            ->dehydrated(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload'),
                         TextInput::make('image_url')
                             ->label(__('site.image_url'))
                             ->placeholder('https://example.com/image.jpg')

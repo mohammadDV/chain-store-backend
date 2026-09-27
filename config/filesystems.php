@@ -56,7 +56,11 @@ return [
             'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
-            'throw' => false,
+            // Backblaze B2 rejects S3 canned ACL "private"; Filament/Livewire
+            // storeAs uses the disk default visibility, so keep this public.
+            'visibility' => 'public',
+            'directory_visibility' => 'public',
+            'throw' => true,
             'report' => false,
         ],
         'liara' => [

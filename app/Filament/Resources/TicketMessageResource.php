@@ -83,7 +83,9 @@ class TicketMessageResource extends Resource
                             ->rows(4),
                         FileUpload::make('file')
                             ->label(__('site.ticket_message_attachment'))
+                            ->disk('s3')
                             ->directory('ticket-messages')
+                            ->visibility('public')
                             ->acceptedFileTypes(['image/*', 'application/pdf', 'text/*'])
                             ->maxSize(5120), // 5MB
                         Select::make('status')

@@ -19,7 +19,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\TextSize;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class ViewTicket extends ViewRecord
@@ -89,7 +88,8 @@ class ViewTicket extends ViewRecord
                         FileUpload::make('file')
                             ->label(__('site.ticket_message_attachment'))
                             ->disk('s3')
-                            ->directory('/ticket-messages')
+                            ->directory('ticket-messages')
+                            ->visibility('public')
                             ->acceptedFileTypes(['image/*', 'application/pdf', 'text/*'])
                             ->maxSize(5120) // 5MB
                             ->disabled($isTicketClosed),
@@ -194,10 +194,17 @@ class ViewTicket extends ViewRecord
 
         $filePath = null;
 
-        // Handle file upload
-        if ($this->data['file'] instanceof TemporaryUploadedFile) {
-            // $filePath = $this->data['file']->store('boofstore/ticket-messages', 's3', 'public');
-            $filePath = Storage::disk('s3')->put('boofstore/ticket-messages', $this->data['file'], 'public');
+        // Handle file upload (TemporaryUploadedFile before store, or path string after Filament dehydrate)
+        $uploaded = $this->data['file'] ?? null;
+        if ($uploaded instanceof TemporaryUploadedFile) {
+            $filePath = $uploaded->store('ticket-messages', [
+                'disk' => 's3',
+                'visibility' => 'public',
+            ]);
+        } elseif (is_string($uploaded) && $uploaded !== '') {
+            $filePath = $uploaded;
+        } elseif (is_array($uploaded) && $uploaded !== []) {
+            $filePath = reset($uploaded) ?: null;
         }
 
         TicketMessage::create([

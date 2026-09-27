@@ -176,7 +176,8 @@ class UserResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->disk('s3')
-                            ->directory('/users/profile-photos')
+                            ->directory('users/profile-photos')
+                            ->visibility('public')
                             // ->previewable(false)
                             ->required(),
                         FileUpload::make('bg_photo_path')
@@ -184,7 +185,8 @@ class UserResource extends Resource
                             ->placeholder(__('site.upload_bg_photo'))
                             ->disk('s3')
                             ->image()
-                            ->directory('/users/bg-photos'),
+                            ->directory('users/bg-photos')
+                            ->visibility('public'),
                     ])->columns(2),
 
                 Section::make(__('site.additional_information'))

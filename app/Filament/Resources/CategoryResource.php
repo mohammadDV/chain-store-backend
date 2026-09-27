@@ -132,6 +132,8 @@ class CategoryResource extends Resource
                             ->disk('s3')
                             ->directory('categories/images')
                             ->visibility('public')
+                            ->panelLayout('integrated')
+                            ->imagePreviewHeight('250')
                             ->maxSize(2048)
                             ->columnSpanFull(),
                     ])->columns(1),

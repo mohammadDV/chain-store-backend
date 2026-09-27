@@ -125,7 +125,8 @@ class WithdrawalTransactionResource extends Resource
                             ->image()
                             ->imageEditor()
                             ->disk('s3')
-                            ->directory('/projects/images')
+                            ->directory('projects/images')
+                            ->visibility('public')
                             ->visible(fn ($record) => ! empty($record->image)),
                         // Forms\Components\ViewField::make('image')
                         //     ->label(__('site.image'))
@@ -228,7 +229,8 @@ class WithdrawalTransactionResource extends Resource
                             ->imageResizeTargetWidth('1920')
                             ->imageResizeTargetHeight('1080')
                             ->disk('s3')
-                            ->directory('/withdrawal-transactions/completion')
+                            ->directory('withdrawal-transactions/completion')
+                            ->visibility('public')
                             ->helperText(__('site.completion_image_help')),
                     ])
                     ->requiresConfirmation()
@@ -295,7 +297,8 @@ class WithdrawalTransactionResource extends Resource
                             ->imageResizeTargetWidth('1920')
                             ->imageResizeTargetHeight('1080')
                             ->disk('s3')
-                            ->directory('/withdrawal-transactions/rejection')
+                            ->directory('withdrawal-transactions/rejection')
+                            ->visibility('public')
                             ->helperText(__('site.rejection_image_help')),
                     ])
                     ->requiresConfirmation()
