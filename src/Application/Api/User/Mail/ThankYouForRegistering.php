@@ -20,7 +20,7 @@ class ThankYouForRegistering extends Mailable
 
     public function build()
     {
-        return $this->markdown('emails.users.thankyou')
-            ->subject('Thank you for registering!');
+        return $this->view('emails.users.thankyou')
+            ->subject(__('site.Welcome to').' '.config('app.name'));
     }
 }

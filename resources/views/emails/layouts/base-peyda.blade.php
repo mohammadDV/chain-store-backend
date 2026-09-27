@@ -3,235 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>@yield('title', config('app.name'))</title>
+    <!--[if mso]>
+    <style type="text/css">
+        body, table, td, a, p, h1, h2, h3 { font-family: Tahoma, Arial, sans-serif !important; }
+    </style>
+    <![endif]-->
     <style>
-        /* Peyda Font Definitions for Email */
         @font-face {
-            font-family: PeydaWebFaNum;
-            font-style: normal;
-            font-weight: 100;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Thin.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Thin.woff') }}') format('woff');
-        }
-        @font-face {
-            font-family: PeydaWebFaNum;
-            font-style: normal;
-            font-weight: 200;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-ExtraLight.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-ExtraLight.woff') }}') format('woff');
-        }
-        @font-face {
-            font-family: PeydaWebFaNum;
-            font-style: normal;
-            font-weight: 300;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Light.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Light.woff') }}') format('woff');
-        }
-        @font-face {
-            font-family: PeydaWebFaNum;
+            font-family: 'Estedad';
             font-style: normal;
             font-weight: 400;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Regular.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Regular.woff') }}') format('woff');
+            font-display: swap;
+            src: url('{{ asset('fonts/estedad/Estedad-FD-Regular.woff2') }}') format('woff2');
         }
         @font-face {
-            font-family: PeydaWebFaNum;
+            font-family: 'Estedad';
             font-style: normal;
             font-weight: 500;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Medium.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Medium.woff') }}') format('woff');
+            font-display: swap;
+            src: url('{{ asset('fonts/estedad/Estedad-FD-Medium.woff2') }}') format('woff2');
         }
         @font-face {
-            font-family: PeydaWebFaNum;
+            font-family: 'Estedad';
             font-style: normal;
             font-weight: 600;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-SemiBold.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-SemiBold.woff') }}') format('woff');
+            font-display: swap;
+            src: url('{{ asset('fonts/estedad/Estedad-FD-SemiBold.woff2') }}') format('woff2');
         }
         @font-face {
-            font-family: PeydaWebFaNum;
+            font-family: 'Estedad';
             font-style: normal;
             font-weight: 700;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Bold.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Bold.woff') }}') format('woff');
-        }
-        @font-face {
-            font-family: PeydaWebFaNum;
-            font-style: normal;
-            font-weight: 800;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-ExtraBold.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-ExtraBold.woff') }}') format('woff');
-        }
-        @font-face {
-            font-family: PeydaWebFaNum;
-            font-style: normal;
-            font-weight: 900;
-            src: url('{{ asset('fonts/peyda/fonts/woff2/PeydaWebFaNum-Black.woff2') }}') format('woff2'),
-                 url('{{ asset('fonts/peyda/fonts/woff/PeydaWebFaNum-Black.woff') }}') format('woff');
+            font-display: swap;
+            src: url('{{ asset('fonts/estedad/Estedad-FD-Bold.woff2') }}') format('woff2');
         }
 
-        /* Base Email Styles with Peyda Font */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'PeydaWebFaNum', 'Tahoma', 'Arial', sans-serif !important;
-            background-color: #f5f5f5;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important;
+            background-color: #f3f2f0;
             direction: rtl;
-            line-height: 1.6;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
 
-        * {
-            font-family: 'PeydaWebFaNum', 'Tahoma', 'Arial', sans-serif !important;
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
         }
 
-        .email-container {
+        img {
+            border: 0;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .wrapper {
+            width: 100%;
+            background-color: #f3f2f0;
+        }
+
+        .container {
+            width: 100%;
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
         }
 
-        .email-card {
+        .card {
             background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            text-align: center;
-            margin: 20px 0;
+            border: 1px solid #e8e6e3;
         }
 
-        .logo {
-            margin-bottom: 30px;
+        .brand {
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #333333;
+            letter-spacing: 0.5px;
         }
 
-        .logo-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: rgba(230, 78, 181, 1);
-            margin: 0;
-            position: relative;
-            display: inline-block;
-        }
-
-        .logo-dots {
-            position: absolute;
-            right: -25px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .dot {
-            width: 6px;
-            height: 6px;
-            background-color: rgba(230, 78, 181, 1);
-            border-radius: 50%;
-            margin: 2px 0;
-            display: block;
+        .brand-accent {
+            color: #FF385C;
         }
 
         .title {
-            font-size: 24px;
-            font-weight: bold;
-            color: #000000;
-            margin: 20px 0;
-            line-height: 1.4;
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: #333333;
+            line-height: 1.5;
+            margin: 0;
         }
 
-        .content {
-            font-size: 16px;
-            color: #333333;
-            line-height: 1.6;
-            margin: 20px 0 30px 0;
-            text-align: center;
+        .text {
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: #555555;
+            line-height: 1.9;
+            margin: 0;
         }
 
         .button {
             display: inline-block;
-            background-color: rgba(230, 78, 181, 1);
-            color: #ffffff;
-            padding: 12px 30px;
-            text-decoration: none;
-            border-radius: 8px;
+            background-color: #FF385C;
+            color: #ffffff !important;
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 15px;
             font-weight: 600;
-            margin: 20px 0;
-            transition: background-color 0.3s ease;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
         }
 
-        .button:hover {
-            background-color: rgba(200, 68, 161, 1);
-        }
-
-        .footer {
-            margin-top: 40px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e5e5;
-            font-size: 14px;
+        .note {
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 400;
             color: #666666;
+            line-height: 1.8;
+            background-color: #f7f6f4;
+            border: 1px solid #e8e6e3;
+            border-radius: 8px;
+            padding: 14px 16px;
         }
 
-        .welcome-message {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #155724;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .warning-text {
-            background-color: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #856404;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        .url-text {
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            color: #495057;
+        .url-box {
+            font-family: Tahoma, Arial, sans-serif;
             font-size: 12px;
+            color: #666666;
+            line-height: 1.7;
+            background-color: #fafafa;
+            border: 1px solid #e8e6e3;
+            border-radius: 8px;
+            padding: 14px 16px;
             word-break: break-all;
             direction: ltr;
-            text-align: center;
+            text-align: left;
         }
 
-        .button {
-            color: #fff !important;
+        .footer-text {
+            font-family: 'Estedad', Tahoma, Arial, sans-serif;
+            font-size: 12px;
+            color: #999999;
+            line-height: 1.8;
         }
 
-        /* Responsive Design */
-        @media only screen and (max-width: 600px) {
-            .email-container {
-                padding: 10px;
+        @media only screen and (max-width: 620px) {
+            .container {
+                width: 100% !important;
             }
 
-            .email-card {
-                padding: 20px;
+            .px {
+                padding-left: 20px !important;
+                padding-right: 20px !important;
             }
 
             .title {
-                font-size: 20px;
-            }
-
-            .content {
-                font-size: 14px;
+                font-size: 20px !important;
             }
         }
     </style>
 </head>
-<body>
-    <div class="email-container">
-        <div class="email-card">
-            @yield('content')
-        </div>
-    </div>
+<body style="margin:0;padding:0;background-color:#f3f2f0;direction:rtl;">
+    <table role="presentation" class="wrapper" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f3f2f0;">
+        <tr>
+            <td align="center" style="padding: 32px 16px;">
+                <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+                    <tr>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <div class="brand" style="font-family:'Estedad',Tahoma,Arial,sans-serif;font-size:22px;font-weight:700;color:#333333;">
+                                BOOF<span class="brand-accent" style="color:#FF385C;">STORE</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="card" style="background-color:#ffffff;border:1px solid #e8e6e3;border-radius:12px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                                <tr>
+                                    <td class="px" style="padding: 36px 40px;">
+                                        @yield('content')
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding: 24px 8px 8px;">
+                            <p class="footer-text" style="margin:0;font-family:'Estedad',Tahoma,Arial,sans-serif;font-size:12px;color:#999999;line-height:1.8;">
+                                @yield('footer', 'این ایمیل از طرف '.config('app.name').' ارسال شده است.')
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>
