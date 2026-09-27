@@ -56,6 +56,8 @@ final class AdminPermission
 
     public const TRANSACTIONS_UPDATE = 'transactions.update';
 
+    public const REVENUE_VIEW = 'revenue.view';
+
     public const POSTS_VIEW = 'posts.view';
 
     public const POSTS_CREATE = 'posts.create';
@@ -201,6 +203,7 @@ final class AdminPermission
                 self::WITHDRAWALS_REJECT,
                 self::TRANSACTIONS_VIEW,
                 self::TRANSACTIONS_UPDATE,
+                self::REVENUE_VIEW,
             ],
             'posts' => [
                 self::POSTS_VIEW,

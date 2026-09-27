@@ -43,6 +43,7 @@ use Illuminate\Support\Facades\View;
 use Morilog\Jalali\Jalalian;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
+use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
@@ -548,11 +549,11 @@ class OrderResource extends Resource
 
         try {
             if (preg_match('/<style\b[^>]*>(.*?)<\/style>/is', $html, $styleMatch)) {
-                $mpdf->WriteHTML($styleMatch[1], \Mpdf\HTMLParserMode::HEADER_CSS);
+                $mpdf->WriteHTML($styleMatch[1], HTMLParserMode::HEADER_CSS);
             }
 
             if (preg_match('/<body\b[^>]*>(.*)<\/body>/is', $html, $bodyMatch)) {
-                $mpdf->WriteHTML($bodyMatch[1], \Mpdf\HTMLParserMode::HTML_BODY);
+                $mpdf->WriteHTML($bodyMatch[1], HTMLParserMode::HTML_BODY);
             } else {
                 $mpdf->WriteHTML($html);
             }
@@ -628,9 +629,7 @@ class OrderResource extends Resource
         foreach (['s3', 'public', 'liara', 'digitalocean'] as $disk) {
             try {
                 if (Storage::disk($disk)->exists($image)) {
-                    $contents = Storage::disk($disk)->get($image);
-
-                    return $contents === false ? null : $contents;
+                    return Storage::disk($disk)->get($image);
                 }
             } catch (Throwable) {
                 continue;
@@ -664,12 +663,6 @@ class OrderResource extends Resource
         $maxSide = 180;
         $width = imagesx($source);
         $height = imagesy($source);
-
-        if ($width <= 0 || $height <= 0) {
-            imagedestroy($source);
-
-            return null;
-        }
 
         $scale = min(1, $maxSide / max($width, $height));
         $targetWidth = max(1, (int) round($width * $scale));

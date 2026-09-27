@@ -8,7 +8,6 @@ use App\Filament\Resources\TransactionResource\Pages\EditTransaction;
 use App\Filament\Resources\TransactionResource\Pages\ListTransactions;
 use App\Filament\Resources\TransactionResource\Pages\ViewTransaction;
 use Domain\Payment\Models\Transaction;
-use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -16,7 +15,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -128,14 +126,6 @@ class TransactionResource extends Resource
                     ->label(__('site.amount'))
                     ->money('IRR')
                     ->sortable(),
-                TextColumn::make('revenue')
-                    ->label(__('site.revenue'))
-                    ->getStateUsing(fn ($record) => $record->revenue)
-                    ->money('IRR')
-                    ->sortable()
-                    ->color('success')
-                    ->weight('bold')
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->label(__('site.status'))
                     ->badge()
@@ -215,14 +205,6 @@ class TransactionResource extends Resource
                                 fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-            ])
-            ->headerActions([
-                Action::make('total_revenue')
-                    ->label(fn ($livewire) => __('site.total_revenue').': '.number_format($livewire->getFilteredTableQuery()->where('status', Transaction::COMPLETED)->get()->sum('revenue')).' تومان')
-                    ->icon('heroicon-o-calculator')
-                    ->color('success')
-                    ->disabled()
-                    ->extraAttributes(['class' => 'cursor-default']),
             ])
             ->recordActions([
                 // Tables\Actions\ViewAction::make(),
