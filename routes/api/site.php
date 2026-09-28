@@ -11,6 +11,7 @@ use Application\Api\Product\Controllers\DiscountController;
 use Application\Api\Product\Controllers\OrderController;
 use Application\Api\Product\Controllers\ProductController;
 use Application\Api\Review\Controllers\ReviewController;
+use Application\Api\Seo\Controllers\SeoController;
 use Application\Api\Ticket\Controllers\TicketController;
 use Application\Api\Ticket\Controllers\TicketSubjectController;
 use Application\Api\User\Controllers\UserController;
@@ -18,6 +19,13 @@ use Application\Api\Wallet\Controllers\WalletController;
 use Application\Api\Wallet\Controllers\WalletTransactionController;
 use Application\Api\Wallet\Controllers\WithdrawalTransactionController;
 use Illuminate\Support\Facades\Route;
+
+// SEO
+Route::prefix('seo')->group(function () {
+    Route::get('/settings', [SeoController::class, 'settings'])->name('seo.settings');
+    Route::get('/sitemap', [SeoController::class, 'sitemap'])->name('seo.sitemap');
+    Route::get('/redirects', [SeoController::class, 'redirects'])->name('seo.redirects');
+});
 
 // Category
 Route::prefix('categories')->group(function () {

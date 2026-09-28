@@ -21,6 +21,7 @@ class CategoryWithParentsResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'title' => $this->resource->title,
+            'slug' => $this->resource->slug,
             'image' => $this->resource->image ?? '',
             'status' => $this->resource->status,
             'parent_id' => $this->resource->parent_id,
@@ -28,6 +29,7 @@ class CategoryWithParentsResource extends JsonResource
                 return [
                     'id' => $this->resource->parent->id,
                     'title' => $this->resource->parent->title,
+                    'slug' => $this->resource->parent->slug,
                     'image' => $this->resource->parent->image ?? '',
                     'status' => $this->resource->parent->status,
                     'parent_id' => $this->resource->parent->parent_id,

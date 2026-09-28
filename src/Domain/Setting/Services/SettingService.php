@@ -33,13 +33,43 @@ class SettingService
      * Only plain values are cached so the cache store never has to unserialize
      * PHP objects, which Laravel forbids by default since version 13.
      *
-     * @return array{profit_rate: string, exchange_rate: string}
+     * @return array{
+     *     profit_rate: string,
+     *     exchange_rate: string,
+     *     site_name: string|null,
+     *     default_meta_description: string|null,
+     *     default_og_image: string|null
+     * }
      */
     public function getSettings(): array
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
-            return Setting::getInstance()->only(['profit_rate', 'exchange_rate']);
+            return Setting::getInstance()->only([
+                'profit_rate',
+                'exchange_rate',
+                'site_name',
+                'default_meta_description',
+                'default_og_image',
+            ]);
         });
+    }
+
+    /**
+     * @return array{
+     *     site_name: string|null,
+     *     default_meta_description: string|null,
+     *     default_og_image: string|null
+     * }
+     */
+    public function getSeoSettings(): array
+    {
+        $settings = $this->getSettings();
+
+        return [
+            'site_name' => $settings['site_name'] ?? null,
+            'default_meta_description' => $settings['default_meta_description'] ?? null,
+            'default_og_image' => $settings['default_og_image'] ?? null,
+        ];
     }
 
     /**

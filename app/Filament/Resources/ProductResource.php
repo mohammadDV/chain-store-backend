@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\HasSeoFormSection;
 use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\ProductResource\Pages\CreateProduct;
 use App\Filament\Resources\ProductResource\Pages\EditProduct;
@@ -32,6 +33,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
@@ -47,6 +49,7 @@ use Illuminate\Support\Facades\Auth;
 class ProductResource extends Resource
 {
     use ChecksResourceAuthorization;
+    use HasSeoFormSection;
     use ScopesQueryByAdminBrands;
 
     protected static ?string $model = Product::class;
@@ -88,214 +91,231 @@ class ProductResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                Section::make(__('site.product_information'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('title')
-                                    ->label(__('site.title'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('code')
-                                    ->label(__('site.code'))
-                                    ->maxLength(255),
-                            ]),
-                        RichEditor::make('description')
-                            ->label(__('site.description'))
-                            ->fileAttachmentsDisk('s3')
-                            ->fileAttachmentsDirectory('products/description')
-                            ->fileAttachmentsVisibility('public')
-                            ->toolbarButtons([
-                                'attachFiles',
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'codeBlock',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'undo',
-                            ])
-                            ->columnSpanFull(),
-                        RichEditor::make('details')
-                            ->label(__('site.details'))
-                            ->fileAttachmentsDisk('s3')
-                            ->fileAttachmentsDirectory('products/details')
-                            ->fileAttachmentsVisibility('public')
-                            ->toolbarButtons([
-                                'attachFiles',
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'codeBlock',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'undo',
-                            ])
-                            ->columnSpanFull(),
-                        TextInput::make('url')
-                            ->label(__('site.url'))
-                            ->columnSpanFull()
-                            ->maxLength(2048)
-                            ->url(),
-                    ]),
-                Section::make(__('site.product_relations'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('brand_id')
-                                    ->label(__('site.brand'))
-                                    ->relationship(
-                                        name: 'brand',
-                                        titleAttribute: 'title',
-                                        modifyQueryUsing: function (Builder $query): Builder {
-                                            $user = Auth::user();
-                                            if (! $user instanceof User) {
-                                                return $query->whereRaw('1 = 0');
-                                            }
-
-                                            return app(AdminAccessService::class)
-                                                ->scopeBrandQuery($query, $user, 'id');
-                                        }
-                                    )
-                                    ->searchable()
-                                    ->required(),
-                                CategorySelect::withPathLabels(
-                                    Select::make('categories')
-                                        ->label(__('site.category'))
-                                        ->relationship('categories', 'title')
-                                        ->multiple()
-                                        ->searchable()
+                Group::make([
+                    Section::make(__('site.product_information'))
+                        ->icon('heroicon-o-cube')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->label(__('site.title'))
                                         ->required()
-                                ),
-                                Select::make('color_id')
-                                    ->label(__('site.color'))
-                                    ->relationship('color', 'title')
-                                    ->required(),
-                                Hidden::make('user_id')
-                                    ->default(fn (): ?int => Auth::id())
-                                    ->required(),
-                            ]),
-                    ]),
-                Section::make(__('site.pricing_inventory'))
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                TextInput::make('amount')
-                                    ->label(__('site.amount'))
-                                    // ->numeric()
-                                    ->required()
-                                    ->minValue(0),
-                                TextInput::make('discount')
-                                    ->label(__('site.discount'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0)
-                                    ->maxValue(99),
-                                TextInput::make('points')
-                                    ->label(__('site.points'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0),
-                                TextInput::make('rate')
-                                    ->label(__('site.rate'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->minValue(0),
-                                TextInput::make('priority')
-                                    ->label(__('site.priority'))
-                                    ->numeric()
-                                    ->default(0),
-                            ]),
-                        Grid::make(3)
-                            ->schema([
-                                Toggle::make('vip')
-                                    ->label(__('site.vip'))
-                                    ->default(false),
-                                Toggle::make('active')
-                                    ->label(__('site.active'))
-                                    ->default(false),
-                                Select::make('status')
-                                    ->label(__('site.status'))
-                                    ->options([
-                                        Product::PENDING => __('site.pending'),
-                                        Product::COMPLETED => __('site.completed'),
-                                        Product::REJECT => __('site.reject'),
-                                    ])
-                                    ->default(Product::PENDING)
-                                    ->required(),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('order_count')
-                                    ->label(__('site.order_count'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->disabled()
-                                    ->dehydrated(false),
-                                TextInput::make('view_count')
-                                    ->label(__('site.view_count'))
-                                    ->numeric()
-                                    ->default(0)
-                                    ->disabled()
-                                    ->dehydrated(false),
-                            ]),
-                    ]),
-                Section::make(__('site.media'))
-                    ->schema([
-                        Hidden::make('image')
-                            ->dehydrated(),
-                        Select::make('image_source')
-                            ->label(__('site.image_source'))
-                            ->options([
-                                'upload' => __('site.upload_file'),
-                                'url' => __('site.enter_url'),
-                            ])
-                            ->default('upload')
-                            ->live()
-                            ->required()
-                            ->dehydrated(false),
-                        FileUpload::make('image_upload')
-                            ->label(__('site.product_image'))
-                            ->placeholder(__('site.upload_product_image'))
-                            ->image()
-                            ->imageEditor()
-                            ->disk('s3')
-                            ->directory('products/images')
-                            ->visibility('public')
-                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
-                            ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
-                            // Must dehydrate so Filament stores the file on the s3 disk on save.
-                            // Mapping to `image` happens in EditProduct/CreateProduct mutateFormDataBeforeSave.
-                            ->dehydrated(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload'),
-                        TextInput::make('image_url')
-                            ->label(__('site.image_url'))
-                            ->placeholder('https://example.com/image.jpg')
-                            ->url()
-                            ->maxLength(2048)
-                            ->live()
-                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
-                            ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
-                            ->afterStateUpdated(function ($state, callable $set) {
-                                if ($state) {
-                                    $set('image', $state);
-                                }
-                            })
-                            ->dehydrated(false),
-                        View::make('filament.components.image-url-preview')
-                            ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
-                            ->dehydrated(false),
-                    ])->columns(1),
+                                        ->maxLength(255),
+                                    TextInput::make('code')
+                                        ->label(__('site.code'))
+                                        ->maxLength(255),
+                                ]),
+                            TextInput::make('url')
+                                ->label(__('site.url'))
+                                ->maxLength(2048)
+                                ->url()
+                                ->columnSpanFull(),
+                        ]),
+                    Section::make(__('site.product_content'))
+                        ->icon('heroicon-o-document-text')
+                        ->schema([
+                            RichEditor::make('description')
+                                ->label(__('site.description'))
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('products/description')
+                                ->fileAttachmentsVisibility('public')
+                                ->toolbarButtons([
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'redo',
+                                    'strike',
+                                    'undo',
+                                ])
+                                ->columnSpanFull(),
+                            RichEditor::make('details')
+                                ->label(__('site.details'))
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('products/details')
+                                ->fileAttachmentsVisibility('public')
+                                ->toolbarButtons([
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'redo',
+                                    'strike',
+                                    'undo',
+                                ])
+                                ->columnSpanFull(),
+                        ])
+                        ->collapsible(),
+                    Section::make(__('site.product_relations'))
+                        ->icon('heroicon-o-link')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    Select::make('brand_id')
+                                        ->label(__('site.brand'))
+                                        ->relationship(
+                                            name: 'brand',
+                                            titleAttribute: 'title',
+                                            modifyQueryUsing: function (Builder $query): Builder {
+                                                $user = Auth::user();
+                                                if (! $user instanceof User) {
+                                                    return $query->whereRaw('1 = 0');
+                                                }
+
+                                                return app(AdminAccessService::class)
+                                                    ->scopeBrandQuery($query, $user, 'id');
+                                            }
+                                        )
+                                        ->searchable()
+                                        ->required(),
+                                    CategorySelect::withPathLabels(
+                                        Select::make('categories')
+                                            ->label(__('site.category'))
+                                            ->relationship('categories', 'title')
+                                            ->multiple()
+                                            ->searchable()
+                                            ->required()
+                                    ),
+                                    Select::make('color_id')
+                                        ->label(__('site.color'))
+                                        ->relationship('color', 'title')
+                                        ->required(),
+                                    Hidden::make('user_id')
+                                        ->default(fn (): ?int => Auth::id())
+                                        ->required(),
+                                ]),
+                        ]),
+                    Section::make(__('site.pricing_inventory'))
+                        ->icon('heroicon-o-banknotes')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('amount')
+                                        ->label(__('site.amount'))
+                                        ->required()
+                                        ->minValue(0),
+                                    TextInput::make('discount')
+                                        ->label(__('site.discount'))
+                                        ->numeric()
+                                        ->default(0)
+                                        ->minValue(0)
+                                        ->maxValue(99),
+                                    TextInput::make('points')
+                                        ->label(__('site.points'))
+                                        ->numeric()
+                                        ->default(0)
+                                        ->minValue(0),
+                                    TextInput::make('rate')
+                                        ->label(__('site.rate'))
+                                        ->numeric()
+                                        ->default(0)
+                                        ->minValue(0),
+                                ]),
+                        ]),
+                    Section::make(__('site.media'))
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            Hidden::make('image')
+                                ->dehydrated(),
+                            Select::make('image_source')
+                                ->label(__('site.image_source'))
+                                ->options([
+                                    'upload' => __('site.upload_file'),
+                                    'url' => __('site.enter_url'),
+                                ])
+                                ->default('upload')
+                                ->live()
+                                ->required()
+                                ->dehydrated(false),
+                            FileUpload::make('image_upload')
+                                ->label(__('site.product_image'))
+                                ->placeholder(__('site.upload_product_image'))
+                                ->image()
+                                ->imageEditor()
+                                ->disk('s3')
+                                ->directory('products/images')
+                                ->visibility('public')
+                                ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
+                                ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload')
+                                // Must dehydrate so Filament stores the file on the s3 disk on save.
+                                // Mapping to `image` happens in EditProduct/CreateProduct mutateFormDataBeforeSave.
+                                ->dehydrated(fn (callable $get) => ($get('image_source') ?? 'upload') === 'upload'),
+                            TextInput::make('image_url')
+                                ->label(__('site.image_url'))
+                                ->placeholder('https://example.com/image.jpg')
+                                ->url()
+                                ->maxLength(2048)
+                                ->live()
+                                ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                                ->required(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                                ->afterStateUpdated(function ($state, callable $set) {
+                                    if ($state) {
+                                        $set('image', $state);
+                                    }
+                                })
+                                ->dehydrated(false),
+                            View::make('filament.components.image-url-preview')
+                                ->visible(fn (callable $get) => ($get('image_source') ?? 'upload') === 'url')
+                                ->dehydrated(false),
+                        ]),
+                    ...static::seoFormSection(true, 'products/og'),
+                ])->columnSpan(2),
+                Group::make([
+                    Section::make(__('site.publishing'))
+                        ->icon('heroicon-o-eye')
+                        ->schema([
+                            Select::make('status')
+                                ->label(__('site.status'))
+                                ->options([
+                                    Product::PENDING => __('site.pending'),
+                                    Product::COMPLETED => __('site.completed'),
+                                    Product::REJECT => __('site.reject'),
+                                ])
+                                ->default(Product::PENDING)
+                                ->required(),
+                            Toggle::make('active')
+                                ->label(__('site.active'))
+                                ->default(false),
+                            Toggle::make('vip')
+                                ->label(__('site.vip'))
+                                ->default(false),
+                            TextInput::make('priority')
+                                ->label(__('site.priority'))
+                                ->numeric()
+                                ->default(0),
+                        ]),
+                    Section::make(__('site.form_statistics'))
+                        ->icon('heroicon-o-chart-bar')
+                        ->schema([
+                            TextInput::make('order_count')
+                                ->label(__('site.order_count'))
+                                ->numeric()
+                                ->default(0)
+                                ->disabled()
+                                ->dehydrated(false),
+                            TextInput::make('view_count')
+                                ->label(__('site.view_count'))
+                                ->numeric()
+                                ->default(0)
+                                ->disabled()
+                                ->dehydrated(false),
+                        ])
+                        ->hiddenOn('create'),
+                ])->columnSpan(1),
             ]);
     }
 

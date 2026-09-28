@@ -3,6 +3,7 @@
 namespace Core\Providers;
 
 use Core\Console\Commands\AddPermissions;
+use Core\Console\Commands\BackfillSeoSlugsCommand;
 use Core\Console\Commands\ExpirePendingOrdersCommand;
 use Core\Console\Commands\ProductCommand;
 use Core\Console\Commands\ProductListCommand;
@@ -28,6 +29,7 @@ class CommandServiceProvider extends ServiceProvider
             ExpirePendingOrdersCommand::class,
             UpdateSizeAndStockCommand::class,
             RefreshStaleProductsCommand::class,
+            BackfillSeoSlugsCommand::class,
         ]);
     }
 

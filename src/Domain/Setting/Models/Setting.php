@@ -10,6 +10,9 @@ class Setting extends Model
     protected $fillable = [
         'profit_rate',
         'exchange_rate',
+        'site_name',
+        'default_meta_description',
+        'default_og_image',
     ];
 
     protected $casts = [

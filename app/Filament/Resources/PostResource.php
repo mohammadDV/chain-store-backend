@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\HasSeoFormSection;
 use App\Filament\Resources\PostResource\Pages\CreatePost;
 use App\Filament\Resources\PostResource\Pages\EditPost;
 use App\Filament\Resources\PostResource\Pages\ListPosts;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -33,6 +35,7 @@ use Morilog\Jalali\Jalalian;
 class PostResource extends Resource
 {
     use ChecksResourceAuthorization;
+    use HasSeoFormSection;
 
     protected static ?string $model = Post::class;
 
@@ -63,101 +66,106 @@ class PostResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                Section::make(__('site.post_information'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('title')
-                                    ->label(__('site.title'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('pre_title')
-                                    ->label(__('site.pre_title'))
-                                    ->maxLength(255),
-                            ]),
-                        Textarea::make('summary')
-                            ->label(__('site.summary'))
-                            ->required()
-                            ->rows(3)
-                            ->maxLength(255),
-                        RichEditor::make('content')
-                            ->label(__('site.content'))
-                            ->required()
-                            ->fileAttachmentsDisk('s3')
-                            ->fileAttachmentsDirectory('posts/content')
-                            ->fileAttachmentsVisibility('public')
-                            ->toolbarButtons([
-                                'attachFiles',
-                                'blockquote',
-                                'bold',
-                                'bulletList',
-                                'codeBlock',
-                                'h2',
-                                'h3',
-                                'italic',
-                                'link',
-                                'orderedList',
-                                'redo',
-                                'strike',
-                                'undo',
-                            ])
-                            ->columnSpanFull(),
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('type')
-                                    ->label(__('site.type'))
-                                    ->options([
-                                        0 => __('site.normal'),
-                                        1 => __('site.video'),
-                                    ])
-                                    ->default(0)
-                                    ->reactive()
-                                    ->required(),
-                                FileUpload::make('video')
-                                    ->label(__('site.video'))
-                                    ->disk('s3')
-                                    ->directory('posts/videos')
-                                    ->visibility('public')
-                                    ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/wmv', 'video/flv', 'video/x-msvideo'])
-                                    ->maxSize(150 * 1024) // 100MB
-                                    ->visible(fn (callable $get) => $get('type') == 1)
-                                    ->required(fn (callable $get) => $get('type') == 1),
-                            ]),
-                    ]),
-
-                Section::make(__('site.media'))
-                    ->schema([
-                        FileUpload::make('image')
-                            ->label(__('site.post_image'))
-                            ->placeholder(__('site.upload_post_image'))
-                            ->image()
-                            ->imageEditor()
-                            ->disk('s3')
-                            ->directory('posts/images')
-                            ->visibility('public')
-                            ->required(),
-                    ])->columns(2),
-
-                Section::make(__('site.settings'))
-                    ->schema([
-                        Select::make('status')
-                            ->label(__('site.status'))
-                            ->options([
-                                0 => __('site.Inactive'),
-                                1 => __('site.Active'),
-                            ])
-                            ->default(0)
-                            ->required(),
-                        Toggle::make('special')
-                            ->label(__('site.special'))
-                            ->default(false)
-                            ->helperText(__('site.special_post_help')),
-                        Hidden::make('view')
-                            ->default(0),
-                        Hidden::make('user_id')
-                            ->default(fn () => auth()->id()),
-                    ])->columns(2),
+                Group::make([
+                    Section::make(__('site.post_information'))
+                        ->icon('heroicon-o-document-text')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->label(__('site.title'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('pre_title')
+                                        ->label(__('site.pre_title'))
+                                        ->maxLength(255),
+                                ]),
+                            Textarea::make('summary')
+                                ->label(__('site.summary'))
+                                ->required()
+                                ->rows(3)
+                                ->maxLength(255)
+                                ->columnSpanFull(),
+                            RichEditor::make('content')
+                                ->label(__('site.content'))
+                                ->required()
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('posts/content')
+                                ->fileAttachmentsVisibility('public')
+                                ->toolbarButtons([
+                                    'attachFiles',
+                                    'blockquote',
+                                    'bold',
+                                    'bulletList',
+                                    'codeBlock',
+                                    'h2',
+                                    'h3',
+                                    'italic',
+                                    'link',
+                                    'orderedList',
+                                    'redo',
+                                    'strike',
+                                    'undo',
+                                ])
+                                ->columnSpanFull(),
+                        ]),
+                    Section::make(__('site.media'))
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            FileUpload::make('image')
+                                ->label(__('site.post_image'))
+                                ->placeholder(__('site.upload_post_image'))
+                                ->image()
+                                ->imageEditor()
+                                ->disk('s3')
+                                ->directory('posts/images')
+                                ->visibility('public')
+                                ->required(),
+                            Select::make('type')
+                                ->label(__('site.type'))
+                                ->options([
+                                    0 => __('site.normal'),
+                                    1 => __('site.video'),
+                                ])
+                                ->default(0)
+                                ->live()
+                                ->required(),
+                            FileUpload::make('video')
+                                ->label(__('site.video'))
+                                ->disk('s3')
+                                ->directory('posts/videos')
+                                ->visibility('public')
+                                ->acceptedFileTypes(['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/wmv', 'video/flv', 'video/x-msvideo'])
+                                ->maxSize(150 * 1024)
+                                ->visible(fn (callable $get) => $get('type') == 1)
+                                ->required(fn (callable $get) => $get('type') == 1),
+                        ]),
+                    ...static::seoFormSection(true, 'posts/og'),
+                ])->columnSpan(2),
+                Group::make([
+                    Section::make(__('site.publishing'))
+                        ->icon('heroicon-o-eye')
+                        ->schema([
+                            Select::make('status')
+                                ->label(__('site.status'))
+                                ->options([
+                                    0 => __('site.Inactive'),
+                                    1 => __('site.Active'),
+                                ])
+                                ->default(0)
+                                ->required(),
+                            Toggle::make('special')
+                                ->label(__('site.special'))
+                                ->default(false)
+                                ->helperText(__('site.special_post_help')),
+                            Hidden::make('view')
+                                ->default(0),
+                            Hidden::make('user_id')
+                                ->default(fn () => auth()->id()),
+                        ]),
+                ])->columnSpan(1),
             ]);
     }
 

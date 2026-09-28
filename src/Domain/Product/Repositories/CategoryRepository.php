@@ -71,7 +71,7 @@ class CategoryRepository implements ICategoryRepository
     public function allCategories(?Brand $brand = null): AnonymousResourceCollection
     {
         $categories = Category::query()
-            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')
+            ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
             ->with(['childrenRecursive']) // Load all nested children recursively
             ->when($brand, function ($query) use ($brand) {
                 $query->whereHas('brands', function ($query) use ($brand) {
@@ -93,7 +93,7 @@ class CategoryRepository implements ICategoryRepository
     public function getCategoryChildren(Category $category): AnonymousResourceCollection
     {
         $categories = Category::query()
-            ->select('id', 'title', 'image', 'status', 'parent_id', 'priority')
+            ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
             ->with(['childrenRecursive'])
             ->where('parent_id', $category->id)
             ->where('status', 1)

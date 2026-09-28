@@ -3,9 +3,12 @@
 namespace Domain\Product\Models;
 
 use App\ProductAttribute;
+use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\ProductFactory;
 use Domain\Brand\Models\Brand;
 use Domain\Review\Models\Review;
+use Domain\Seo\Concerns\RecordsSlugRedirects;
+use Domain\Seo\Concerns\ResolvesByIdOrSlug;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -24,6 +27,9 @@ class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
+    use RecordsSlugRedirects;
+    use ResolvesByIdOrSlug;
+    use Sluggable;
 
     const PENDING = 'pending';
 
@@ -39,6 +45,20 @@ class Product extends Model
         'priority' => 'integer',
         'related_products' => 'array',
     ];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'title',
+            ],
+        ];
+    }
+
+    public function seoFrontendPath(string $slug): string
+    {
+        return '/product/'.$slug;
+    }
 
     public function categories(): BelongsToMany
     {

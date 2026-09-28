@@ -7,6 +7,8 @@ use App\Filament\Resources\SettingResource\Pages\EditSetting;
 use App\Filament\Resources\SettingResource\Pages\ListSettings;
 use Closure;
 use Domain\Setting\Models\Setting;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -62,6 +64,26 @@ class SettingResource extends Resource
                             ->required()
                             ->step(0.01)
                             ->helperText(__('site.exchange_rate_help')),
+                    ]),
+                Section::make(__('site.seo_settings'))
+                    ->schema([
+                        TextInput::make('site_name')
+                            ->label(__('site.site_name'))
+                            ->maxLength(255)
+                            ->helperText(__('site.site_name_help')),
+                        Textarea::make('default_meta_description')
+                            ->label(__('site.default_meta_description'))
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->helperText(__('site.default_meta_description_help')),
+                        FileUpload::make('default_og_image')
+                            ->label(__('site.default_og_image'))
+                            ->image()
+                            ->imageEditor()
+                            ->disk('s3')
+                            ->directory('settings/og')
+                            ->visibility('public')
+                            ->helperText(__('site.default_og_image_help')),
                     ]),
                 Section::make(__('site.security'))
                     ->schema([

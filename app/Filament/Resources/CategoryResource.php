@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\HasSeoFormSection;
 use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\CategoryResource\Pages\CreateCategory;
 use App\Filament\Resources\CategoryResource\Pages\EditCategory;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
@@ -31,6 +33,7 @@ use Filament\Tables\Table;
 class CategoryResource extends Resource
 {
     use ChecksResourceAuthorization;
+    use HasSeoFormSection;
     use ScopesQueryByAdminBrands;
 
     protected static ?string $model = Category::class;
@@ -72,71 +75,80 @@ class CategoryResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                Section::make(__('site.category_information'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('title')
-                                    ->label(__('site.title'))
-                                    ->required()
-                                    ->maxLength(255),
-                                Select::make('status')
-                                    ->label(__('site.status'))
-                                    ->options([
-                                        1 => __('site.Active'),
-                                        0 => __('site.Inactive'),
-                                    ])
-                                    ->default(0)
-                                    ->required(),
-                            ]),
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('brands')
-                                    ->label(__('site.brands'))
-                                    ->relationship('brands', 'title')
-                                    ->searchable()
-                                    ->preload()
-                                    ->multiple(),
-                                CategorySelect::withPathLabels(
-                                    Select::make('parent_id')
-                                        ->label(__('site.parent_category'))
-                                        ->relationship('parent', 'title')
+                Group::make([
+                    Section::make(__('site.category_information'))
+                        ->icon('heroicon-o-rectangle-group')
+                        ->schema([
+                            TextInput::make('title')
+                                ->label(__('site.title'))
+                                ->required()
+                                ->maxLength(255),
+                            Grid::make(2)
+                                ->schema([
+                                    CategorySelect::withPathLabels(
+                                        Select::make('parent_id')
+                                            ->label(__('site.parent_category'))
+                                            ->relationship('parent', 'title')
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder(__('site.select_parent_category'))
+                                            ->nullable()
+                                            ->default(null)
+                                            ->helperText(__('site.select_parent_category'))
+                                    ),
+                                    Select::make('brands')
+                                        ->label(__('site.brands'))
+                                        ->relationship('brands', 'title')
                                         ->searchable()
                                         ->preload()
-                                        ->placeholder(__('site.select_parent_category'))
-                                        ->nullable()
-                                        ->default(null)
-                                        ->helperText(__('site.select_parent_category'))
-                                ),
-                            ]),
-                        TextInput::make('priority')
-                            ->label(__('site.priority'))
-                            ->numeric()
-                            ->default(0),
-                        RichEditor::make('description')
-                            ->label(__('site.description'))
-                            ->nullable()
-                            ->columnSpanFull()
-                            ->fileAttachmentsDisk('s3')
-                            ->fileAttachmentsDirectory('categories/descriptions')
-                            ->fileAttachmentsVisibility('public'),
-                    ])->columns(1),
-                Section::make(__('site.media'))
-                    ->schema([
-                        FileUpload::make('image')
-                            ->label(__('site.category_image'))
-                            ->placeholder(__('site.upload_category_image'))
-                            ->image()
-                            ->imageEditor()
-                            ->disk('s3')
-                            ->directory('categories/images')
-                            ->visibility('public')
-                            ->panelLayout('integrated')
-                            ->imagePreviewHeight('250')
-                            ->maxSize(2048)
-                            ->columnSpanFull(),
-                    ])->columns(1),
+                                        ->multiple(),
+                                ]),
+                            RichEditor::make('description')
+                                ->label(__('site.description'))
+                                ->nullable()
+                                ->columnSpanFull()
+                                ->fileAttachmentsDisk('s3')
+                                ->fileAttachmentsDirectory('categories/descriptions')
+                                ->fileAttachmentsVisibility('public'),
+                        ]),
+                    Section::make(__('site.media'))
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            FileUpload::make('image')
+                                ->label(__('site.category_image'))
+                                ->placeholder(__('site.upload_category_image'))
+                                ->image()
+                                ->imageEditor()
+                                ->disk('s3')
+                                ->directory('categories/images')
+                                ->visibility('public')
+                                ->panelLayout('integrated')
+                                ->imagePreviewHeight('250')
+                                ->maxSize(2048)
+                                ->columnSpanFull(),
+                        ]),
+                    ...static::seoFormSection(true, 'categories/og'),
+                ])->columnSpan(2),
+                Group::make([
+                    Section::make(__('site.publishing'))
+                        ->icon('heroicon-o-eye')
+                        ->schema([
+                            Select::make('status')
+                                ->label(__('site.status'))
+                                ->options([
+                                    1 => __('site.Active'),
+                                    0 => __('site.Inactive'),
+                                ])
+                                ->default(0)
+                                ->required(),
+                            TextInput::make('priority')
+                                ->label(__('site.priority'))
+                                ->numeric()
+                                ->default(0),
+                        ]),
+                ])->columnSpan(1),
             ]);
     }
 
@@ -161,6 +173,10 @@ class CategoryResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->limit(50),
+                TextColumn::make('slug')
+                    ->label(__('site.slug'))
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('path')
                     ->label(__('site.category_path'))
                     ->state(fn (Category $record): string => CategoryPathLabels::for($record))

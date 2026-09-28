@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Concerns\ChecksResourceAuthorization;
+use App\Filament\Concerns\HasSeoFormSection;
 use App\Filament\Concerns\ScopesQueryByAdminBrands;
 use App\Filament\Resources\BrandResource\Pages\CreateBrand;
 use App\Filament\Resources\BrandResource\Pages\EditBrand;
@@ -20,6 +21,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\ImageColumn;
@@ -30,6 +32,7 @@ use Filament\Tables\Table;
 class BrandResource extends Resource
 {
     use ChecksResourceAuthorization;
+    use HasSeoFormSection;
     use ScopesQueryByAdminBrands;
 
     protected static ?string $model = Brand::class;
@@ -71,67 +74,76 @@ class BrandResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                Section::make(__('site.brand_information'))
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('title')
-                                    ->label(__('site.title'))
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('slug')
-                                    ->label(__('site.slug'))
-                                    ->required()
-                                    ->unique(ignoreRecord: true)
-                                    ->maxLength(255),
-                            ]),
-                        Textarea::make('description')
-                            ->label(__('site.description'))
-                            ->maxLength(2048)
-                            ->rows(4)
-                            ->columnSpanFull(),
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('status')
-                                    ->label(__('site.status'))
-                                    ->options([
-                                        1 => __('site.Active'),
-                                        0 => __('site.Inactive'),
-                                    ])
-                                    ->default(1)
-                                    ->required(),
-                                TextInput::make('priority')
-                                    ->label(__('site.priority'))
-                                    ->numeric()
-                                    ->default(0),
-                            ]),
-                        Toggle::make('has_stock_management')
-                            ->label(__('site.has_stock_management'))
-                            ->default(0)
-                            ->columnSpanFull(),
-                        Select::make('colors')
-                            ->label(__('site.colors'))
-                            ->relationship('colors', 'title')
-                            ->searchable()
-                            ->multiple()
-                            ->preload()
-                            ->helperText(__('site.select_brand_colors'))
-                            ->columnSpanFull(),
-                    ]),
-                Section::make(__('site.media'))
-                    ->schema([
-                        FileUpload::make('logo')
-                            ->label(__('site.brand_logo'))
-                            ->placeholder(__('site.upload_brand_logo'))
-                            ->image()
-                            ->imageEditor()
-                            ->disk('s3')
-                            ->directory('brands/logos')
-                            ->visibility('public')
-                            ->maxSize(2048)
-                            ->columnSpanFull(),
-                    ])->columns(1),
+                Group::make([
+                    Section::make(__('site.brand_information'))
+                        ->icon('heroicon-o-shopping-bag')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->label(__('site.title'))
+                                        ->required()
+                                        ->maxLength(255),
+                                    TextInput::make('slug')
+                                        ->label(__('site.slug'))
+                                        ->required()
+                                        ->unique(ignoreRecord: true)
+                                        ->maxLength(255)
+                                        ->helperText(__('site.seo_slug_help')),
+                                ]),
+                            Textarea::make('description')
+                                ->label(__('site.description'))
+                                ->maxLength(2048)
+                                ->rows(4)
+                                ->columnSpanFull(),
+                            Select::make('colors')
+                                ->label(__('site.colors'))
+                                ->relationship('colors', 'title')
+                                ->searchable()
+                                ->multiple()
+                                ->preload()
+                                ->helperText(__('site.select_brand_colors'))
+                                ->columnSpanFull(),
+                        ]),
+                    Section::make(__('site.media'))
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            FileUpload::make('logo')
+                                ->label(__('site.brand_logo'))
+                                ->placeholder(__('site.upload_brand_logo'))
+                                ->image()
+                                ->imageEditor()
+                                ->disk('s3')
+                                ->directory('brands/logos')
+                                ->visibility('public')
+                                ->maxSize(2048)
+                                ->columnSpanFull(),
+                        ]),
+                    ...static::seoFormSection(false, 'brands/og'),
+                ])->columnSpan(2),
+                Group::make([
+                    Section::make(__('site.publishing'))
+                        ->icon('heroicon-o-eye')
+                        ->schema([
+                            Select::make('status')
+                                ->label(__('site.status'))
+                                ->options([
+                                    1 => __('site.Active'),
+                                    0 => __('site.Inactive'),
+                                ])
+                                ->default(1)
+                                ->required(),
+                            TextInput::make('priority')
+                                ->label(__('site.priority'))
+                                ->numeric()
+                                ->default(0),
+                            Toggle::make('has_stock_management')
+                                ->label(__('site.has_stock_management'))
+                                ->default(0),
+                        ]),
+                ])->columnSpan(1),
             ]);
     }
 

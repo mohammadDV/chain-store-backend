@@ -111,7 +111,7 @@ class ProductRepository implements IProductRepository
     {
         $search = $request->get('query');
         $products = Product::query()
-            ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+            ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
             ->whereHas('favorites', function ($query) {
                 $query->where('favorites.user_id', Auth::user()->id);
             })
@@ -147,7 +147,7 @@ class ProductRepository implements IProductRepository
         };
 
         $products = Product::query()
-            ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+            ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
             ->withCount('reviews')
             ->when(! empty($brand), function ($query) use ($brand) {
                 $query->where('brand_id', $brand);
@@ -269,7 +269,7 @@ class ProductRepository implements IProductRepository
         // Try to get results from cache first
         // return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($request, $today) {
         $query = Product::query()
-            ->select('id', 'title', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+            ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
             ->withCount('reviews')
             ->active();
 

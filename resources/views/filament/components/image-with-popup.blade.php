@@ -2,87 +2,27 @@
     $path = $getState();
     $imageUrl = $path;
 
-    // Check if path starts with https:// or http://
-    if ($path && !str_starts_with($path, 'https://') && !str_starts_with($path, 'http://')) {
-        // Use S3 storage to get the URL
+    if ($path && ! str_starts_with($path, 'https://') && ! str_starts_with($path, 'http://')) {
         $imageUrl = \Storage::disk('s3')->url($path);
     }
-
-    // Escape the URL for JavaScript
-    $escapedUrl = addslashes($imageUrl);
 @endphp
 
 @if($path)
-    <div class="relative">
+    <a
+        href="{{ $imageUrl }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="display:inline-flex;line-height:0;"
+    >
         <img
             src="{{ $imageUrl }}"
-            alt="File preview"
-            class="w-16 h-16 object-cover rounded-lg border border-gray-200 cursor-pointer hover:opacity-80 transition-opacity"
+            alt=""
+            width="40"
+            height="40"
             loading="lazy"
-            onclick="if (typeof window.filamentImageModalOpen === 'function') { window.filamentImageModalOpen('{{ $escapedUrl }}'); } else { window.open('{{ $imageUrl }}', '_blank'); }"
+            style="width:40px;height:40px;max-width:40px;max-height:40px;object-fit:cover;border-radius:6px;border:1px solid #e5e7eb;display:block;"
         />
-    </div>
+    </a>
 @else
-    <span class="text-gray-400">-</span>
+    <span style="color:#9ca3af;">-</span>
 @endif
-
-@once
-    <!-- Single shared Image Modal -->
-    <div
-        id="filamentImageModal"
-        class="hidden fixed inset-0 z-[99999] overflow-auto bg-black bg-opacity-90 flex items-center justify-center"
-        onclick="if (typeof window.filamentImageModalClose === 'function') window.filamentImageModalClose();"
-    >
-        <div class="relative max-w-7xl max-h-full p-4" onclick="event.stopPropagation();">
-            <button
-                onclick="if (typeof window.filamentImageModalClose === 'function') window.filamentImageModalClose();"
-                class="absolute top-4 right-4 text-white hover:text-gray-300 text-4xl font-bold bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center z-10 transition-all hover:bg-opacity-70 cursor-pointer"
-            >
-                &times;
-            </button>
-            <img
-                id="filamentImageModalImg"
-                src=""
-                alt=""
-                class="max-w-full max-h-[90vh] object-contain rounded-lg"
-            />
-        </div>
-    </div>
-
-    <script>
-        (function() {
-            if (typeof window.filamentImageModalOpen !== 'undefined') {
-                return; // Already initialized
-            }
-
-            window.filamentImageModalOpen = function(imageUrl) {
-                const modal = document.getElementById('filamentImageModal');
-                const modalImage = document.getElementById('filamentImageModalImg');
-                if (modal && modalImage) {
-                    modalImage.src = imageUrl;
-                    modal.classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                }
-            };
-
-            window.filamentImageModalClose = function() {
-                const modal = document.getElementById('filamentImageModal');
-                if (modal) {
-                    modal.classList.add('hidden');
-                    document.body.style.overflow = '';
-                }
-            };
-
-            // Close on Escape key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    const modal = document.getElementById('filamentImageModal');
-                    if (modal && !modal.classList.contains('hidden')) {
-                        window.filamentImageModalClose();
-                    }
-                }
-            });
-        })();
-    </script>
-@endonce
-

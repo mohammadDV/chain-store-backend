@@ -21,8 +21,13 @@ class BrandResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'title' => $this->resource->title,
+            'slug' => $this->resource->slug,
             'logo' => $this->resource->logo,
             'description' => $this->resource->description,
+            'meta_title' => $this->resource->meta_title,
+            'meta_description' => $this->resource->meta_description,
+            'meta_keywords' => $this->resource->meta_keywords,
+            'og_image' => $this->resource->og_image,
             'banners' => BannerResource::collection($this->whenLoaded('banners')),
             'colors' => ColorResource::collection($this->whenLoaded('colors')),
         ];

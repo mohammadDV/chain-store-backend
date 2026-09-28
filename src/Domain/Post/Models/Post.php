@@ -4,6 +4,8 @@ namespace Domain\Post\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\PostFactory;
+use Domain\Seo\Concerns\RecordsSlugRedirects;
+use Domain\Seo\Concerns\ResolvesByIdOrSlug;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +13,10 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, Sluggable;
+    use HasFactory;
+    use RecordsSlugRedirects;
+    use ResolvesByIdOrSlug;
+    use Sluggable;
 
     protected $guarded = [];
 
@@ -22,6 +27,11 @@ class Post extends Model
                 'source' => 'title',
             ],
         ];
+    }
+
+    public function seoFrontendPath(string $slug): string
+    {
+        return '/post/'.$slug;
     }
 
     public function user()

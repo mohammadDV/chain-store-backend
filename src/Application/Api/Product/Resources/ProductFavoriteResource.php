@@ -21,6 +21,7 @@ class ProductFavoriteResource extends JsonResource
         return [
             'id' => $this->resource->id,
             'title' => $this->resource->title,
+            'slug' => $this->resource->slug,
             'amount' => intval($this->resource->amount),
             'discount' => intval($this->resource->discount),
             'image' => $this->resource->image,

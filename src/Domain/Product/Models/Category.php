@@ -2,8 +2,11 @@
 
 namespace Domain\Product\Models;
 
+use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\CategoryFactory;
 use Domain\Brand\Models\Brand;
+use Domain\Seo\Concerns\RecordsSlugRedirects;
+use Domain\Seo\Concerns\ResolvesByIdOrSlug;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,8 +39,25 @@ class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
+    use RecordsSlugRedirects;
+    use ResolvesByIdOrSlug;
+    use Sluggable;
 
     protected $guarded = [];
+
+    public function sluggable(): array
+    {
+        return [
+            'slug' => [
+                'source' => 'title',
+            ],
+        ];
+    }
+
+    public function seoFrontendPath(string $slug): string
+    {
+        return '/shop/'.$slug;
+    }
 
     protected static function newFactory(): CategoryFactory
     {
@@ -127,7 +147,7 @@ class Category extends Model
     /**
      * Get the full category path (breadcrumb)
      *
-     * @return list<array{id: int, title: string}>
+     * @return list<array{id: int, title: string, slug: string|null}>
      */
     public function getPath(): array
     {
@@ -138,6 +158,7 @@ class Category extends Model
             array_unshift($path, [
                 'id' => $category->id,
                 'title' => $category->title,
+                'slug' => $category->slug,
             ]);
             $category = $category->parent;
         }

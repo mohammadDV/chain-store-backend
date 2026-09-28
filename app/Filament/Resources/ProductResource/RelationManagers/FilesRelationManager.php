@@ -13,7 +13,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
@@ -82,15 +81,8 @@ class FilesRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                ImageColumn::make('path')
-                    ->label(__('site.file'))
-                    ->disk('s3')
-                    ->visibility('public')
-                    ->extraImgAttributes(['loading' => 'lazy'])
-                    ->size(60)
-                    ->circular(false),
                 ViewColumn::make('path')
-                    ->label(__('site.file_path'))
+                    ->label(__('site.file'))
                     ->view('filament.components.image-with-popup')
                     ->searchable(),
                 TextColumn::make('type')
