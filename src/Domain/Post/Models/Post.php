@@ -14,6 +14,7 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory;
+
     use RecordsSlugRedirects;
     use ResolvesByIdOrSlug;
     use Sluggable;

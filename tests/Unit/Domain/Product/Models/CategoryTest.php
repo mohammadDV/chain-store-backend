@@ -59,9 +59,9 @@ it('builds breadcrumb path and depth', function () {
     $leaf = Category::factory()->childOf($mid)->create(['title' => 'Leaf']);
 
     expect($leaf->getPath())->toBe([
-        ['id' => $root->id, 'title' => 'Root'],
-        ['id' => $mid->id, 'title' => 'Mid'],
-        ['id' => $leaf->id, 'title' => 'Leaf'],
+        ['id' => $root->id, 'title' => 'Root', 'slug' => $root->slug],
+        ['id' => $mid->id, 'title' => 'Mid', 'slug' => $mid->slug],
+        ['id' => $leaf->id, 'title' => 'Leaf', 'slug' => $leaf->slug],
     ])
         ->and($root->getDepth())->toBe(0)
         ->and($mid->getDepth())->toBe(1)

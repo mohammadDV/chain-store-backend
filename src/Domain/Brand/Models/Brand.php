@@ -34,6 +34,7 @@ class Brand extends Model
 {
     /** @use HasFactory<BrandFactory> */
     use HasFactory;
+
     use RecordsSlugRedirects;
     use ResolvesByIdOrSlug;
 

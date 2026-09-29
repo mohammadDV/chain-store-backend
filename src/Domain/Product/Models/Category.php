@@ -39,6 +39,7 @@ class Category extends Model
 {
     /** @use HasFactory<CategoryFactory> */
     use HasFactory;
+
     use RecordsSlugRedirects;
     use ResolvesByIdOrSlug;
     use Sluggable;

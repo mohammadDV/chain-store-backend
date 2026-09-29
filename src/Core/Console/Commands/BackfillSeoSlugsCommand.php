@@ -3,10 +3,11 @@
 namespace Core\Console\Commands;
 
 use Core\Helpers\HelperClass;
+use Domain\Post\Models\Post;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Product;
-use Domain\Post\Models\Post;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Model;
 
 class BackfillSeoSlugsCommand extends Command
 {
@@ -26,7 +27,7 @@ class BackfillSeoSlugsCommand extends Command
     }
 
     /**
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $modelClass
+     * @param  class-string<Model>  $modelClass
      */
     private function backfill(string $modelClass, string $label): void
     {
@@ -39,14 +40,16 @@ class BackfillSeoSlugsCommand extends Command
             ->orderBy('id')
             ->chunkById(100, function ($items) use (&$count, $modelClass) {
                 foreach ($items as $item) {
-                    $base = HelperClass::sluggableCustomSlugMethod((string) $item->title) ?: 'item-'.$item->id;
+                    $id = (int) $item->getKey();
+                    $title = (string) $item->getAttribute('title');
+                    $base = HelperClass::sluggableCustomSlugMethod($title) ?: 'item-'.$id;
                     $slug = $base;
                     $i = 1;
 
                     while (
                         $modelClass::query()
                             ->where('slug', $slug)
-                            ->where('id', '!=', $item->id)
+                            ->whereKeyNot($id)
                             ->exists()
                     ) {
                         $slug = $base.'-'.$i;
@@ -54,7 +57,7 @@ class BackfillSeoSlugsCommand extends Command
                     }
 
                     // Bypass observers / sluggable events for a direct write.
-                    $modelClass::query()->whereKey($item->id)->update(['slug' => $slug]);
+                    $modelClass::query()->whereKey($id)->update(['slug' => $slug]);
                     $count++;
                 }
             });

@@ -27,6 +27,7 @@ class Product extends Model
 {
     /** @use HasFactory<ProductFactory> */
     use HasFactory;
+
     use RecordsSlugRedirects;
     use ResolvesByIdOrSlug;
     use Sluggable;

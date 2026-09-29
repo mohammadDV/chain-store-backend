@@ -5,13 +5,14 @@ namespace App\Filament\Concerns;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 
 trait HasSeoFormSection
 {
     /**
-     * @return list<\Filament\Schemas\Components\Component>
+     * @return list<Component>
      */
     protected static function seoFormSection(bool $includeSlug = true, string $ogDirectory = 'seo/og'): array
     {
