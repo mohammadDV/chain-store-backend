@@ -5,6 +5,7 @@ namespace Domain\Product\Models;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\CategoryFactory;
 use Domain\Brand\Models\Brand;
+use Domain\Product\Services\CategoryFooterService;
 use Domain\Seo\Concerns\RecordsSlugRedirects;
 use Domain\Seo\Concerns\ResolvesByIdOrSlug;
 use Domain\User\Models\User;
@@ -63,6 +64,16 @@ class Category extends Model
     protected static function newFactory(): CategoryFactory
     {
         return CategoryFactory::new();
+    }
+
+    protected static function booted(): void
+    {
+        $clearFooterCache = static function (): void {
+            app(CategoryFooterService::class)->clearCache();
+        };
+
+        static::saved($clearFooterCache);
+        static::deleted($clearFooterCache);
     }
 
     /**

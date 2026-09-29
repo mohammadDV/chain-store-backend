@@ -16,4 +16,12 @@ class SettingController extends Controller
             'data' => $settingService->getPublicFeatures(),
         ], Response::HTTP_OK);
     }
+
+    public function contact(SettingService $settingService): JsonResponse
+    {
+        return response()->json([
+            'status' => 1,
+            'data' => $settingService->getContactSettings(),
+        ], Response::HTTP_OK);
+    }
 }

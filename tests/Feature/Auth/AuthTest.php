@@ -21,6 +21,7 @@ it('registers a user with wallet and sanctum token', function () {
         'email' => 'new@example.com',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'privacy_policy' => true,
     ]);
 
     $response->assertCreated()
@@ -33,6 +34,23 @@ it('registers a user with wallet and sanctum token', function () {
     expect($user->tokens()->count())->toBe(1);
 });
 
+it('rejects register without accepting site rules', function () {
+    $this->postJson('/api/register', [
+        'email' => 'norules@example.com',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'privacy_policy' => false,
+    ])->assertStatus(422)
+        ->assertJsonValidationErrors(['privacy_policy']);
+
+    $this->postJson('/api/register', [
+        'email' => 'norules2@example.com',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+    ])->assertStatus(422)
+        ->assertJsonValidationErrors(['privacy_policy']);
+});
+
 it('rejects duplicate email on register', function () {
     User::factory()->create(['email' => 'dup@example.com']);
 
@@ -40,6 +58,7 @@ it('rejects duplicate email on register', function () {
         'email' => 'dup@example.com',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'privacy_policy' => true,
     ])->assertStatus(422);
 });
 
@@ -48,6 +67,7 @@ it('rejects weak password on register', function () {
         'email' => 'weak@example.com',
         'password' => 'short',
         'password_confirmation' => 'short',
+        'privacy_policy' => true,
     ])->assertStatus(422);
 });
 
@@ -116,7 +136,6 @@ it('completes registration profile for authenticated user', function () {
     $response = $this->postJson('/api/complete-register', [
         'first_name' => 'Ali',
         'last_name' => 'Rezaei',
-        'privacy_policy' => true,
         'mobile' => '09121234567',
         'nickname' => 'alirezaei',
     ]);
@@ -130,7 +149,6 @@ it('rejects complete-register for guests', function () {
     $this->postJson('/api/complete-register', [
         'first_name' => 'Ali',
         'last_name' => 'Rezaei',
-        'privacy_policy' => true,
         'mobile' => '09121234567',
         'nickname' => 'guestnick',
     ])->assertUnauthorized();
@@ -143,7 +161,6 @@ it('rejects nickname containing admin', function () {
     $this->postJson('/api/complete-register', [
         'first_name' => 'Ali',
         'last_name' => 'Rezaei',
-        'privacy_policy' => true,
         'mobile' => '09121234568',
         'nickname' => 'superadmin',
     ])->assertStatus(422);

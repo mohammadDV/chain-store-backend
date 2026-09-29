@@ -95,6 +95,36 @@ class SettingResource extends Resource
                             ->visibility('public')
                             ->helperText(__('site.default_og_image_help')),
                     ]),
+                Section::make(__('site.contact_page_settings'))
+                    ->icon('heroicon-o-phone')
+                    ->schema([
+                        TextInput::make('contact_title')
+                            ->label(__('site.contact_title'))
+                            ->maxLength(255),
+                        TextInput::make('contact_subtitle')
+                            ->label(__('site.contact_subtitle'))
+                            ->maxLength(255),
+                        TextInput::make('contact_phone')
+                            ->label(__('site.contact_phone'))
+                            ->maxLength(255),
+                        TextInput::make('contact_phone_hours')
+                            ->label(__('site.contact_phone_hours'))
+                            ->maxLength(255),
+                        TextInput::make('contact_address')
+                            ->label(__('site.contact_address'))
+                            ->maxLength(255),
+                        TextInput::make('contact_map_url')
+                            ->label(__('site.contact_map_url'))
+                            ->maxLength(2048),
+                        TextInput::make('contact_email')
+                            ->label(__('site.contact_email'))
+                            ->email()
+                            ->maxLength(255),
+                        TextInput::make('contact_email_hint')
+                            ->label(__('site.contact_email_hint'))
+                            ->maxLength(255),
+                    ])
+                    ->columns(2),
                 Section::make(__('site.security'))
                     ->schema([
                         TextInput::make('security_code')

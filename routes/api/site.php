@@ -4,6 +4,7 @@ use Application\Api\Brand\Controllers\BrandController;
 use Application\Api\File\Controllers\FileController;
 use Application\Api\Notification\Controllers\NotificationController;
 use Application\Api\Payment\Controllers\PaymentController;
+use Application\Api\Page\Controllers\PageController;
 use Application\Api\Post\Controllers\PostController;
 use Application\Api\Product\Controllers\CategoryController;
 use Application\Api\Product\Controllers\ColorController;
@@ -31,12 +32,18 @@ Route::prefix('seo')->group(function () {
 // Public storefront feature flags (cached)
 Route::prefix('settings')->group(function () {
     Route::get('/features', [SettingController::class, 'features'])->name('settings.features');
+    Route::get('/contact', [SettingController::class, 'contact'])->name('settings.contact');
 });
+
+// CMS pages (cached until admin update)
+Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
+Route::get('/pages/{slug}', [PageController::class, 'show'])->name('pages.show');
 
 // Category
 Route::prefix('categories')->group(function () {
     Route::get('/active/{brand?}', [CategoryController::class, 'activeProductCategories'])->name('active-product-categories');
     Route::get('/all/{brand?}', [CategoryController::class, 'allCategories'])->name('all-categories');
+    Route::get('/footer', [CategoryController::class, 'footer'])->name('categories.footer');
     Route::get('/{category}/children', [CategoryController::class, 'getCategoryChildren'])->name('category-children');
     Route::get('/{category}', [CategoryController::class, 'show'])->name('category.show');
 });

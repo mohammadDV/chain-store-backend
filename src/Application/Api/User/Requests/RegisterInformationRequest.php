@@ -27,7 +27,6 @@ class RegisterInformationRequest extends FormRequest
         return [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'privacy_policy' => ['required', 'accepted'],
             'mobile' => ['required', 'regex:/(09)[0-9]{9}/', 'digits:11', 'numeric', 'unique:users,mobile'],
             'nickname' => ['required', 'string', 'min:3', 'max:255', 'unique:users,nickname', new NicknameCheck],
             // 'token' => [new Recaptcha],
@@ -42,8 +41,6 @@ class RegisterInformationRequest extends FormRequest
         return [
             'first_name.required' => 'نام الزامی است',
             'last_name.required' => 'نام خانوادگی الزامی است',
-            'privacy_policy.required' => 'قبول قوانین و مقررات الزامی است',
-            'privacy_policy.accepted' => 'لطفا قوانین و مقررات را بپذیرید',
             'mobile.required' => 'شماره موبایل الزامی است',
             'mobile.regex' => 'فرمت شماره موبایل صحیح نیست',
             'mobile.digits' => 'شماره موبایل باید ۱۱ رقم باشد',

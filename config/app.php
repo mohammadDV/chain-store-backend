@@ -68,6 +68,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Frontend On-Demand Revalidation
+    |--------------------------------------------------------------------------
+    |
+    | Shared secret used when the backend asks Next.js to drop cache tags
+    | after admin content changes. Leave empty to skip the HTTP notify.
+    |
+    */
+
+    'revalidate_secret' => env('REVALIDATE_SECRET'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

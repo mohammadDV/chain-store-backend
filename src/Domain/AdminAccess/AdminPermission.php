@@ -66,6 +66,14 @@ final class AdminPermission
 
     public const POSTS_DELETE = 'posts.delete';
 
+    public const PAGES_VIEW = 'pages.view';
+
+    public const PAGES_CREATE = 'pages.create';
+
+    public const PAGES_UPDATE = 'pages.update';
+
+    public const PAGES_DELETE = 'pages.delete';
+
     public const NOTIFICATIONS_VIEW = 'notifications.view';
 
     public const COSTS_VIEW = 'costs.view';
@@ -210,6 +218,12 @@ final class AdminPermission
                 self::POSTS_CREATE,
                 self::POSTS_UPDATE,
                 self::POSTS_DELETE,
+            ],
+            'pages' => [
+                self::PAGES_VIEW,
+                self::PAGES_CREATE,
+                self::PAGES_UPDATE,
+                self::PAGES_DELETE,
             ],
             'notifications' => [
                 self::NOTIFICATIONS_VIEW,

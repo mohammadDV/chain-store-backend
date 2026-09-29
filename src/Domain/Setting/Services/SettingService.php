@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Cache;
 
 class SettingService
 {
+    public const CONTACT_CACHE_TAG = 'settings-contact';
+
     private const CACHE_KEY = 'app_settings';
 
     private const CACHE_TTL = 3600; // 1 hour
@@ -48,7 +50,15 @@ class SettingService
      *     payment_gateway_enabled: bool,
      *     site_name: string|null,
      *     default_meta_description: string|null,
-     *     default_og_image: string|null
+     *     default_og_image: string|null,
+     *     contact_title: string|null,
+     *     contact_subtitle: string|null,
+     *     contact_phone: string|null,
+     *     contact_phone_hours: string|null,
+     *     contact_address: string|null,
+     *     contact_map_url: string|null,
+     *     contact_email: string|null,
+     *     contact_email_hint: string|null
      * }
      */
     public function getSettings(): array
@@ -61,6 +71,14 @@ class SettingService
                 'site_name',
                 'default_meta_description',
                 'default_og_image',
+                'contact_title',
+                'contact_subtitle',
+                'contact_phone',
+                'contact_phone_hours',
+                'contact_address',
+                'contact_map_url',
+                'contact_email',
+                'contact_email_hint',
             ]);
 
             $settings['payment_gateway_enabled'] = (bool) $settings['payment_gateway_enabled'];
@@ -86,6 +104,36 @@ class SettingService
             'payment_gateway_disabled_message' => $enabled
                 ? null
                 : __('site.payment_gateway_disabled'),
+        ];
+    }
+
+    /**
+     * Public contact page fields (cached via getSettings).
+     *
+     * @return array{
+     *     title: string,
+     *     subtitle: string|null,
+     *     phone: string|null,
+     *     phone_hours: string|null,
+     *     address: string|null,
+     *     map_url: string|null,
+     *     email: string|null,
+     *     email_hint: string|null
+     * }
+     */
+    public function getContactSettings(): array
+    {
+        $settings = $this->getSettings();
+
+        return [
+            'title' => $settings['contact_title'] ?: 'با ما در  ارتباط باشید',
+            'subtitle' => $settings['contact_subtitle'] ?? 'ما میتوانیم به شما کمک کنیم!',
+            'phone' => $settings['contact_phone'] ?? null,
+            'phone_hours' => $settings['contact_phone_hours'] ?? null,
+            'address' => $settings['contact_address'] ?? null,
+            'map_url' => $settings['contact_map_url'] ?? null,
+            'email' => $settings['contact_email'] ?? null,
+            'email_hint' => $settings['contact_email_hint'] ?? null,
         ];
     }
 

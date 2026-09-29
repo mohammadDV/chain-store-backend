@@ -4,10 +4,12 @@ use Domain\Setting\Models\Setting;
 use Domain\Setting\Services\SettingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
+    Http::fake();
     app(SettingService::class)->clearCache();
 });
 
@@ -87,6 +89,14 @@ it('reports payment gateway disabled after update and clears cache', function ()
     expect($service->isPaymentGatewayEnabled())->toBeFalse()
         ->and($service->getPublicFeatures()['payment_gateway_disabled_message'])
         ->toBe(__('site.payment_gateway_disabled'));
+});
+
+it('returns contact settings with defaults when empty', function () {
+    Setting::getInstance();
+    $service = app(SettingService::class);
+
+    expect($service->getContactSettings()['title'])->toBe('با ما در  ارتباط باشید')
+        ->and($service->getContactSettings()['subtitle'])->toBe('ما میتوانیم به شما کمک کنیم!');
 });
 
 it('creates a default singleton when missing', function () {

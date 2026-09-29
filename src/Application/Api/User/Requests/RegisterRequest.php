@@ -26,6 +26,7 @@ class RegisterRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'string', 'min:8', 'regex:/^[a-zA-Z0-9_!@#$%^&*-]+$/'],
+            'privacy_policy' => ['required', 'accepted'],
             // 'token' => [new Recaptcha],
         ];
     }
@@ -42,6 +43,8 @@ class RegisterRequest extends FormRequest
             'password.required' => 'رمز عبور الزامی است',
             'password.min' => 'رمز عبور باید حداقل ۸ کاراکتر باشد',
             'password.regex' => 'رمز عبور باید شامل حروف و اعداد باشد',
+            'privacy_policy.required' => 'قبول قوانین و مقررات الزامی است',
+            'privacy_policy.accepted' => 'لطفا قوانین و مقررات را بپذیرید',
         ];
     }
 }

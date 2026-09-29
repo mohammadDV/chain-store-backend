@@ -7,6 +7,7 @@ use Core\Http\Requests\TableRequest;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
 use Domain\Product\Repositories\Contracts\ICategoryRepository;
+use Domain\Product\Services\CategoryFooterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
@@ -36,6 +37,17 @@ class CategoryController extends Controller
     public function allCategories(?Brand $brand = null): JsonResponse
     {
         return response()->json($this->repository->allCategories($brand), Response::HTTP_OK);
+    }
+
+    /**
+     * Lightweight cached columns for the storefront footer.
+     */
+    public function footer(CategoryFooterService $footerService): JsonResponse
+    {
+        return response()->json([
+            'status' => 1,
+            'data' => $footerService->getColumns(),
+        ], Response::HTTP_OK);
     }
 
     /**

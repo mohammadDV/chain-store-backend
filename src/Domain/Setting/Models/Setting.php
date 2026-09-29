@@ -2,6 +2,7 @@
 
 namespace Domain\Setting\Models;
 
+use Core\Support\FrontendCacheInvalidator;
 use Domain\Setting\Services\SettingService;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +15,14 @@ class Setting extends Model
         'site_name',
         'default_meta_description',
         'default_og_image',
+        'contact_title',
+        'contact_subtitle',
+        'contact_phone',
+        'contact_phone_hours',
+        'contact_address',
+        'contact_map_url',
+        'contact_email',
+        'contact_email_hint',
     ];
 
     protected $casts = [
@@ -29,13 +38,11 @@ class Setting extends Model
     {
         parent::boot();
 
-        // Clear cache when settings are updated or saved
         static::saved(function () {
             app(SettingService::class)->clearCache();
-        });
-
-        static::updated(function () {
-            app(SettingService::class)->clearCache();
+            app(FrontendCacheInvalidator::class)->revalidate([
+                SettingService::CONTACT_CACHE_TAG,
+            ]);
         });
     }
 
