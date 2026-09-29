@@ -9,6 +9,7 @@ use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
 use Domain\Payment\Repositories\Contracts\IPaymentRepository;
+use Domain\Payment\Services\PaymentGatewayAvailability;
 use Domain\Product\Repositories\OrderRepository;
 use Domain\User\Models\User;
 use Domain\Wallet\Models\Wallet;
@@ -27,6 +28,7 @@ class PaymentController extends Controller
 
     public function __construct(
         protected IPaymentRepository $repository,
+        protected PaymentGatewayAvailability $paymentGateway,
     ) {}
 
     /**
@@ -50,6 +52,14 @@ class PaymentController extends Controller
      */
     public function payment(Request $request)
     {
+        if (! $this->paymentGateway->isEnabled()) {
+            return response(
+                $this->paymentGateway->disabledMessage(),
+                503,
+                ['Content-Type' => 'text/plain; charset=UTF-8']
+            );
+        }
+
         $code = Transaction::generateHash($request->input('transaction'));
 
         if ($code != $request->input('sign')) {

@@ -10,6 +10,7 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
+use Domain\Payment\Services\PaymentGatewayAvailability;
 use Domain\Product\Enums\OrderLedgerSource;
 use Domain\Product\Jobs\RefreshProductOnCartJob;
 use Domain\Product\Models\Discount;
@@ -43,6 +44,7 @@ class OrderRepository implements IOrderRepository
         protected SettingService $settingService,
         protected StockService $stockService,
         protected OrderStatusService $orderStatusService,
+        protected PaymentGatewayAvailability $paymentGateway,
     ) {
         //
     }
@@ -548,6 +550,10 @@ class OrderRepository implements IOrderRepository
      */
     private function payWithBank(Order $order): JsonResponse
     {
+        if (! $this->paymentGateway->isEnabled()) {
+            return $this->paymentGateway->disabledJsonResponse();
+        }
+
         $transaction = DB::transaction(function () use ($order) {
             /** @var Order $lockedOrder */
             $lockedOrder = Order::query()

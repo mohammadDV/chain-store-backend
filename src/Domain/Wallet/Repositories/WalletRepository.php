@@ -9,6 +9,7 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
+use Domain\Payment\Services\PaymentGatewayAvailability;
 use Domain\User\Models\User;
 use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
@@ -27,7 +28,10 @@ class WalletRepository implements IWalletRepository
 {
     use GlobalFunc;
 
-    public function __construct(protected TelegramNotificationService $service) {}
+    public function __construct(
+        protected TelegramNotificationService $service,
+        protected PaymentGatewayAvailability $paymentGateway,
+    ) {}
 
     /**
      * Get the Wallet pagination.
@@ -52,6 +56,10 @@ class WalletRepository implements IWalletRepository
      */
     public function topUp(TopUpRequest $request)
     {
+        if (! $this->paymentGateway->isEnabled()) {
+            return $this->paymentGateway->disabledJsonResponse();
+        }
+
         if (empty(Auth::user()->status)) {
             return response()->json([
                 'status' => 0,

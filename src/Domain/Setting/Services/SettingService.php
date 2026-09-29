@@ -28,6 +28,15 @@ class SettingService
     }
 
     /**
+     * Whether the bank payment gateway is accepting new payments.
+     * Defaults to true when the flag is missing (safe for old cache rows).
+     */
+    public function isPaymentGatewayEnabled(): bool
+    {
+        return (bool) $this->getSettings()['payment_gateway_enabled'];
+    }
+
+    /**
      * Get all settings with caching.
      *
      * Only plain values are cached so the cache store never has to unserialize
@@ -36,6 +45,7 @@ class SettingService
      * @return array{
      *     profit_rate: string,
      *     exchange_rate: string,
+     *     payment_gateway_enabled: bool,
      *     site_name: string|null,
      *     default_meta_description: string|null,
      *     default_og_image: string|null
@@ -44,14 +54,39 @@ class SettingService
     public function getSettings(): array
     {
         return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
-            return Setting::getInstance()->only([
+            $settings = Setting::getInstance()->only([
                 'profit_rate',
                 'exchange_rate',
+                'payment_gateway_enabled',
                 'site_name',
                 'default_meta_description',
                 'default_og_image',
             ]);
+
+            $settings['payment_gateway_enabled'] = (bool) $settings['payment_gateway_enabled'];
+
+            return $settings;
         });
+    }
+
+    /**
+     * Lightweight public flags for the storefront (cached via getSettings).
+     *
+     * @return array{
+     *     payment_gateway_enabled: bool,
+     *     payment_gateway_disabled_message: string|null
+     * }
+     */
+    public function getPublicFeatures(): array
+    {
+        $enabled = $this->isPaymentGatewayEnabled();
+
+        return [
+            'payment_gateway_enabled' => $enabled,
+            'payment_gateway_disabled_message' => $enabled
+                ? null
+                : __('site.payment_gateway_disabled'),
+        ];
     }
 
     /**

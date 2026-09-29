@@ -10,6 +10,7 @@ use Domain\Setting\Models\Setting;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -64,6 +65,15 @@ class SettingResource extends Resource
                             ->required()
                             ->step(0.01)
                             ->helperText(__('site.exchange_rate_help')),
+                    ]),
+                Section::make(__('site.payment_settings'))
+                    ->icon('heroicon-o-credit-card')
+                    ->schema([
+                        Toggle::make('payment_gateway_enabled')
+                            ->label(__('site.payment_gateway_enabled'))
+                            ->helperText(__('site.payment_gateway_enabled_help'))
+                            ->default(true)
+                            ->required(),
                     ]),
                 Section::make(__('site.seo_settings'))
                     ->schema([

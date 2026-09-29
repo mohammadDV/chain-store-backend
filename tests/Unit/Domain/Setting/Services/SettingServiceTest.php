@@ -65,6 +65,30 @@ it('falls back to config when settings lookup fails', function () {
         ->and($service->getExchangeRateWithFallback())->toBe(3100.0);
 });
 
+it('reports payment gateway enabled by default', function () {
+    Setting::getInstance();
+    $service = app(SettingService::class);
+
+    expect($service->isPaymentGatewayEnabled())->toBeTrue()
+        ->and($service->getPublicFeatures())->toMatchArray([
+            'payment_gateway_enabled' => true,
+            'payment_gateway_disabled_message' => null,
+        ]);
+});
+
+it('reports payment gateway disabled after update and clears cache', function () {
+    Setting::getInstance();
+    $service = app(SettingService::class);
+
+    expect($service->isPaymentGatewayEnabled())->toBeTrue();
+
+    $service->updateSettings(['payment_gateway_enabled' => false]);
+
+    expect($service->isPaymentGatewayEnabled())->toBeFalse()
+        ->and($service->getPublicFeatures()['payment_gateway_disabled_message'])
+        ->toBe(__('site.payment_gateway_disabled'));
+});
+
 it('creates a default singleton when missing', function () {
     config([
         'setting.profit_rate' => 40,

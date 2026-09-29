@@ -12,6 +12,7 @@ use Application\Api\Product\Controllers\OrderController;
 use Application\Api\Product\Controllers\ProductController;
 use Application\Api\Review\Controllers\ReviewController;
 use Application\Api\Seo\Controllers\SeoController;
+use Application\Api\Setting\Controllers\SettingController;
 use Application\Api\Ticket\Controllers\TicketController;
 use Application\Api\Ticket\Controllers\TicketSubjectController;
 use Application\Api\User\Controllers\UserController;
@@ -25,6 +26,11 @@ Route::prefix('seo')->group(function () {
     Route::get('/settings', [SeoController::class, 'settings'])->name('seo.settings');
     Route::get('/sitemap', [SeoController::class, 'sitemap'])->name('seo.sitemap');
     Route::get('/redirects', [SeoController::class, 'redirects'])->name('seo.redirects');
+});
+
+// Public storefront feature flags (cached)
+Route::prefix('settings')->group(function () {
+    Route::get('/features', [SettingController::class, 'features'])->name('settings.features');
 });
 
 // Category

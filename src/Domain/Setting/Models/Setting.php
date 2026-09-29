@@ -10,6 +10,7 @@ class Setting extends Model
     protected $fillable = [
         'profit_rate',
         'exchange_rate',
+        'payment_gateway_enabled',
         'site_name',
         'default_meta_description',
         'default_og_image',
@@ -18,6 +19,7 @@ class Setting extends Model
     protected $casts = [
         'profit_rate' => 'decimal:2',
         'exchange_rate' => 'decimal:2',
+        'payment_gateway_enabled' => 'boolean',
     ];
 
     /**
@@ -48,6 +50,7 @@ class Setting extends Model
             [
                 'profit_rate' => config('setting.profit_rate', 40),
                 'exchange_rate' => config('setting.exchange_rate', 3000),
+                'payment_gateway_enabled' => config('setting.payment_gateway_enabled', true),
             ]
         );
     }

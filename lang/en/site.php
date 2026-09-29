@@ -720,6 +720,10 @@ return [
     'default_og_image' => 'Default OG Image',
     'default_og_image_help' => 'Default social share image',
     'seo_settings' => 'SEO Settings',
+    'payment_settings' => 'Payment Settings',
+    'payment_gateway_enabled' => 'Payment gateway enabled',
+    'payment_gateway_enabled_help' => 'When disabled, users cannot use the bank gateway for order payment or wallet top-up. Wallet checkout remains available.',
+    'payment_gateway_disabled' => 'Online payment is temporarily unavailable. Please try again in 30 minutes.',
 
     'invalid_security_code' => 'Invalid security code. Please enter the correct code to update settings.',
     'media' => 'Media',
