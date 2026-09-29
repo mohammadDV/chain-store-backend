@@ -3,8 +3,8 @@
 use Application\Api\Brand\Controllers\BrandController;
 use Application\Api\File\Controllers\FileController;
 use Application\Api\Notification\Controllers\NotificationController;
-use Application\Api\Payment\Controllers\PaymentController;
 use Application\Api\Page\Controllers\PageController;
+use Application\Api\Payment\Controllers\PaymentController;
 use Application\Api\Post\Controllers\PostController;
 use Application\Api\Product\Controllers\CategoryController;
 use Application\Api\Product\Controllers\ColorController;

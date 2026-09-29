@@ -4,6 +4,7 @@ namespace Domain\Product\Services;
 
 use Core\Support\FrontendCacheInvalidator;
 use Domain\Product\Models\Category;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -40,7 +41,7 @@ class CategoryFooterService
     }
 
     /**
-     * @param  Collection<int, object{id: int, title: string, slug: string|null, parent_id: int, priority: int}>  $categories
+     * @param  Collection<int, Category>  $categories
      * @return list<array{title: string, slug: string|null, links: list<array{title: string, slug: string|null}>}>
      */
     public function buildColumns(Collection $categories): array
@@ -58,6 +59,7 @@ class CategoryFooterService
         $columns = [];
 
         foreach ($roots as $root) {
+            /** @var Collection<int, Category> $children */
             $children = ($childrenByParent->get((int) $root->id) ?? collect())
                 ->sortByDesc(fn ($category) => (int) $category->priority)
                 ->values();
@@ -85,9 +87,9 @@ class CategoryFooterService
     }
 
     /**
-     * @return Collection<int, object{id: int, title: string, slug: string|null, parent_id: int, priority: int}>
+     * @return EloquentCollection<int, Category>
      */
-    private function fetchActiveCategories(): Collection
+    private function fetchActiveCategories(): EloquentCollection
     {
         return Category::query()
             ->select(['id', 'title', 'slug', 'parent_id', 'priority'])
@@ -97,7 +99,7 @@ class CategoryFooterService
     }
 
     /**
-     * @param  Collection<int, object{title: string, slug: string|null, priority: int}>  $categories
+     * @param  Collection<int, Category>  $categories
      * @return list<array{title: string, slug: string|null}>
      */
     private function uniqueTitleLinks(Collection $categories): array
