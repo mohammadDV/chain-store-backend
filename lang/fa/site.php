@@ -1607,6 +1607,7 @@ return [
     'product_ref' => 'شناسه یا کد محصول',
     'product_ref_help' => 'شناسه عددی محصول یا کد محصول را وارد کنید.',
     'product_not_found' => 'محصول یافت نشد',
+    'product_cannot_delete_has_orders' => 'این محصول در سفارش ثبت شده و قابل حذف نیست.',
     'product_id' => 'شناسه محصول',
     'product_code' => 'کد محصول',
     'size_id' => 'شناسه سایز',

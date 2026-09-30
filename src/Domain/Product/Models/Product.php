@@ -6,6 +6,7 @@ use App\ProductAttribute;
 use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\ProductFactory;
 use Domain\Brand\Models\Brand;
+use Domain\Product\Exceptions\ProductHasOrdersException;
 use Domain\Review\Models\Review;
 use Domain\Seo\Concerns\RecordsSlugRedirects;
 use Domain\Seo\Concerns\ResolvesByIdOrSlug;
@@ -176,6 +177,20 @@ class Product extends Model
             ->whereNotNull('code')
             ->where('code', '!=', '')
             ->whereNotNull('brand_id');
+    }
+
+    protected static function booted(): void
+    {
+        static::deleting(function (Product $product): void {
+            if ($product->orders()->exists()) {
+                throw new ProductHasOrdersException;
+            }
+
+            // Morph likes have no FK cascade; sizes/favorites cascade at DB (and here for safety).
+            $product->likes()->delete();
+            $product->favorites()->delete();
+            $product->sizes->each(static fn (Size $size) => $size->delete());
+        });
     }
 
     protected static function newFactory(): ProductFactory

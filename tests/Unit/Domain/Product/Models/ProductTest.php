@@ -189,3 +189,64 @@ it('scopes stale products for refresh', function () {
 
     Carbon::setTestNow();
 });
+
+it('deletes product with sizes favorites likes and files when no orders exist', function () {
+    $product = Product::factory()->create();
+    $size = Size::factory()->create(['product_id' => $product->id]);
+    $stockId = $size->stock->id;
+    $file = File::query()->create([
+        'product_id' => $product->id,
+        'path' => 'products/delete-me.jpg',
+        'type' => 'image',
+        'status' => 1,
+        'priority' => 0,
+    ]);
+    $favorite = Favorite::query()->create([
+        'product_id' => $product->id,
+        'user_id' => User::factory()->create()->id,
+    ]);
+    $like = Like::query()->create([
+        'likeable_id' => $product->id,
+        'likeable_type' => Product::class,
+        'user_id' => User::factory()->create()->id,
+        'is_like' => 1,
+    ]);
+    $category = Category::factory()->create();
+    $product->categories()->attach($category);
+
+    $productId = $product->id;
+    $sizeId = $size->id;
+    $fileId = $file->id;
+    $favoriteId = $favorite->id;
+    $likeId = $like->id;
+
+    $product->delete();
+
+    expect(Product::query()->find($productId))->toBeNull()
+        ->and(Size::query()->find($sizeId))->toBeNull()
+        ->and(\Domain\Product\Models\Stock::query()->find($stockId))->toBeNull()
+        ->and(File::query()->find($fileId))->toBeNull()
+        ->and(Favorite::query()->find($favoriteId))->toBeNull()
+        ->and(Like::query()->find($likeId))->toBeNull()
+        ->and(\Illuminate\Support\Facades\DB::table('category_product')->where('product_id', $productId)->exists())->toBeFalse();
+});
+
+it('blocks deleting a product that has orders', function () {
+    $product = Product::factory()->create();
+    Size::factory()->create(['product_id' => $product->id]);
+    $order = Order::factory()->create();
+    $product->orders()->attach($order, [
+        'count' => 1,
+        'amount' => 1000,
+        'status' => Order::PENDING,
+        'color_id' => null,
+        'size_id' => null,
+    ]);
+
+    expect(fn () => $product->delete())
+        ->toThrow(\Domain\Product\Exceptions\ProductHasOrdersException::class);
+
+    expect(Product::query()->find($product->id))->not->toBeNull()
+        ->and($product->sizes()->exists())->toBeTrue()
+        ->and($product->orders()->exists())->toBeTrue();
+});

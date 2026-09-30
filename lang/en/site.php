@@ -984,6 +984,7 @@ return [
     'product_ref' => 'Product ID or Code',
     'product_ref_help' => 'Enter the numeric product ID or the product code.',
     'product_not_found' => 'Product not found',
+    'product_cannot_delete_has_orders' => 'This product is linked to an order and cannot be deleted.',
     'product_id' => 'Product ID',
     'product_code' => 'Product Code',
     'size_id' => 'Size ID',
