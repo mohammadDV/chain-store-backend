@@ -16,14 +16,26 @@ class Recaptcha implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $gResponseToken = (string) $value;
+        $gResponseToken = is_string($value) ? trim($value) : '';
+
+        if ($gResponseToken === '') {
+            $fail(trans('site.Invalid recaptcha'));
+
+            return;
+        }
 
         $response = Http::asForm()->post(
             'https://www.google.com/recaptcha/api/siteverify',
-            ['secret' => config('services.recaptcha.secret_key'), 'response' => $gResponseToken]
+            [
+                'secret' => config('services.recaptcha.secret_key'),
+                'response' => $gResponseToken,
+            ]
         );
 
-        if (! json_decode($response->body(), true)['success']) {
+        $payload = json_decode($response->body(), true);
+        $success = is_array($payload) && ($payload['success'] ?? false) === true;
+
+        if (! $success) {
             $fail(trans('site.Invalid recaptcha'));
         }
     }

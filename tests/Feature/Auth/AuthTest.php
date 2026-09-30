@@ -17,11 +17,14 @@ beforeEach(function () {
 });
 
 it('registers a user with wallet and sanctum token', function () {
+    $this->fakeRecaptchaSuccess();
+
     $response = $this->postJson('/api/register', [
         'email' => 'new@example.com',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'privacy_policy' => true,
+        'token' => 'fake-recaptcha',
     ]);
 
     $response->assertCreated()
@@ -35,11 +38,14 @@ it('registers a user with wallet and sanctum token', function () {
 });
 
 it('rejects register without accepting site rules', function () {
+    $this->fakeRecaptchaSuccess();
+
     $this->postJson('/api/register', [
         'email' => 'norules@example.com',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'privacy_policy' => false,
+        'token' => 'fake-recaptcha',
     ])->assertStatus(422)
         ->assertJsonValidationErrors(['privacy_policy']);
 
@@ -47,11 +53,13 @@ it('rejects register without accepting site rules', function () {
         'email' => 'norules2@example.com',
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
+        'token' => 'fake-recaptcha',
     ])->assertStatus(422)
         ->assertJsonValidationErrors(['privacy_policy']);
 });
 
 it('rejects duplicate email on register', function () {
+    $this->fakeRecaptchaSuccess();
     User::factory()->create(['email' => 'dup@example.com']);
 
     $this->postJson('/api/register', [
@@ -59,16 +67,45 @@ it('rejects duplicate email on register', function () {
         'password' => 'Password1!',
         'password_confirmation' => 'Password1!',
         'privacy_policy' => true,
+        'token' => 'fake-recaptcha',
     ])->assertStatus(422);
 });
 
 it('rejects weak password on register', function () {
+    $this->fakeRecaptchaSuccess();
+
     $this->postJson('/api/register', [
         'email' => 'weak@example.com',
         'password' => 'short',
         'password_confirmation' => 'short',
         'privacy_policy' => true,
+        'token' => 'fake-recaptcha',
     ])->assertStatus(422);
+});
+
+it('rejects register when recaptcha fails', function () {
+    Http::fake([
+        'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => false], 200),
+    ]);
+
+    $this->postJson('/api/register', [
+        'email' => 'badcaptcha@example.com',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'privacy_policy' => true,
+        'token' => 'bad-token',
+    ])->assertStatus(422)
+        ->assertJsonValidationErrors(['token']);
+});
+
+it('rejects register without recaptcha token', function () {
+    $this->postJson('/api/register', [
+        'email' => 'notoken@example.com',
+        'password' => 'Password1!',
+        'password_confirmation' => 'Password1!',
+        'privacy_policy' => true,
+    ])->assertStatus(422)
+        ->assertJsonValidationErrors(['token']);
 });
 
 it('logs in with valid credentials and recaptcha', function () {
@@ -122,6 +159,19 @@ it('rejects login when recaptcha fails', function () {
         'password' => 'Password1!',
         'token' => 'bad-token',
     ])->assertStatus(422);
+});
+
+it('rejects login without recaptcha token', function () {
+    User::factory()->create([
+        'email' => 'nologintoken@example.com',
+        'password' => Hash::make('Password1!'),
+    ]);
+
+    $this->postJson('/api/login', [
+        'email' => 'nologintoken@example.com',
+        'password' => 'Password1!',
+    ])->assertStatus(422)
+        ->assertJsonValidationErrors(['token']);
 });
 
 it('completes registration profile for authenticated user', function () {

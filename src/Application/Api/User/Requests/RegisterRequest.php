@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'string', 'min:8', 'regex:/^[a-zA-Z0-9_!@#$%^&*-]+$/'],
             'privacy_policy' => ['required', 'accepted'],
-            // 'token' => [new Recaptcha],
+            'token' => ['required', new Recaptcha],
         ];
     }
 
