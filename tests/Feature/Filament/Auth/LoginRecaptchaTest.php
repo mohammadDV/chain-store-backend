@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->seedRoles();
 });
 
-it('rejects filament login without recaptcha token', function () {
+it('requests enterprise token when filament login has no recaptcha token yet', function () {
     User::factory()->admin()->create([
         'email' => 'admin-captcha@example.com',
         'password' => Hash::make('Password1!'),
@@ -27,14 +27,21 @@ it('rejects filament login without recaptcha token', function () {
         ->fillForm([
             'email' => 'admin-captcha@example.com',
             'password' => 'Password1!',
+            'token' => '',
         ])
         ->call('authenticate')
-        ->assertHasFormErrors(['token']);
+        ->assertHasNoFormErrors()
+        ->assertNoRedirect();
+
+    $this->assertGuest();
 });
 
 it('rejects filament login when recaptcha fails', function () {
     Http::fake([
         'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => false], 200),
+        'https://recaptchaenterprise.googleapis.com/v1/projects/*' => Http::response([
+            'tokenProperties' => ['valid' => false],
+        ], 200),
     ]);
 
     User::factory()->admin()->create([
@@ -52,7 +59,9 @@ it('rejects filament login when recaptcha fails', function () {
             'token' => 'bad-token',
         ])
         ->call('authenticate')
-        ->assertHasFormErrors(['token']);
+        ->assertHasFormErrors(['email']);
+
+    $this->assertGuest();
 });
 
 it('allows filament login with valid credentials and recaptcha', function () {

@@ -19,30 +19,57 @@ class Login extends BaseLogin
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getRememberFormComponent(),
-                Hidden::make('token')
-                    ->required()
-                    ->validationAttribute(__('site.Invalid recaptcha')),
+                Hidden::make('token'),
                 ViewField::make('recaptcha_widget')
-                    ->view('filament.auth.recaptcha')
+                    ->view('filament.auth.recaptcha', [
+                        'siteKey' => config('services.recaptcha.site_key'),
+                    ])
                     ->dehydrated(false),
             ]);
     }
 
     public function authenticate(): ?LoginResponse
     {
-        $token = $this->data['token'] ?? null;
+        $token = trim((string) ($this->data['token'] ?? ''));
+
+        if ($token === '') {
+            $siteKey = (string) config('services.recaptcha.site_key');
+
+            $this->js(<<<JS
+                (async () => {
+                    const siteKey = {$this->jsString($siteKey)};
+                    if (! window.grecaptcha?.enterprise) {
+                        return;
+                    }
+
+                    await new Promise((resolve) => window.grecaptcha.enterprise.ready(resolve));
+                    const token = await window.grecaptcha.enterprise.execute(siteKey, { action: 'ADMIN_LOGIN' });
+                    \$wire.set('data.token', token);
+                    \$wire.authenticate();
+                })();
+            JS);
+
+            return null;
+        }
 
         $validator = validator(
             ['token' => $token],
-            ['token' => [new Recaptcha]],
+            ['token' => [new Recaptcha(expectedAction: 'ADMIN_LOGIN')]],
         );
 
         if ($validator->fails()) {
+            $this->data['token'] = null;
+
             throw ValidationException::withMessages([
-                'data.token' => $validator->errors()->first('token') ?: __('site.Invalid recaptcha'),
+                'data.email' => $validator->errors()->first('token') ?: __('site.Invalid recaptcha'),
             ]);
         }
 
         return parent::authenticate();
+    }
+
+    private function jsString(string $value): string
+    {
+        return json_encode($value, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
     }
 }

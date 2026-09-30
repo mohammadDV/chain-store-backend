@@ -12,6 +12,7 @@ use Domain\User\Models\Role;
 use Domain\User\Models\User;
 use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\Sanctum;
 use Mockery;
@@ -30,12 +31,30 @@ trait TestHelpers
 
     protected function fakeRecaptchaSuccess(): void
     {
-        Http::fake([
-            'https://www.google.com/recaptcha/api/siteverify' => Http::response([
+        Http::fake(function (Request $request) {
+            $url = $request->url();
+
+            if (str_contains($url, 'recaptchaenterprise.googleapis.com')) {
+                $action = data_get($request->data(), 'event.expectedAction')
+                    ?? data_get(json_decode($request->body(), true), 'event.expectedAction')
+                    ?? 'LOGIN';
+
+                return Http::response([
+                    'tokenProperties' => [
+                        'valid' => true,
+                        'action' => $action,
+                    ],
+                    'riskAnalysis' => [
+                        'score' => 0.9,
+                    ],
+                ], 200);
+            }
+
+            return Http::response([
                 'success' => true,
                 'score' => 0.9,
-            ], 200),
-        ]);
+            ], 200);
+        });
     }
 
     protected function actingAsUser(?User $user = null): User
