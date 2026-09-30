@@ -1,6 +1,7 @@
 <?php
 
 use Domain\Brand\Models\Brand;
+use Domain\Product\Exceptions\ProductHasOrdersException;
 use Domain\Product\Models\Category;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Favorite;
@@ -9,6 +10,7 @@ use Domain\Product\Models\Like;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
+use Domain\Product\Models\Stock;
 use Domain\Review\Models\Review;
 use Domain\Setting\Models\Setting;
 use Domain\User\Models\User;
@@ -18,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -224,11 +227,11 @@ it('deletes product with sizes favorites likes and files when no orders exist', 
 
     expect(Product::query()->find($productId))->toBeNull()
         ->and(Size::query()->find($sizeId))->toBeNull()
-        ->and(\Domain\Product\Models\Stock::query()->find($stockId))->toBeNull()
+        ->and(Stock::query()->find($stockId))->toBeNull()
         ->and(File::query()->find($fileId))->toBeNull()
         ->and(Favorite::query()->find($favoriteId))->toBeNull()
         ->and(Like::query()->find($likeId))->toBeNull()
-        ->and(\Illuminate\Support\Facades\DB::table('category_product')->where('product_id', $productId)->exists())->toBeFalse();
+        ->and(DB::table('category_product')->where('product_id', $productId)->exists())->toBeFalse();
 });
 
 it('blocks deleting a product that has orders', function () {
@@ -244,7 +247,7 @@ it('blocks deleting a product that has orders', function () {
     ]);
 
     expect(fn () => $product->delete())
-        ->toThrow(\Domain\Product\Exceptions\ProductHasOrdersException::class);
+        ->toThrow(ProductHasOrdersException::class);
 
     expect(Product::query()->find($product->id))->not->toBeNull()
         ->and($product->sizes()->exists())->toBeTrue()
