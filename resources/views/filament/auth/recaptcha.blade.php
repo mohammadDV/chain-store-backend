@@ -4,6 +4,6 @@
 
 <div wire:ignore>
     @if (filled($siteKey))
-        <script src="https://www.google.com/recaptcha/enterprise.js?render={{ urlencode($siteKey) }}" async defer></script>
+        <script src="https://www.google.com/recaptcha/api.js?render={{ urlencode($siteKey) }}" async defer></script>
     @endif
 </div>

@@ -14,7 +14,7 @@ beforeEach(function () {
     $this->seedRoles();
 });
 
-it('requests enterprise token when filament login has no recaptcha token yet', function () {
+it('requests recaptcha token when filament login has no token yet', function () {
     User::factory()->admin()->create([
         'email' => 'admin-captcha@example.com',
         'password' => Hash::make('Password1!'),

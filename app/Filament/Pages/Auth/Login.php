@@ -38,12 +38,12 @@ class Login extends BaseLogin
             $this->js(<<<JS
                 (async () => {
                     const siteKey = {$this->jsString($siteKey)};
-                    if (! window.grecaptcha?.enterprise) {
+                    if (! window.grecaptcha?.execute) {
                         return;
                     }
 
-                    await new Promise((resolve) => window.grecaptcha.enterprise.ready(resolve));
-                    const token = await window.grecaptcha.enterprise.execute(siteKey, { action: 'ADMIN_LOGIN' });
+                    await new Promise((resolve) => window.grecaptcha.ready(resolve));
+                    const token = await window.grecaptcha.execute(siteKey, { action: 'ADMIN_LOGIN' });
                     \$wire.set('data.token', token);
                     \$wire.authenticate();
                 })();
