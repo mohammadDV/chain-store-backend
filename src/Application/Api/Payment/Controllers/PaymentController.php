@@ -2,7 +2,6 @@
 
 namespace Application\Api\Payment\Controllers;
 
-use Application\Api\Payment\Requests\ManualPaymentRequest;
 use Core\Http\Controllers\Controller;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
@@ -37,14 +36,6 @@ class PaymentController extends Controller
     public function index(TableRequest $request): JsonResponse
     {
         return response()->json($this->repository->index($request));
-    }
-
-    /**
-     * Manual payment.
-     */
-    public function manualPayment(ManualPaymentRequest $request)
-    {
-        return response()->json($this->repository->manualPayment($request));
     }
 
     /**

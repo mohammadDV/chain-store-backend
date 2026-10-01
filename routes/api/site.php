@@ -134,7 +134,6 @@ Route::middleware(['auth:sanctum', 'auth', 'throttle:200,1'])->prefix('profile')
     Route::get('/dashboard-info', [UserController::class, 'getDashboardInfo'])->name('profile.dashboard.info');
 
     // payment
-    Route::post('/payment/manual-payment', [PaymentController::class, 'manualPayment'])->name('user.payment.manual-payment');
     Route::get('/payment/transactions', [PaymentController::class, 'index'])->name('user.payment.transactions');
 
     // wallet

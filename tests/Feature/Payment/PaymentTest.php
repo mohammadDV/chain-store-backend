@@ -114,29 +114,6 @@ it('marks a transaction failed after a failed callback', function () {
         ->and($transaction->fresh()->description)->toBe('Payment failed');
 });
 
-it('allows wallet manual payments only for authenticated users', function () {
-    $payload = [
-        'amount' => 25_000,
-        'type' => Transaction::WALLET,
-        'image' => 'receipts/payment.jpg',
-    ];
-
-    $this->postJson('/api/profile/payment/manual-payment', $payload)->assertUnauthorized();
-
-    $user = $this->actingAsUser();
-
-    $this->postJson('/api/profile/payment/manual-payment', $payload)
-        ->assertOk()
-        ->assertJsonPath('status', 1);
-
-    $this->assertDatabaseHas('transactions', [
-        'user_id' => $user->id,
-        'model_type' => Transaction::WALLET,
-        'amount' => 25_000,
-        'manual' => 1,
-    ]);
-});
-
 it('shows a public payment result by bank transaction id', function () {
     $transaction = Transaction::factory()->completed()->create([
         'amount' => 91_000,
