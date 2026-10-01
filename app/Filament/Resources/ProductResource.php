@@ -19,6 +19,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
 use Domain\Product\Services\CartProductRefreshService;
+use Domain\Product\Support\CategoryPathLabels;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteBulkAction;
@@ -415,12 +416,23 @@ class ProductResource extends Resource
                     ->label(__('site.brand'))
                     ->options(fn () => Brand::query()->pluck('title', 'id')->all())
                     ->searchable(),
-                CategorySelect::filterWithPathLabels(
-                    SelectFilter::make('categories')
-                        ->label(__('site.category'))
-                        ->relationship('categories', 'title')
-                        ->searchable()
-                ),
+                SelectFilter::make('category_id')
+                    ->label(__('site.category'))
+                    ->options(fn (): array => CategoryPathLabels::options())
+                    ->searchable()
+                    ->query(function (Builder $query, array $data): Builder {
+                        $categoryId = $data['value'] ?? null;
+                        if (blank($categoryId)) {
+                            return $query;
+                        }
+
+                        return $query->whereExists(function ($sub) use ($categoryId): void {
+                            $sub->selectRaw('1')
+                                ->from('category_product')
+                                ->whereColumn('category_product.product_id', 'products.id')
+                                ->where('category_product.category_id', (int) $categoryId);
+                        });
+                    }),
                 SelectFilter::make('color_id')
                     ->label(__('site.color'))
                     ->options(fn () => Color::query()->pluck('title', 'id')->all())
