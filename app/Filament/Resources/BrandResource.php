@@ -10,6 +10,7 @@ use App\Filament\Resources\BrandResource\Pages\EditBrand;
 use App\Filament\Resources\BrandResource\Pages\ListBrands;
 use App\Filament\Resources\BrandResource\Pages\ViewBrand;
 use App\Filament\Resources\BrandResource\RelationManagers\BannersRelationManager;
+use App\Filament\Support\SlugInput;
 use Domain\Brand\Models\Brand;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -86,12 +87,10 @@ class BrandResource extends Resource
                                         ->label(__('site.title'))
                                         ->required()
                                         ->maxLength(255),
-                                    TextInput::make('slug')
-                                        ->label(__('site.slug'))
-                                        ->required()
-                                        ->unique(ignoreRecord: true)
-                                        ->maxLength(255)
-                                        ->helperText(__('site.seo_slug_help')),
+                                    SlugInput::configure(
+                                        TextInput::make('slug'),
+                                        required: true,
+                                    ),
                                 ]),
                             Textarea::make('description')
                                 ->label(__('site.description'))

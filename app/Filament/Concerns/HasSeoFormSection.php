@@ -2,6 +2,7 @@
 
 namespace App\Filament\Concerns;
 
+use App\Filament\Support\SlugInput;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,12 +20,9 @@ trait HasSeoFormSection
         $fields = [];
 
         if ($includeSlug) {
-            $fields[] = TextInput::make('slug')
-                ->label(__('site.slug'))
-                ->maxLength(255)
-                ->unique(ignoreRecord: true)
-                ->helperText(__('site.seo_slug_help'))
-                ->columnSpanFull();
+            $fields[] = SlugInput::configure(
+                TextInput::make('slug')->columnSpanFull()
+            );
         }
 
         $fields = array_merge($fields, [

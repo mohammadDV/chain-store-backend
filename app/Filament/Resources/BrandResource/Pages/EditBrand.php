@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\BrandResource\Pages;
 
 use App\Filament\Resources\BrandResource;
-use Filament\Actions;
+use Domain\Seo\Support\AsciiSlug;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Str;
 
 class EditBrand extends EditRecord
 {
@@ -14,7 +13,10 @@ class EditBrand extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $data['slug'] = Str::slug($data['slug'] ?: $data['title']);
+        $slug = trim((string) ($data['slug'] ?? ''));
+        $data['slug'] = $slug !== ''
+            ? AsciiSlug::normalize($slug)
+            : AsciiSlug::generate((string) ($data['title'] ?? ''));
 
         return $data;
     }
@@ -23,7 +25,6 @@ class EditBrand extends EditRecord
     {
         return [
             ViewAction::make(),
-            // Actions\DeleteAction::make(),
         ];
     }
 }

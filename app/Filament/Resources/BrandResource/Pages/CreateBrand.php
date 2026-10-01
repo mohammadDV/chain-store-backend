@@ -3,8 +3,8 @@
 namespace App\Filament\Resources\BrandResource\Pages;
 
 use App\Filament\Resources\BrandResource;
+use Domain\Seo\Support\AsciiSlug;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Support\Str;
 
 class CreateBrand extends CreateRecord
 {
@@ -12,7 +12,10 @@ class CreateBrand extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['slug'] = Str::slug($data['slug'] ?: $data['title']);
+        $slug = trim((string) ($data['slug'] ?? ''));
+        $data['slug'] = $slug !== ''
+            ? AsciiSlug::normalize($slug)
+            : AsciiSlug::generate((string) ($data['title'] ?? ''));
 
         return $data;
     }

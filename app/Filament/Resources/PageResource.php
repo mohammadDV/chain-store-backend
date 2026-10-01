@@ -6,6 +6,7 @@ use App\Filament\Concerns\ChecksResourceAuthorization;
 use App\Filament\Resources\PageResource\Pages\CreatePage;
 use App\Filament\Resources\PageResource\Pages\EditPage;
 use App\Filament\Resources\PageResource\Pages\ListPages;
+use App\Filament\Support\SlugInput;
 use Domain\Page\Models\Page;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
@@ -69,13 +70,10 @@ class PageResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->columnSpanFull(),
-                        TextInput::make('slug')
-                            ->label(__('site.slug'))
-                            ->required()
-                            ->maxLength(255)
-                            ->unique(ignoreRecord: true)
-                            ->helperText(__('site.page_slug_help'))
-                            ->columnSpanFull(),
+                        SlugInput::configure(
+                            TextInput::make('slug')->columnSpanFull(),
+                            required: true,
+                        ),
                         FileUpload::make('image')
                             ->label(__('site.image'))
                             ->image()
