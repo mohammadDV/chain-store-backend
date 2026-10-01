@@ -12,6 +12,8 @@ class Setting extends Model
         'profit_rate',
         'exchange_rate',
         'payment_gateway_enabled',
+        'delivery_amount',
+        'limit_delivery_amount',
         'site_name',
         'default_meta_description',
         'default_og_image',
@@ -29,6 +31,8 @@ class Setting extends Model
         'profit_rate' => 'decimal:2',
         'exchange_rate' => 'decimal:2',
         'payment_gateway_enabled' => 'boolean',
+        'delivery_amount' => 'decimal:2',
+        'limit_delivery_amount' => 'decimal:2',
     ];
 
     /**
@@ -58,6 +62,8 @@ class Setting extends Model
                 'profit_rate' => config('setting.profit_rate', 40),
                 'exchange_rate' => config('setting.exchange_rate', 3000),
                 'payment_gateway_enabled' => config('setting.payment_gateway_enabled', true),
+                'delivery_amount' => 0,
+                'limit_delivery_amount' => 0,
             ]
         );
     }

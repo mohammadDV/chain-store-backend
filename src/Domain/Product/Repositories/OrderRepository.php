@@ -84,9 +84,40 @@ class OrderRepository implements IOrderRepository
             ->with(['products', 'discount'])
             ->where('id', $order->id)
             ->where('active', 1)
-            ->first();
+            ->firstOrFail();
+
+        if ($order->status === Order::PENDING) {
+            $this->syncPendingOrderDelivery($order);
+        }
 
         return new OrderResource($order->load('products.color'));
+    }
+
+    /**
+     * Recalculate shipping on a pending order from current settings.
+     */
+    private function syncPendingOrderDelivery(Order $order): void
+    {
+        $deliveryAmount = $this->settingService->resolveDeliveryAmount((float) $order->amount);
+        $discountAmount = (float) ($order->discount_amount ?? 0);
+        $totalAmount = (float) $order->amount - $discountAmount + $deliveryAmount;
+
+        if (
+            (float) $order->delivery_amount === $deliveryAmount
+            && (float) $order->total_amount === $totalAmount
+        ) {
+            return;
+        }
+
+        $profitRate = $this->settingService->getProfitRateWithFallback();
+
+        $order->update([
+            'delivery_amount' => $deliveryAmount,
+            'total_amount' => $totalAmount,
+            'profit_rate' => $profitRate,
+            'profit' => ((float) $order->amount * $profitRate / 100) + $deliveryAmount - $discountAmount,
+            'exchange_rate' => $this->settingService->getExchangeRateWithFallback(),
+        ]);
     }
 
     /**
@@ -151,11 +182,7 @@ class OrderRepository implements IOrderRepository
 
             $discountAmount = $discount->calculateDiscount($order->amount);
 
-            $deliveryAmount = 0;
-
-            if ($order->amount < config('product.default_limit_delivery_amount')) {
-                $deliveryAmount = config('product.default_delivery_amount');
-            }
+            $deliveryAmount = $this->settingService->resolveDeliveryAmount((float) $order->amount);
 
             // Calculate final total
             $totalAmount = $order->amount - $discountAmount + $deliveryAmount;
@@ -231,11 +258,7 @@ class OrderRepository implements IOrderRepository
                 $productCount += $productData['count'];
             }
 
-            $deliveryAmount = 0;
-
-            if ($productsAmount < config('product.default_limit_delivery_amount')) {
-                $deliveryAmount = config('product.default_delivery_amount');
-            }
+            $deliveryAmount = $this->settingService->resolveDeliveryAmount((float) $productsAmount);
 
             // Calculate final total
             $totalAmount = $productsAmount + $deliveryAmount;
@@ -396,11 +419,7 @@ class OrderRepository implements IOrderRepository
             $discountId = $calclulatedAmount['discount_id'];
 
         } else {
-            $deliveryAmount = 0;
-
-            if ($amount < config('product.default_limit_delivery_amount')) {
-                $deliveryAmount = config('product.default_delivery_amount');
-            }
+            $deliveryAmount = $this->settingService->resolveDeliveryAmount((float) $amount);
 
             $totalAmount = $amount + $deliveryAmount;
         }

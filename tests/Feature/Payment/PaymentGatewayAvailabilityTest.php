@@ -62,7 +62,9 @@ it('exposes payment gateway enabled by default in public features', function () 
         ->assertOk()
         ->assertJsonPath('status', 1)
         ->assertJsonPath('data.payment_gateway_enabled', true)
-        ->assertJsonPath('data.payment_gateway_disabled_message', null);
+        ->assertJsonPath('data.payment_gateway_disabled_message', null)
+        ->assertJsonPath('data.delivery_amount', 0)
+        ->assertJsonPath('data.limit_delivery_amount', 0);
 });
 
 it('exposes disabled message when payment gateway is off', function () {

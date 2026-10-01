@@ -62,9 +62,13 @@ it('falls back to config when settings lookup fails', function () {
     $service = Mockery::mock(SettingService::class)->makePartial();
     $service->shouldReceive('getProfitRate')->andThrow(new RuntimeException('db down'));
     $service->shouldReceive('getExchangeRate')->andThrow(new RuntimeException('db down'));
+    $service->shouldReceive('getDeliveryAmount')->andThrow(new RuntimeException('db down'));
+    $service->shouldReceive('getLimitDeliveryAmount')->andThrow(new RuntimeException('db down'));
 
     expect($service->getProfitRateWithFallback())->toBe(41.0)
-        ->and($service->getExchangeRateWithFallback())->toBe(3100.0);
+        ->and($service->getExchangeRateWithFallback())->toBe(3100.0)
+        ->and($service->getDeliveryAmountWithFallback())->toBe(0.0)
+        ->and($service->getLimitDeliveryAmountWithFallback())->toBe(0.0);
 });
 
 it('reports payment gateway enabled by default', function () {
@@ -75,6 +79,27 @@ it('reports payment gateway enabled by default', function () {
         ->and($service->getPublicFeatures())->toMatchArray([
             'payment_gateway_enabled' => true,
             'payment_gateway_disabled_message' => null,
+            'delivery_amount' => 0.0,
+            'limit_delivery_amount' => 0.0,
+        ]);
+});
+
+it('resolves delivery fee from settings with free-shipping threshold', function () {
+    Setting::getInstance()->update([
+        'delivery_amount' => 120_000,
+        'limit_delivery_amount' => 1_000_000,
+    ]);
+    app(SettingService::class)->clearCache();
+
+    $service = app(SettingService::class);
+
+    expect($service->getDeliveryAmount())->toBe(120000.0)
+        ->and($service->getLimitDeliveryAmount())->toBe(1000000.0)
+        ->and($service->resolveDeliveryAmount(999_999))->toBe(120000.0)
+        ->and($service->resolveDeliveryAmount(1_000_000))->toBe(0.0)
+        ->and($service->getPublicFeatures())->toMatchArray([
+            'delivery_amount' => 120000.0,
+            'limit_delivery_amount' => 1000000.0,
         ]);
 });
 

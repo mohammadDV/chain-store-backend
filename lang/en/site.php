@@ -727,6 +727,12 @@ return [
     'payment_gateway_enabled' => 'Payment gateway enabled',
     'payment_gateway_enabled_help' => 'When disabled, users cannot use the bank gateway for order payment or wallet top-up. Wallet checkout remains available.',
     'payment_gateway_disabled' => 'Online payment is temporarily unavailable. Please try again in 30 minutes.',
+    'shipping_settings' => 'Shipping Settings',
+    'delivery_amount' => 'Shipping fee',
+    'delivery_amount_help' => 'Fee added when the product subtotal is below the free-shipping threshold.',
+    'limit_delivery_amount' => 'Free shipping threshold',
+    'limit_delivery_amount_help' => 'When the product subtotal reaches this amount or more, shipping is free.',
+    'toman' => 'Toman',
 
     'contact_page_settings' => 'Contact page settings',
     'contact_title' => 'Contact title',

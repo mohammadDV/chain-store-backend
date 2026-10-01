@@ -39,6 +39,36 @@ class SettingService
     }
 
     /**
+     * Flat shipping fee charged when the order is below the free-shipping threshold.
+     * Missing values resolve to 0.
+     */
+    public function getDeliveryAmount(): float
+    {
+        return (float) $this->getSettings()['delivery_amount'];
+    }
+
+    /**
+     * Order product subtotal at/above which shipping is free.
+     * Missing values resolve to 0.
+     */
+    public function getLimitDeliveryAmount(): float
+    {
+        return (float) $this->getSettings()['limit_delivery_amount'];
+    }
+
+    /**
+     * Resolve shipping fee for a given product subtotal.
+     */
+    public function resolveDeliveryAmount(float $productsAmount): float
+    {
+        if ($productsAmount < $this->getLimitDeliveryAmountWithFallback()) {
+            return $this->getDeliveryAmountWithFallback();
+        }
+
+        return 0.0;
+    }
+
+    /**
      * Get all settings with caching.
      *
      * Only plain values are cached so the cache store never has to unserialize
@@ -48,6 +78,8 @@ class SettingService
      *     profit_rate: string,
      *     exchange_rate: string,
      *     payment_gateway_enabled: bool,
+     *     delivery_amount: string,
+     *     limit_delivery_amount: string,
      *     site_name: string|null,
      *     default_meta_description: string|null,
      *     default_og_image: string|null,
@@ -68,6 +100,8 @@ class SettingService
                 'profit_rate',
                 'exchange_rate',
                 'payment_gateway_enabled',
+                'delivery_amount',
+                'limit_delivery_amount',
                 'site_name',
                 'default_meta_description',
                 'default_og_image',
@@ -92,7 +126,9 @@ class SettingService
      *
      * @return array{
      *     payment_gateway_enabled: bool,
-     *     payment_gateway_disabled_message: string|null
+     *     payment_gateway_disabled_message: string|null,
+     *     delivery_amount: float,
+     *     limit_delivery_amount: float
      * }
      */
     public function getPublicFeatures(): array
@@ -104,6 +140,8 @@ class SettingService
             'payment_gateway_disabled_message' => $enabled
                 ? null
                 : __('site.payment_gateway_disabled'),
+            'delivery_amount' => $this->getDeliveryAmountWithFallback(),
+            'limit_delivery_amount' => $this->getLimitDeliveryAmountWithFallback(),
         ];
     }
 
@@ -197,6 +235,30 @@ class SettingService
             return $this->getExchangeRate();
         } catch (\Exception $e) {
             return (float) config('setting.exchange_rate');
+        }
+    }
+
+    /**
+     * Get delivery fee from settings, or 0 when unavailable.
+     */
+    public function getDeliveryAmountWithFallback(): float
+    {
+        try {
+            return $this->getDeliveryAmount();
+        } catch (\Exception $e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Get free-shipping threshold from settings, or 0 when unavailable.
+     */
+    public function getLimitDeliveryAmountWithFallback(): float
+    {
+        try {
+            return $this->getLimitDeliveryAmount();
+        } catch (\Exception $e) {
+            return 0.0;
         }
     }
 }

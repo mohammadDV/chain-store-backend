@@ -75,6 +75,26 @@ class SettingResource extends Resource
                             ->default(true)
                             ->required(),
                     ]),
+                Section::make(__('site.shipping_settings'))
+                    ->icon('heroicon-o-truck')
+                    ->schema([
+                        TextInput::make('delivery_amount')
+                            ->label(__('site.delivery_amount'))
+                            ->numeric()
+                            ->required()
+                            ->minValue(0)
+                            ->step(1000)
+                            ->suffix(__('site.toman'))
+                            ->helperText(__('site.delivery_amount_help')),
+                        TextInput::make('limit_delivery_amount')
+                            ->label(__('site.limit_delivery_amount'))
+                            ->numeric()
+                            ->required()
+                            ->minValue(0)
+                            ->step(1000)
+                            ->suffix(__('site.toman'))
+                            ->helperText(__('site.limit_delivery_amount_help')),
+                    ]),
                 Section::make(__('site.seo_settings'))
                     ->schema([
                         TextInput::make('site_name')

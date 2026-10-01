@@ -18,6 +18,8 @@ class SettingSeeder extends Seeder
                 'profit_rate' => config('setting.profit_rate', 40),
                 'exchange_rate' => config('setting.exchange_rate', 3000),
                 'payment_gateway_enabled' => config('setting.payment_gateway_enabled', true),
+                'delivery_amount' => 0,
+                'limit_delivery_amount' => 0,
             ]
         );
     }
