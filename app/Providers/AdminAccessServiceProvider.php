@@ -11,6 +11,7 @@ use App\Policies\CostPolicy;
 use App\Policies\DiscountPolicy;
 use App\Policies\InventoryTransactionPolicy;
 use App\Policies\NotificationPolicy;
+use App\Policies\ManualOrderPolicy;
 use App\Policies\OrderPolicy;
 use App\Policies\PostPolicy;
 use App\Policies\ProductPolicy;
@@ -36,6 +37,7 @@ use Domain\Product\Models\Category;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Discount;
 use Domain\Product\Models\InventoryTransaction;
+use Domain\Product\Models\ManualOrder;
 use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Review\Models\Review;
@@ -75,6 +77,7 @@ class AdminAccessServiceProvider extends ServiceProvider
         Category::class => CategoryPolicy::class,
         Banner::class => BannerPolicy::class,
         Order::class => OrderPolicy::class,
+        ManualOrder::class => ManualOrderPolicy::class,
         Review::class => ReviewPolicy::class,
         InventoryTransaction::class => InventoryTransactionPolicy::class,
         Color::class => ColorPolicy::class,

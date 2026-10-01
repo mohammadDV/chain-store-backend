@@ -144,6 +144,16 @@ final class AdminPermission
 
     public const ORDERS_REFUND = 'orders.refund';
 
+    public const MANUAL_ORDERS_VIEW = 'manual_orders.view';
+
+    public const MANUAL_ORDERS_CREATE = 'manual_orders.create';
+
+    public const MANUAL_ORDERS_UPDATE = 'manual_orders.update';
+
+    public const MANUAL_ORDERS_DELETE = 'manual_orders.delete';
+
+    public const MANUAL_ORDERS_CHANGE_STATUS = 'manual_orders.change_status';
+
     public const REVIEWS_VIEW = 'reviews.view';
 
     public const REVIEWS_UPDATE = 'reviews.update';
@@ -275,6 +285,13 @@ final class AdminPermission
                 self::ORDERS_DELETE,
                 self::ORDERS_CHANGE_STATUS,
                 self::ORDERS_REFUND,
+            ],
+            'manual_orders' => [
+                self::MANUAL_ORDERS_VIEW,
+                self::MANUAL_ORDERS_CREATE,
+                self::MANUAL_ORDERS_UPDATE,
+                self::MANUAL_ORDERS_DELETE,
+                self::MANUAL_ORDERS_CHANGE_STATUS,
             ],
             'reviews' => [
                 self::REVIEWS_VIEW,
