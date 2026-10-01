@@ -11,7 +11,7 @@ use Domain\Notification\Services\NotificationService;
 use Domain\Payment\Models\Transaction;
 use Domain\Payment\Services\PaymentGatewayAvailability;
 use Domain\User\Models\User;
-use Domain\User\Services\TelegramNotificationService;
+use Domain\User\Services\TelegramNotifier;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Domain\Wallet\Models\WithdrawalTransaction;
@@ -29,7 +29,7 @@ class WalletRepository implements IWalletRepository
     use GlobalFunc;
 
     public function __construct(
-        protected TelegramNotificationService $service,
+        protected TelegramNotifier $telegramNotifier,
         protected PaymentGatewayAvailability $paymentGateway,
     ) {}
 
@@ -144,8 +144,7 @@ class WalletRepository implements IWalletRepository
                 return;
             }
 
-            $this->service->sendNotification(
-                config('telegram.chat_id'),
+            $this->telegramNotifier->notifyOrder(
                 'افزایش موجودی حساب'.PHP_EOL.
                 'id '.$walletTransaction->wallet->id.PHP_EOL.
                 'nickname '.$walletTransaction->wallet->user->nickname.PHP_EOL.

@@ -2,7 +2,10 @@
 
 namespace Core\Providers;
 
+use Domain\User\Listeners\SendRegistrationTelegramNotification;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -21,5 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         App::setlocale('fa');
+
+        Event::listen(Registered::class, SendRegistrationTelegramNotification::class);
     }
 }

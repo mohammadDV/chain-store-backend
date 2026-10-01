@@ -11,7 +11,6 @@ use Application\Api\User\Requests\ResetPasswordRequest;
 use Application\Api\User\Resources\UserResource;
 use Core\Http\Controllers\Controller;
 use Domain\User\Models\User;
-use Domain\User\Services\TelegramNotificationService;
 use Domain\Wallet\Models\Wallet;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Events\Verified;
@@ -28,8 +27,6 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function __construct(protected TelegramNotificationService $service) {}
-
     /**
      * Log in the user.
      */
@@ -135,6 +132,8 @@ class AuthController extends Controller
                     'currency' => Wallet::IRR,
                     'status' => 1,
                 ]);
+
+                event(new Registered($user));
             }
         }
 
@@ -206,22 +205,6 @@ class AuthController extends Controller
         ]);
 
         event(new Registered($user));
-
-        // $this->service->sendNotification(
-        //     config('telegram.chat_id'),
-        //     'ثبت نام کاربر جدید' . PHP_EOL .
-        //     'email ' . $request->email . PHP_EOL
-        // );
-
-        // $this->service->sendNotification(
-        //     config('telegram.chat_id'),
-        //     'ثبت نام کاربر جدید' . PHP_EOL .
-        //     'first_name ' . $request->first_name . PHP_EOL .
-        //     'last_name ' . $request->last_name. PHP_EOL .
-        //     'nickname ' . $request->nickname . PHP_EOL .
-        //     'email ' . $request->email . PHP_EOL .
-        //     'mobile ' . $request->mobile . PHP_EOL
-        // );
 
         return response([
             'user' => new UserResource($user),

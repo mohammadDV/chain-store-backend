@@ -20,7 +20,7 @@ use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Domain\Product\Services\OrderStatusService;
 use Domain\Product\Services\StockService;
 use Domain\Setting\Services\SettingService;
-use Domain\User\Services\TelegramNotificationService;
+use Domain\User\Services\TelegramNotifier;
 use Domain\Wallet\Models\Wallet;
 use Domain\Wallet\Models\WalletTransaction;
 use Domain\Wallet\Repositories\Contracts\IWalletRepository;
@@ -39,7 +39,7 @@ class OrderRepository implements IOrderRepository
     use GlobalFunc;
 
     public function __construct(
-        protected TelegramNotificationService $service,
+        protected TelegramNotifier $telegramNotifier,
         protected IWalletRepository $walletRepository,
         protected SettingService $settingService,
         protected StockService $stockService,
@@ -353,8 +353,7 @@ class OrderRepository implements IOrderRepository
             }
 
             // Send notification
-            // $this->service->sendNotification(
-            //     config('telegram.chat_id'),
+            // $this->telegramNotifier->notifyOrder(
             //     'سفارش جدید' . PHP_EOL .
             //     'Order ID: ' . $order->id . PHP_EOL .
             //     'User: ' . Auth::user()->nickname . PHP_EOL .
@@ -552,6 +551,14 @@ class OrderRepository implements IOrderRepository
 
             $this->queueScraperRefreshForUnmanagedProducts($paidOrder);
 
+            $this->telegramNotifier->notifyOrder(
+                'سفارش با موفقیت پرداخت شد (کیف پول)'.PHP_EOL.
+                'order_id '.$paidOrder->id.PHP_EOL.
+                'order_code '.$paidOrder->code.PHP_EOL.
+                'order_amount '.$paidOrder->total_amount.PHP_EOL.
+                'order_time '.now()
+            );
+
             return response()->json([
                 'status' => 1,
                 'message' => __('site.The operation has been successfully'),
@@ -685,8 +692,7 @@ class OrderRepository implements IOrderRepository
             if ($result['newly_paid']) {
                 $this->queueScraperRefreshForUnmanagedProducts($order);
 
-                $this->service->sendNotification(
-                    config('telegram.chat_id'),
+                $this->telegramNotifier->notifyOrder(
                     'سفارش با موفقیت پرداخت شد'.PHP_EOL.
                     'order_id '.$order->id.PHP_EOL.
                     'order_code '.$order->code.PHP_EOL.

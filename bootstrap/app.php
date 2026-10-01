@@ -1,6 +1,8 @@
 <?php
 
 use Core\Exceptions\Handler;
+use Domain\User\Services\TelegramNotifier;
+use Domain\User\Support\CriticalExceptionMessageBuilder;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +23,20 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->renderable(function (Throwable $e) {
             if (request()->is('api/*')) {
                 return app(Handler::class)->handleApiException($e);
+            }
+        });
+
+        $exceptions->reportable(function (Throwable $e) {
+            if (! CriticalExceptionMessageBuilder::shouldNotify($e)) {
+                return;
+            }
+
+            try {
+                app(TelegramNotifier::class)->notifyError(
+                    CriticalExceptionMessageBuilder::build($e)
+                );
+            } catch (Throwable) {
+                // Never break exception reporting because of Telegram.
             }
         });
     })->create();

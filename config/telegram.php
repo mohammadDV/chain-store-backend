@@ -217,4 +217,23 @@ return [
     ],
 
     'chat_id' => env('TELEGRAM_CHAT_ID', '1184138863'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Notification Channels & Queue
+    |--------------------------------------------------------------------------
+    |
+    | Business alerts (orders, registrations, tickets, …) go to the order
+    | channel. Critical server errors go to the error channel. Both are
+    | dispatched onto the low-priority queue so they never block requests.
+    |
+    */
+    'channels' => [
+        'order' => env('TELEGRAM_ORDER_CHAT_ID', env('TELEGRAM_CHAT_ID')),
+        'error' => env('TELEGRAM_ERROR_CHAT_ID'),
+    ],
+
+    'queue' => env('TELEGRAM_QUEUE', 'low'),
+
+    'enabled' => env('TELEGRAM_NOTIFICATIONS_ENABLED', true),
 ];

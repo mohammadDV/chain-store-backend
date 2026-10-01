@@ -11,7 +11,7 @@ use Domain\Notification\Services\NotificationService;
 use Domain\Ticket\Models\Ticket;
 use Domain\Ticket\Models\TicketMessage;
 use Domain\Ticket\Repositories\Contracts\ITicketRepository;
-use Domain\User\Services\TelegramNotificationService;
+use Domain\User\Services\TelegramNotifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -21,7 +21,7 @@ class TicketRepository implements ITicketRepository
 {
     use GlobalFunc;
 
-    public function __construct(protected TelegramNotificationService $service)
+    public function __construct(protected TelegramNotifier $telegramNotifier)
     {
         //
     }
@@ -113,8 +113,7 @@ class TicketRepository implements ITicketRepository
             'type' => NotificationService::TICKET,
         ], Auth::user());
 
-        $this->service->sendNotification(
-            config('telegram.chat_id'),
+        $this->telegramNotifier->notifyOrder(
             'ارسال تیکت جدید'.PHP_EOL.
             'id '.Auth::user()->id.PHP_EOL.
             'nickname '.Auth::user()->nickname
