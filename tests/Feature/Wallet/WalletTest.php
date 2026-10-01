@@ -18,12 +18,13 @@ it('returns own wallet for authenticated user', function () {
     $user = $this->actingAsUser();
     $wallet = $this->createWalletFor($user, 50000);
 
-    $this->getJson('/api/profile/wallet')
+    $response = $this->getJson('/api/profile/wallet')
         ->assertOk()
         ->assertJsonPath('status', 1)
         ->assertJsonPath('data.currency', Wallet::IRR);
 
-    expect((float) $this->getJson('/api/profile/wallet')->json('data.balance'))->toBe(50000.0);
+    expect((float) $response->json('data.balance'))->toBe(50000.0)
+        ->and((float) $response->json('data.available_balance'))->toBe(50000.0);
 });
 
 it('rejects wallet access for guests', function () {
