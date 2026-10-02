@@ -50,12 +50,6 @@ class RegisterInformationRequest extends FormRequest
             'nickname.min' => 'نام کاربری باید حداقل ۳ کاراکتر باشد',
             'nickname.max' => 'نام کاربری نمی‌تواند بیشتر از ۲۵۵ کاراکتر باشد',
             'nickname.unique' => 'این نام کاربری قبلا ثبت شده است',
-            'email.required' => 'ایمیل الزامی است',
-            'email.email' => 'فرمت ایمیل صحیح نیست',
-            'email.unique' => 'این ایمیل قبلا ثبت شده است',
-            'password.required' => 'رمز عبور الزامی است',
-            'password.min' => 'رمز عبور باید حداقل ۸ کاراکتر باشد',
-            'password.regex' => 'رمز عبور باید شامل حروف و اعداد باشد',
         ];
     }
 }

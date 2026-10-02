@@ -2,7 +2,8 @@
 
 namespace Application\Api\User\Requests;
 
-use Illuminate\Contracts\Validation\Rule;
+use Application\Api\User\Rules\StrongPassword;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ResetPasswordRequest extends FormRequest
@@ -18,14 +19,22 @@ class ResetPasswordRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, Rule|array|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'token' => ['required', 'string'],
             'email' => ['required', 'string', 'email', 'max:255', 'exists:users,email'],
-            'password' => ['required', 'confirmed', 'string', 'min:8', 'regex:/^[a-zA-Z0-9_!@#$%^&*-]+$/'],
+            'password' => StrongPassword::requiredConfirmed(),
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'password.required' => __('site.password_required'),
+            'password.confirmed' => __('site.Password confirmation does not match'),
         ];
     }
 }

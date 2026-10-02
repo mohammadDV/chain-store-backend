@@ -8,6 +8,7 @@ use App\Filament\Resources\UserResource\Pages\EditUser;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\Pages\ManageUserPermissions;
 use App\Filament\Resources\UserResource\Pages\ViewUser;
+use Application\Api\User\Rules\StrongPassword;
 use Domain\User\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -151,6 +152,9 @@ class UserResource extends Resource
                         TextInput::make('password')
                             ->label(__('site.Password'))
                             ->password()
+                            ->revealable()
+                            ->helperText(__('site.password_help'))
+                            ->rule(new StrongPassword)
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $context): bool => $context === 'create'),
                         Select::make('status')

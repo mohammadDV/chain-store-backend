@@ -74,13 +74,23 @@ it('rejects duplicate email on register', function () {
 it('rejects weak password on register', function () {
     $this->fakeRecaptchaSuccess();
 
-    $this->postJson('/api/register', [
+    $response = $this->postJson('/api/register', [
         'email' => 'weak@example.com',
         'password' => 'short',
         'password_confirmation' => 'short',
         'privacy_policy' => true,
         'token' => 'fake-recaptcha',
-    ])->assertStatus(422);
+    ]);
+
+    $response->assertStatus(422)->assertJsonValidationErrors(['password']);
+
+    $message = implode(' ', $response->json('errors.password') ?? []);
+
+    expect($message)
+        ->toContain('حداقل')
+        ->toContain('حرف بزرگ')
+        ->toContain('عدد')
+        ->toContain('نماد');
 });
 
 it('rejects register when recaptcha fails', function () {

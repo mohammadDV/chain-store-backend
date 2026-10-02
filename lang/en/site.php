@@ -232,6 +232,13 @@ return [
     // User Notifications
     'password_changed_title' => 'Password Changed',
     'password_changed_content' => 'Dear user: Your password has been successfully changed.',
+    'password_help' => 'Password must be at least 8 characters and include a lowercase letter (a-z), an uppercase letter (A-Z), a number (0-9), and a symbol (! @ # $ % …). Example: Pass123!',
+    'password_missing_requirements' => 'Password is incomplete. Missing: :requirements',
+    'password_req_min' => 'at least :min characters',
+    'password_req_lowercase' => 'at least one lowercase letter (a-z)',
+    'password_req_uppercase' => 'at least one uppercase letter (A-Z)',
+    'password_req_number' => 'at least one number (0-9)',
+    'password_req_symbol' => 'at least one symbol (! @ # $ % ^ & * etc.)',
 
     // Project Notifications
     'project_created_title' => 'Project Successfully Created',

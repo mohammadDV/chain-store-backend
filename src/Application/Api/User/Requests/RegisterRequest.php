@@ -3,7 +3,8 @@
 namespace Application\Api\User\Requests;
 
 use Application\Api\User\Rules\Recaptcha;
-use Illuminate\Contracts\Validation\Rule;
+use Application\Api\User\Rules\StrongPassword;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -19,13 +20,13 @@ class RegisterRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, Rule|array|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'password' => ['required', 'confirmed', 'string', 'min:8', 'regex:/^[a-zA-Z0-9_!@#$%^&*-]+$/'],
+            'password' => StrongPassword::requiredConfirmed(),
             'privacy_policy' => ['required', 'accepted'],
             'token' => ['required', new Recaptcha(expectedAction: 'REGISTER')],
         ];
@@ -40,9 +41,8 @@ class RegisterRequest extends FormRequest
             'email.required' => 'ایمیل الزامی است',
             'email.email' => 'فرمت ایمیل صحیح نیست',
             'email.unique' => 'این ایمیل قبلا ثبت شده است',
-            'password.required' => 'رمز عبور الزامی است',
-            'password.min' => 'رمز عبور باید حداقل ۸ کاراکتر باشد',
-            'password.regex' => 'رمز عبور باید شامل حروف و اعداد باشد',
+            'password.required' => __('site.password_required'),
+            'password.confirmed' => __('site.Password confirmation does not match'),
             'privacy_policy.required' => 'قبول قوانین و مقررات الزامی است',
             'privacy_policy.accepted' => 'لطفا قوانین و مقررات را بپذیرید',
         ];
