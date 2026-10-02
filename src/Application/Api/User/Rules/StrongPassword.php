@@ -61,7 +61,7 @@ class StrongPassword implements ValidationRule
     }
 
     /**
-     * @return list<\Illuminate\Contracts\Validation\ValidationRule|string>
+     * @return list<ValidationRule|string>
      */
     public static function requiredConfirmed(): array
     {
@@ -69,7 +69,7 @@ class StrongPassword implements ValidationRule
     }
 
     /**
-     * @return list<\Illuminate\Contracts\Validation\ValidationRule|string>
+     * @return list<ValidationRule|string>
      */
     public static function optional(): array
     {
