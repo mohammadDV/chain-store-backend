@@ -3,9 +3,10 @@
 namespace Core\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
@@ -38,8 +39,12 @@ class Handler extends ExceptionHandler
     /**
      * Handle API exceptions and return consistent JSON response
      */
-    public function handleApiException(Throwable $e): JsonResponse
+    public function handleApiException(Throwable $e): Response
     {
+        if ($e instanceof HttpResponseException) {
+            return $e->getResponse();
+        }
+
         if ($e instanceof ValidationException) {
             return response()->json([
                 'status' => 0,

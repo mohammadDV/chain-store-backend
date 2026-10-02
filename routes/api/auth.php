@@ -12,11 +12,11 @@ Route::post('/email/verification-notification', [AuthController::class, 'resendV
     ->name('verification.send');
 
 Route::post('/register', [AuthController::class, 'register'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:auth.register'])
     ->name('register');
 
 Route::post('/login', [AuthController::class, 'login'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:auth.login'])
     ->name('login');
 
 Route::post('/complete-register', [AuthController::class, 'completeRegister'])
@@ -28,7 +28,7 @@ Route::middleware(['auth:sanctum'])->get('/logout', [AuthController::class, 'log
     ->name('logout');
 
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])
-    ->middleware('guest')
+    ->middleware(['guest', 'throttle:auth.forgot-password'])
     ->name('password.email');
 
 Route::post('/verify-reset-token', [AuthController::class, 'verifyResetToken'])
