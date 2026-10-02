@@ -28,6 +28,17 @@ class TelegramNotifier
         );
     }
 
+    /**
+     * Security alerts (admin brute-force, lockouts, …) use the error channel.
+     */
+    public function notifySecurity(string $message): void
+    {
+        $this->dispatch(
+            (string) config('telegram.channels.error', ''),
+            $message,
+        );
+    }
+
     private function dispatch(string $chatId, string $message): void
     {
         if (! config('telegram.enabled', true)) {
