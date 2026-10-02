@@ -624,6 +624,8 @@ return [
     'select_brand_optional' => 'Select a brand (optional)',
     'no_brand' => 'No Brand',
     'link' => 'Link',
+    'banner_link_placeholder' => 'Example: shop or /shop or https://example.com',
+    'banner_link_help' => 'Enter internal paths without the domain (e.g. shop or /shop). For external links start with https:// so they open in a new tab.',
     'product' => 'Product',
     'products' => 'Products',
     'category' => 'Category',

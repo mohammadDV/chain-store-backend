@@ -78,7 +78,8 @@ class BannerResource extends Resource
                                     ->maxLength(255),
                                 TextInput::make('link')
                                     ->label(__('site.link'))
-                                    ->url()
+                                    ->placeholder(__('site.banner_link_placeholder'))
+                                    ->helperText(__('site.banner_link_help'))
                                     ->maxLength(2048),
                             ]),
                         Grid::make(2)
@@ -164,7 +165,9 @@ class BannerResource extends Resource
                     ->placeholder(__('site.no_brand')),
                 TextColumn::make('link')
                     ->label(__('site.link'))
-                    ->url(fn ($record) => $record->link)
+                    ->url(fn ($record) => filled($record->link) && preg_match('#^https?://#i', (string) $record->link)
+                        ? $record->link
+                        : null)
                     ->openUrlInNewTab()
                     ->limit(30)
                     ->toggleable(isToggledHiddenByDefault: true),

@@ -1194,6 +1194,8 @@ return [
     'select_brand_optional' => 'انتخاب برند (اختیاری)',
     'no_brand' => 'بدون برند',
     'link' => 'لینک',
+    'banner_link_placeholder' => 'مثال: shop یا /shop یا https://example.com',
+    'banner_link_help' => 'لینک داخلی را بدون دامنه وارد کنید (مثل shop یا /shop). برای لینک خارجی حتماً با https:// شروع کنید تا در تب جدید باز شود.',
     'product' => 'محصول',
     'products' => 'محصولات',
     'category' => 'دسته‌بندی',
