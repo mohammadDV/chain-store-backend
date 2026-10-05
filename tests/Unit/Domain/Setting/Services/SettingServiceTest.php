@@ -121,7 +121,8 @@ it('returns contact settings with defaults when empty', function () {
     $service = app(SettingService::class);
 
     expect($service->getContactSettings()['title'])->toBe('با ما در  ارتباط باشید')
-        ->and($service->getContactSettings()['subtitle'])->toBe('ما میتوانیم به شما کمک کنیم!');
+        ->and($service->getContactSettings()['subtitle'])->toBe('ما میتوانیم به شما کمک کنیم!')
+        ->and($service->getContactSettings()['telegram_username'])->toBe('mohammaddv');
 });
 
 it('creates a default singleton when missing', function () {

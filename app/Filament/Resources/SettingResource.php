@@ -143,6 +143,12 @@ class SettingResource extends Resource
                         TextInput::make('contact_email_hint')
                             ->label(__('site.contact_email_hint'))
                             ->maxLength(255),
+                        TextInput::make('telegram_username')
+                            ->label(__('site.telegram_username'))
+                            ->prefix('@')
+                            ->placeholder('mohammaddv')
+                            ->maxLength(255)
+                            ->helperText(__('site.telegram_username_help')),
                     ])
                     ->columns(2),
                 Section::make(__('site.security'))

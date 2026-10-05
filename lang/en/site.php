@@ -752,6 +752,8 @@ return [
     'contact_map_url' => 'Map URL',
     'contact_email' => 'Contact email',
     'contact_email_hint' => 'Email hint',
+    'telegram_username' => 'Support Telegram username',
+    'telegram_username_help' => 'Without @. Linked from the homepage for ordering other brands.',
 
     'pages' => 'Pages',
     'page' => 'Page',

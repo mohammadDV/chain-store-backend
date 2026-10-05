@@ -25,6 +25,7 @@ class Setting extends Model
         'contact_map_url',
         'contact_email',
         'contact_email_hint',
+        'telegram_username',
     ];
 
     protected $casts = [

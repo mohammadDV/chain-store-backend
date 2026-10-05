@@ -34,6 +34,7 @@ it('returns contact settings from the settings row', function () {
         'map_url' => 'https://maps.example.com',
         'email' => 'info@example.com',
         'email_hint' => 'ایمیل بزنید',
+        'telegram_username' => 'mohammaddv',
     ]);
 });
 
@@ -41,13 +42,15 @@ it('exposes contact settings via public api', function () {
     Setting::getInstance()->update([
         'contact_phone' => '021-999',
         'contact_email' => 'hi@boofstore.com',
+        'telegram_username' => '@support_boof',
     ]);
 
     $this->getJson('/api/settings/contact')
         ->assertOk()
         ->assertJsonPath('status', 1)
         ->assertJsonPath('data.phone', '021-999')
-        ->assertJsonPath('data.email', 'hi@boofstore.com');
+        ->assertJsonPath('data.email', 'hi@boofstore.com')
+        ->assertJsonPath('data.telegram_username', 'support_boof');
 });
 
 it('lists active pages and shows page by slug', function () {

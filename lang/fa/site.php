@@ -1322,6 +1322,8 @@ return [
     'contact_map_url' => 'لینک نقشه',
     'contact_email' => 'ایمیل تماس',
     'contact_email_hint' => 'راهنمای ایمیل',
+    'telegram_username' => 'آیدی تلگرام پشتیبانی',
+    'telegram_username_help' => 'بدون @ وارد کنید؛ در صفحه اصلی برای سفارش از برندهای دیگر لینک می‌شود.',
 
     'pages' => 'صفحات',
     'page' => 'صفحه',

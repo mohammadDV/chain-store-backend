@@ -90,7 +90,8 @@ class SettingService
      *     contact_address: string|null,
      *     contact_map_url: string|null,
      *     contact_email: string|null,
-     *     contact_email_hint: string|null
+     *     contact_email_hint: string|null,
+     *     telegram_username: string|null
      * }
      */
     public function getSettings(): array
@@ -113,6 +114,7 @@ class SettingService
                 'contact_map_url',
                 'contact_email',
                 'contact_email_hint',
+                'telegram_username',
             ]);
 
             $settings['payment_gateway_enabled'] = (bool) $settings['payment_gateway_enabled'];
@@ -156,12 +158,15 @@ class SettingService
      *     address: string|null,
      *     map_url: string|null,
      *     email: string|null,
-     *     email_hint: string|null
+     *     email_hint: string|null,
+     *     telegram_username: string
      * }
      */
     public function getContactSettings(): array
     {
         $settings = $this->getSettings();
+        $telegramUsername = trim((string) ($settings['telegram_username'] ?? ''));
+        $telegramUsername = ltrim($telegramUsername, '@');
 
         return [
             'title' => $settings['contact_title'] ?: 'با ما در  ارتباط باشید',
@@ -172,6 +177,7 @@ class SettingService
             'map_url' => $settings['contact_map_url'] ?? null,
             'email' => $settings['contact_email'] ?? null,
             'email_hint' => $settings['contact_email_hint'] ?? null,
+            'telegram_username' => $telegramUsername !== '' ? $telegramUsername : 'mohammaddv',
         ];
     }
 
