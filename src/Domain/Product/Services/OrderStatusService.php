@@ -19,6 +19,7 @@ class OrderStatusService
 {
     public function __construct(
         protected OrderLedgerService $ledgerService,
+        protected StockService $stockService,
     ) {}
 
     /**
@@ -184,6 +185,21 @@ class OrderStatusService
 
             if (! $locked || $locked->status !== Order::PENDING) {
                 return false;
+            }
+
+            $locked->loadMissing(['products.brand']);
+            foreach ($locked->products as $product) {
+                if (
+                    empty($product->brand->has_stock_management)
+                    || empty($product->pivot->size_id)
+                ) {
+                    continue;
+                }
+
+                $this->stockService->releaseForOrder(
+                    (int) $product->pivot->size_id,
+                    (int) $product->pivot->count,
+                );
             }
 
             $fromStatus = $locked->status;

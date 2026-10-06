@@ -10,6 +10,7 @@ use Domain\Product\Exceptions\ProductHasOrdersException;
 use Domain\Review\Models\Review;
 use Domain\Seo\Concerns\RecordsSlugRedirects;
 use Domain\Seo\Concerns\ResolvesByIdOrSlug;
+use Domain\Seo\Services\SeoCacheService;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -191,6 +192,13 @@ class Product extends Model
             $product->favorites()->delete();
             $product->sizes->each(static fn (Size $size) => $size->delete());
         });
+
+        $clearSeo = static function (): void {
+            app(SeoCacheService::class)->clearSitemap();
+        };
+
+        static::saved($clearSeo);
+        static::deleted($clearSeo);
     }
 
     protected static function newFactory(): ProductFactory

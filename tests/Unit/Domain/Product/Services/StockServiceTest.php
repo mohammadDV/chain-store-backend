@@ -5,7 +5,6 @@ namespace Tests\Unit\Domain\Product\Services;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
 use Domain\Product\Models\InventoryTransaction;
-use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
 use Domain\Product\Models\Stock;
@@ -116,25 +115,12 @@ class StockServiceTest extends TestCase
         $this->assertSame(10, $available);
     }
 
-    public function test_available_for_order_subtracts_pending_orders(): void
+    public function test_available_for_order_subtracts_reserved(): void
     {
-        $user = User::factory()->create();
         $product = Product::factory()->create();
         $size = Size::factory()->create(['product_id' => $product->id]);
         $this->stockService->setQuantity($size->id, 10);
-
-        $order = Order::factory()->create([
-            'user_id' => $user->id,
-            'status' => Order::PENDING,
-            'active' => 1,
-        ]);
-        $order->products()->attach($product->id, [
-            'count' => 4,
-            'amount' => 100,
-            'status' => Order::PENDING,
-            'color_id' => null,
-            'size_id' => $size->id,
-        ]);
+        $size->stock->update(['reserved' => 4]);
 
         DB::beginTransaction();
         $available = $this->stockService->availableForOrder($size->id, true);
@@ -143,12 +129,34 @@ class StockServiceTest extends TestCase
         $this->assertSame(6, $available);
     }
 
-    public function test_decrement_for_order_reduces_quantity_and_writes_sale(): void
+    public function test_reserve_and_release_for_order_adjust_reserved_only(): void
+    {
+        $product = Product::factory()->create();
+        $size = Size::factory()->create(['product_id' => $product->id]);
+        $this->stockService->setQuantity($size->id, 10);
+
+        DB::transaction(function () use ($size) {
+            $this->stockService->reserveForOrder($size->id, 3);
+        });
+
+        $this->assertSame(10, $size->stock->fresh()->quantity);
+        $this->assertSame(3, $size->stock->fresh()->reserved);
+
+        DB::transaction(function () use ($size) {
+            $this->stockService->releaseForOrder($size->id, 2);
+        });
+
+        $this->assertSame(10, $size->stock->fresh()->quantity);
+        $this->assertSame(1, $size->stock->fresh()->reserved);
+    }
+
+    public function test_decrement_for_order_reduces_quantity_and_reserved(): void
     {
         $user = User::factory()->create();
         $product = Product::factory()->create();
         $size = Size::factory()->create(['product_id' => $product->id]);
         $this->stockService->setQuantity($size->id, 10);
+        $size->stock->update(['reserved' => 3]);
 
         DB::beginTransaction();
         $this->stockService->decrementForOrder($size->id, 3, $user->id, 'Order ABC');

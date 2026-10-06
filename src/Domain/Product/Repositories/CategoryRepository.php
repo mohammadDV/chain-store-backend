@@ -7,10 +7,10 @@ use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Models\Category;
-use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\ICategoryRepository;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Domain\Product\Services\CategoryTreeCacheService;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class CategoryRepository.
@@ -39,68 +39,72 @@ class CategoryRepository implements ICategoryRepository
     /**
      * Get the productCategories.
      */
-    public function activeProductCategories(?Brand $brand = null): AnonymousResourceCollection
+    public function activeProductCategories(?Brand $brand = null): array
     {
-        $categories = Category::query()
-            // ->select('id', 'title', 'image')
-            // ->when($brand->id, function ($query) use ($brand) {
-            //     return $query->whereHas('products');
-                // return $query->whereHas('products', function ($subquery) use ($brand) {
-                    // $query->where('brand_id', $brand->id);
-                    // return $subquery->where('products.is_failed', 0);
-                        // ->where('status', Product::COMPLETED)
-                        // ->where('is_failed', 0);
-                // });
-                // $query->whereHas('brands', function ($query) use ($brand) {
-                //     $query->where('brand_id', $brand->id)
-                //         ->where('brand_category.status', 1);
-                // });
-            // })
-            ->whereHas('products')
-            ->where('parent_id', 0)
-            ->where('status', 1)
-            ->orderBy('priority', 'desc')
-            ->get();
+        return Cache::remember(
+            CategoryTreeCacheService::activeKey($brand?->id),
+            CategoryTreeCacheService::TTL_SECONDS,
+            function () {
+                $categories = Category::query()
+                    ->whereHas('products')
+                    ->where('parent_id', 0)
+                    ->where('status', 1)
+                    ->orderBy('priority', 'desc')
+                    ->get();
 
-        return CategoryResource::collection($categories);
+                return CategoryResource::collection($categories)->resolve();
+            }
+        );
     }
 
     /**
      * Get the productCategories with all nested children recursively.
      */
-    public function allCategories(?Brand $brand = null): AnonymousResourceCollection
+    public function allCategories(?Brand $brand = null): array
     {
-        $categories = Category::query()
-            ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
-            ->with(['childrenRecursive']) // Load all nested children recursively
-            ->when($brand, function ($query) use ($brand) {
-                $query->whereHas('brands', function ($query) use ($brand) {
-                    $query->where('brand_id', $brand->id)
-                        ->where('brand_category.status', 1);
-                });
-            })
-            ->where('parent_id', 0)
-            ->where('status', 1)
-            ->orderBy('priority', 'desc')
-            ->get();
+        return Cache::remember(
+            CategoryTreeCacheService::allKey($brand?->id),
+            CategoryTreeCacheService::TTL_SECONDS,
+            function () use ($brand) {
+                $categories = Category::query()
+                    ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
+                    ->with(['childrenRecursive'])
+                    ->when($brand, function ($query) use ($brand) {
+                        $query->whereHas('brands', function ($query) use ($brand) {
+                            $query->where('brand_id', $brand->id)
+                                ->where('brand_category.status', 1);
+                        });
+                    })
+                    ->where('parent_id', 0)
+                    ->where('status', 1)
+                    ->orderBy('priority', 'desc')
+                    ->get();
 
-        return CategoryResource::collection($categories);
+                return CategoryResource::collection($categories)->resolve();
+            }
+        );
     }
 
     /**
      * Get the children of a specific category.
      */
-    public function getCategoryChildren(Category $category): AnonymousResourceCollection
+    public function getCategoryChildren(Category $category): array
     {
-        $categories = Category::query()
-            ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
-            ->with(['childrenRecursive'])
-            ->where('parent_id', $category->id)
-            ->where('status', 1)
-            ->orderBy('priority', 'desc')
-            ->get();
+        return Cache::remember(
+            CategoryTreeCacheService::childrenKey((int) $category->id),
+            CategoryTreeCacheService::TTL_SECONDS,
+            function () use ($category) {
+                $categories = Category::query()
+                    ->select('id', 'title', 'slug', 'image', 'status', 'parent_id', 'priority')
+                    ->with(['childrenRecursive'])
+                    ->where('parent_id', $category->id)
+                    ->where('status', 1)
+                    ->orderBy('priority', 'desc')
+                    ->get();
 
-        return CategoryResource::collection($categories);
+                return CategoryResource::collection($categories)->resolve();
+            }
+        );
     }
 
     /**

@@ -11,6 +11,7 @@ use Domain\Brand\Models\Brand;
 use Domain\Brand\Repositories\Contracts\IBrandRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class BrandRepository.
@@ -29,13 +30,17 @@ class BrandRepository implements IBrandRepository
      */
     public function index(TableRequest $request): Collection
     {
-        $brands = Brand::query()
-            ->with(['banners', 'colors'])
-            ->where('status', 1)
-            ->orderBy('priority', 'desc')
-            ->get();
+        $payload = Cache::remember('brands:index', 3600, function () {
+            $brands = Brand::query()
+                ->with(['banners', 'colors'])
+                ->where('status', 1)
+                ->orderBy('priority', 'desc')
+                ->get();
 
-        return $brands->map(fn ($brand) => new BrandResource($brand));
+            return $brands->map(fn ($brand) => (new BrandResource($brand))->resolve())->all();
+        });
+
+        return collect($payload);
     }
 
     /**
@@ -52,21 +57,27 @@ class BrandRepository implements IBrandRepository
      */
     public function getBanners(Request $request): Collection
     {
+        $brandId = $request->get('brand');
+        $cacheKey = 'banners:'.($brandId ?: 'home');
 
-        $banners = Banner::query()
-            ->where('status', 1)
-            ->when(! empty($request->get('brand')), function ($query) use ($request) {
-                $query->whereHas('brand', function ($query) use ($request) {
-                    $query->where('id', $request->get('brand'));
-                });
-            })
-            ->when(empty($request->get('brand')), function ($query) {
-                $query->whereNull('brand_id');
-            })
-            ->inRandomOrder()
-            ->limit(10)
-            ->get();
+        $payload = Cache::remember($cacheKey, 300, function () use ($brandId) {
+            $banners = Banner::query()
+                ->where('status', 1)
+                ->when(! empty($brandId), function ($query) use ($brandId) {
+                    $query->whereHas('brand', function ($query) use ($brandId) {
+                        $query->where('id', $brandId);
+                    });
+                })
+                ->when(empty($brandId), function ($query) {
+                    $query->whereNull('brand_id');
+                })
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get();
 
-        return $banners->map(fn ($banner) => new BannerResource($banner));
+            return $banners->map(fn ($banner) => (new BannerResource($banner))->resolve())->all();
+        });
+
+        return collect($payload);
     }
 }

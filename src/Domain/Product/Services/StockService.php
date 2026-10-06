@@ -5,8 +5,6 @@ namespace Domain\Product\Services;
 use Domain\Product\Enums\InventoryTransactionSource;
 use Domain\Product\Enums\InventoryTransactionType;
 use Domain\Product\Models\InventoryTransaction;
-use Domain\Product\Models\Order;
-use Domain\Product\Models\OrderProduct;
 use Domain\Product\Models\Size;
 use Domain\Product\Models\Stock;
 use Illuminate\Support\Facades\DB;
@@ -201,7 +199,7 @@ class StockService
 
     /**
      * Available quantity for placing an order.
-     * Soft-reserves pending orders when $withPendingReservation is true.
+     * When $withPendingReservation is true, uses stocks.reserved (soft hold).
      * Locks the stock row — must be called inside a DB transaction.
      */
     public function availableForOrder(int $sizeId, bool $withPendingReservation): int
@@ -215,22 +213,50 @@ class StockService
             return 0;
         }
 
-        $pendingCount = 0;
         if ($withPendingReservation) {
-            $pendingCount = (int) OrderProduct::query()
-                ->whereHas('order', function ($query) {
-                    $query->where('status', Order::PENDING)
-                        ->where('active', 1);
-                })
-                ->where('size_id', $sizeId)
-                ->sum('count');
+            return max(0, (int) $stock->quantity - (int) $stock->reserved);
         }
 
-        return max(0, $stock->quantity - $pendingCount);
+        return max(0, (int) $stock->quantity);
     }
 
     /**
-     * Hard-decrement stock after payment. Locks the row — safe inside an outer transaction.
+     * Soft-reserve units for a pending order. Locks the row — call inside a transaction.
+     */
+    public function reserveForOrder(int $sizeId, int $count): void
+    {
+        if ($count < 1) {
+            throw new InvalidArgumentException('Reserve count must be at least 1.');
+        }
+
+        [$size, $stock] = $this->lockSizeAndStock($sizeId);
+        $available = max(0, (int) $stock->quantity - (int) $stock->reserved);
+
+        if ($available < $count) {
+            throw new RuntimeException("Insufficient stock for size_id {$sizeId}.");
+        }
+
+        $stock->update(['reserved' => (int) $stock->reserved + $count]);
+    }
+
+    /**
+     * Release soft reservation (expire / replace cart). Locks the row — call inside a transaction.
+     */
+    public function releaseForOrder(int $sizeId, int $count): void
+    {
+        if ($count < 1) {
+            return;
+        }
+
+        [, $stock] = $this->lockSizeAndStock($sizeId);
+        $stock->update([
+            'reserved' => max(0, (int) $stock->reserved - $count),
+        ]);
+    }
+
+    /**
+     * Hard-decrement stock after payment and release the matching reservation.
+     * Locks the row — safe inside an outer transaction.
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
@@ -240,20 +266,43 @@ class StockService
         int $count,
         ?int $userId = null,
         ?string $description = null,
+        bool $releaseReservation = true,
     ): void {
         if ($count < 1) {
             throw new InvalidArgumentException('Decrement count must be at least 1.');
         }
 
-        $this->applyDelta(
-            $sizeId,
-            -$count,
-            InventoryTransactionType::Sale,
-            InventoryTransactionSource::Order,
-            $userId,
-            $description,
-            allowNegativeResult: false,
-        );
+        DB::transaction(function () use ($sizeId, $count, $userId, $description, $releaseReservation) {
+            [$size, $stock] = $this->lockSizeAndStock($sizeId);
+            $previous = (int) $stock->quantity;
+            $resulting = $previous - $count;
+
+            if ($resulting < 0) {
+                throw new RuntimeException("Insufficient stock for size_id {$sizeId}.");
+            }
+
+            $reserved = (int) $stock->reserved;
+            if ($releaseReservation) {
+                $reserved = max(0, $reserved - $count);
+            }
+
+            $stock->update([
+                'quantity' => $resulting,
+                'reserved' => $reserved,
+            ]);
+
+            InventoryTransaction::query()->create([
+                'product_id' => $size->product_id,
+                'size_id' => $size->id,
+                'type' => InventoryTransactionType::Sale,
+                'source' => InventoryTransactionSource::Order,
+                'user_id' => $userId,
+                'quantity_change' => -$count,
+                'previous_quantity' => $previous,
+                'resulting_quantity' => $resulting,
+                'description' => $description,
+            ]);
+        });
     }
 
     private function applyAbsoluteQuantity(

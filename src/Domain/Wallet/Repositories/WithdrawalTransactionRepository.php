@@ -82,17 +82,22 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
         $amount = $request->amount;
         $description = $request->description ?? __('site.wallet_transaction_wallet_withdrawal');
 
-        if (! $wallet->canWithdraw($amount)) {
-            return response()->json([
-                'status' => 0,
-                'message' => __('site.Insufficient funds'),
-            ], 422);
-        }
-
         try {
             return DB::transaction(function () use ($request, $wallet, $amount, $description) {
+                $lockedWallet = Wallet::query()
+                    ->whereKey($wallet->id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
+                if (! $lockedWallet->canWithdraw($amount)) {
+                    return response()->json([
+                        'status' => 0,
+                        'message' => __('site.Insufficient funds'),
+                    ], 422);
+                }
+
                 $transaction = WalletTransaction::createTransaction(
-                    wallet: $wallet,
+                    wallet: $lockedWallet,
                     amount: -$amount,
                     type: WalletTransaction::WITHDRAWAL,
                     description: $description,
@@ -100,9 +105,9 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
                 );
 
                 WithdrawalTransaction::create([
-                    'wallet_id' => $wallet->id,
+                    'wallet_id' => $lockedWallet->id,
                     'amount' => $amount,
-                    'currency' => $wallet->currency,
+                    'currency' => $lockedWallet->currency,
                     'status' => WithdrawalTransaction::PENDING,
                     'reference' => WithdrawalTransaction::generateReference(),
                     'description' => $description,
@@ -110,14 +115,14 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
                     'sheba' => $request->sheba,
                 ]);
 
-                $wallet->refresh();
+                $lockedWallet->refresh();
 
                 return response()->json([
                     'status' => 1,
                     'message' => __('site.Withdrawal successful'),
                     'data' => [
                         'transaction_reference' => $transaction->reference,
-                        'new_balance' => $wallet->balance,
+                        'new_balance' => $lockedWallet->balance,
                     ],
                 ]);
             });
@@ -157,32 +162,50 @@ class WithdrawalTransactionRepository implements IWithdrawalTransactionRepositor
 
         DB::beginTransaction();
         try {
+            $lockedWithdrawal = WithdrawalTransaction::query()
+                ->whereKey($withdrawalTransaction->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedWithdrawal->status != WithdrawalTransaction::PENDING) {
+                DB::rollBack();
+
+                return response()->json([
+                    'status' => 0,
+                    'message' => __('site.Withdrawal failed. Please try again.'),
+                ], 500);
+            }
 
             if ($request->input('status') == WithdrawalTransaction::REJECT) {
+                $wallet = Wallet::query()
+                    ->whereKey($lockedWithdrawal->wallet_id)
+                    ->lockForUpdate()
+                    ->firstOrFail();
+
                 WalletTransaction::createTransaction(
-                    wallet: $withdrawalTransaction->wallet,
-                    amount: $withdrawalTransaction->amount,
+                    wallet: $wallet,
+                    amount: (float) $lockedWithdrawal->amount,
                     type: WalletTransaction::REFUND,
-                    description: __('site.wallet_transaction_withdrawal_refund', ['reference' => $withdrawalTransaction->reference]),
+                    description: __('site.wallet_transaction_withdrawal_refund', ['reference' => $lockedWithdrawal->reference]),
                     status: WalletTransaction::COMPLETED
                 );
             }
 
-            $withdrawalTransaction->update($data);
+            $lockedWithdrawal->update($data);
 
             NotificationService::create([
                 'title' => __('site.wallet_withdrawal_rejected_title'),
                 'content' => __('site.wallet_withdrawal_rejected_content'),
-                'id' => $withdrawalTransaction->id,
+                'id' => $lockedWithdrawal->id,
                 'type' => NotificationService::WITHDRAWAL,
-            ], $withdrawalTransaction->wallet->user);
+            ], $lockedWithdrawal->wallet->user);
 
             DB::commit();
 
             return response()->json([
                 'status' => 1,
                 'message' => __('site.Status updated successfully'),
-                'data' => $withdrawalTransaction->fresh(),
+                'data' => $lockedWithdrawal->fresh(),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

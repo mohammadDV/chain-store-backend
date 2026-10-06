@@ -6,8 +6,10 @@ use Cviebrock\EloquentSluggable\Sluggable;
 use Database\Factories\CategoryFactory;
 use Domain\Brand\Models\Brand;
 use Domain\Product\Services\CategoryFooterService;
+use Domain\Product\Services\CategoryTreeCacheService;
 use Domain\Seo\Concerns\RecordsSlugRedirects;
 use Domain\Seo\Concerns\ResolvesByIdOrSlug;
+use Domain\Seo\Services\SeoCacheService;
 use Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -70,6 +72,8 @@ class Category extends Model
     {
         $clearFooterCache = static function (): void {
             app(CategoryFooterService::class)->clearCache();
+            app(CategoryTreeCacheService::class)->clear();
+            app(SeoCacheService::class)->clearSitemap();
         };
 
         static::saved($clearFooterCache);

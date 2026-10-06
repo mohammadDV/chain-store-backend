@@ -13,6 +13,7 @@ use Domain\Product\Models\Order;
 use Domain\Product\Models\Product;
 use Domain\Product\Models\Size;
 use Domain\Product\Repositories\OrderRepository;
+use Domain\Product\Services\OrderStatusService;
 use Domain\Product\Services\StockService;
 use Domain\User\Models\User;
 use Domain\User\Services\TelegramNotificationService;
@@ -142,6 +143,9 @@ class StockOrderTest extends TestCase
                 'status' => 0,
                 'message' => __('site.Insufficient stock'),
             ]);
+
+        $this->assertSame(3, $size->stock->fresh()->reserved);
+        $this->assertSame(5, $size->stock->fresh()->quantity);
     }
 
     public function test_pending_orders_do_not_soft_reserve_without_stock_management(): void
@@ -156,6 +160,8 @@ class StockOrderTest extends TestCase
             ],
         ])->assertCreated();
 
+        $this->assertSame(0, $size->stock->fresh()->reserved);
+
         Sanctum::actingAs($user);
         $response = $this->postJson('/api/profile/orders', [
             'products' => [
@@ -164,6 +170,29 @@ class StockOrderTest extends TestCase
         ]);
 
         $response->assertCreated()->assertJson(['status' => 1]);
+        $this->assertSame(0, $size->stock->fresh()->reserved);
+    }
+
+    public function test_expiring_pending_order_releases_reserved_stock(): void
+    {
+        [$user, $product, $size] = $this->seedProductWithStock(10, true);
+        Sanctum::actingAs($user);
+
+        $this->postJson('/api/profile/orders', [
+            'products' => [
+                ['id' => $product->id, 'count' => 4, 'size_id' => $size->id],
+            ],
+        ])->assertCreated();
+
+        $this->assertSame(4, $size->stock->fresh()->reserved);
+
+        $order = Order::query()->where('user_id', $user->id)->where('status', Order::PENDING)->firstOrFail();
+        $expired = app(OrderStatusService::class)->expire($order);
+
+        $this->assertTrue($expired);
+        $this->assertSame(Order::EXPIRED, $order->fresh()->status);
+        $this->assertSame(0, $size->stock->fresh()->reserved);
+        $this->assertSame(10, $size->stock->fresh()->quantity);
     }
 
     public function test_complete_order_decrements_stock_when_stock_management_enabled(): void

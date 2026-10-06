@@ -5,14 +5,17 @@ namespace Domain\Brand\Models;
 use Database\Factories\BrandFactory;
 use Domain\Product\Models\Color;
 use Domain\Product\Models\Product;
+use Domain\Product\Services\CategoryTreeCacheService;
 use Domain\Seo\Concerns\RecordsSlugRedirects;
 use Domain\Seo\Concerns\ResolvesByIdOrSlug;
+use Domain\Seo\Services\SeoCacheService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * @property int $id
@@ -43,6 +46,18 @@ class Brand extends Model
     public function seoFrontendPath(string $slug): string
     {
         return '/brand/'.$slug;
+    }
+
+    protected static function booted(): void
+    {
+        $clear = static function (): void {
+            Cache::forget('brands:index');
+            app(SeoCacheService::class)->clearSitemap();
+            app(CategoryTreeCacheService::class)->clear();
+        };
+
+        static::saved($clear);
+        static::deleted($clear);
     }
 
     protected static function newFactory(): BrandFactory

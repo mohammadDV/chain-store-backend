@@ -3,6 +3,7 @@
 namespace Core\Providers;
 
 use Core\Http\RateLimiting\AuthRateLimiter;
+use Core\Http\RateLimiting\CatalogRateLimiter;
 use Domain\User\Listeners\SendRegistrationTelegramNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\App;
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         App::setlocale('fa');
 
         AuthRateLimiter::configure();
+        CatalogRateLimiter::configure();
 
         Event::listen(Registered::class, SendRegistrationTelegramNotification::class);
     }

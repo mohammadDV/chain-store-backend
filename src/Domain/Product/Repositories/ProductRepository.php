@@ -20,6 +20,7 @@ use Illuminate\Http\Response;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -146,23 +147,36 @@ class ProductRepository implements IProductRepository
             default => $column = 'id',
         };
 
-        $products = Product::query()
-            ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
-            ->withCount('reviews')
-            ->when(! empty($brand), function ($query) use ($brand) {
-                $query->where('brand_id', $brand);
-            })
-            ->active()
-            ->when($isRandom, function ($query) {
-                $query->inRandomOrder();
-            }, function ($query) use ($column, $request) {
-                $query->orderBy($column, $request->get('sort', 'desc'));
-            })
-            ->limit(config('product.limit'))
-            ->get()
-            ->map(fn ($product) => new ProductBoxResource($product));
+        $cacheKey = 'products:featured:'.md5(json_encode([
+            'column' => $column,
+            'brand' => $brand,
+            'random' => $isRandom,
+            'sort' => $request->get('sort', 'desc'),
+        ]));
 
-        return $products;
+        // Random featured lists stay short-lived so results still rotate.
+        $ttl = $isRandom ? 60 : 300;
+
+        $payload = Cache::remember($cacheKey, $ttl, function () use ($column, $brand, $isRandom, $request) {
+            return Product::query()
+                ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+                ->withCount('reviews')
+                ->when(! empty($brand), function ($query) use ($brand) {
+                    $query->where('brand_id', $brand);
+                })
+                ->active()
+                ->when($isRandom, function ($query) {
+                    $query->inRandomOrder();
+                }, function ($query) use ($column, $request) {
+                    $query->orderBy($column, $request->get('sort', 'desc'));
+                })
+                ->limit(config('product.limit'))
+                ->get()
+                ->map(fn ($product) => (new ProductBoxResource($product))->resolve())
+                ->all();
+        });
+
+        return collect($payload);
     }
 
     /**
@@ -200,32 +214,33 @@ class ProductRepository implements IProductRepository
     {
 
         $search = $request->get('query');
+        $cacheKey = 'product_search_suggestions_'.md5((string) $search);
 
-        $categories = Category::query()
-            ->with('parentRecursive')
-            ->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%'.$search.'%');
-            })
-            ->where('status', 1)
-            ->limit(10)
-            ->get();
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($request, $search) {
+            $categories = Category::query()
+                ->with('parentRecursive')
+                ->where(function ($query) use ($search) {
+                    $query->where('title', 'like', '%'.$search.'%');
+                })
+                ->where('status', 1)
+                ->limit(10)
+                ->get();
 
-        $queryProduct = Product::query()
-            ->active()
-            ->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhere('details', 'like', '%'.$search.'%');
-            });
+            $queryProduct = Product::query()
+                ->active()
+                ->where(function ($query) use ($search) {
+                    $query->where('title', 'like', '%'.$search.'%');
+                });
 
-        $products = $queryProduct->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
-            ->limit(5)
-            ->get();
+            $products = $queryProduct->orderBy($request->get('column', 'id'), $request->get('sort', 'desc'))
+                ->limit(5)
+                ->get();
 
-        return [
-            'products' => $products->map(fn ($product) => new ProductBoxResource($product)),
-            'categories' => $categories->map(fn ($category) => new CategoryResource($category)),
-        ];
+            return [
+                'products' => $products->map(fn ($product) => (new ProductBoxResource($product))->resolve())->all(),
+                'categories' => $categories->map(fn ($category) => (new CategoryResource($category))->resolve())->all(),
+            ];
+        });
 
     }
 
@@ -254,7 +269,6 @@ class ProductRepository implements IProductRepository
             default => $column = 'id',
         };
 
-        // Generate a unique cache key based on all search parameters
         $cacheKey = 'product_search_'.md5(json_encode([
             'query' => $search,
             'category' => $categories,
@@ -263,70 +277,86 @@ class ProductRepository implements IProductRepository
             'start_amount' => $startAmount,
             'end_amount' => $endAmount,
             'column' => $column,
+            'sort' => $request->get('sort', 'desc'),
+            'count' => $request->get('count', 25),
             'page' => $request->input('page', 1),
         ]));
 
-        // Try to get results from cache first
-        // return cache()->remember($cacheKey, now()->addMinutes(5), function () use ($request, $today) {
-        $query = Product::query()
-            ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
-            ->withCount('reviews')
-            ->active();
+        $cached = Cache::remember($cacheKey, now()->addMinutes(5), function () use (
+            $request,
+            $search,
+            $categories,
+            $brands,
+            $colors,
+            $startAmount,
+            $endAmount,
+            $column,
+        ) {
+            $query = Product::query()
+                ->select('id', 'title', 'slug', 'amount', 'discount', 'rate', 'order_count', 'view_count', 'image')
+                ->withCount('reviews')
+                ->active();
 
-        if (! empty($search)) {
-            $query->where(function ($query) use ($search) {
-                $query->where('title', 'like', '%'.$search.'%')
-                    ->orWhere('description', 'like', '%'.$search.'%')
-                    ->orWhere('details', 'like', '%'.$search.'%');
-            });
-        }
+            // Title-only LIKE — avoid scanning description/details under load.
+            if (! empty($search)) {
+                $query->where('title', 'like', '%'.$search.'%');
+            }
 
-        // start amount
-        if (! empty($startAmount)) {
-            $query->where('amount', '>=', $startAmount);
-        }
+            if (! empty($startAmount)) {
+                $query->where('amount', '>=', $startAmount);
+            }
 
-        // end amount
-        if (! empty($endAmount)) {
-            $query->where('amount', '<=', $endAmount);
-        }
+            if (! empty($endAmount)) {
+                $query->where('amount', '<=', $endAmount);
+            }
 
-        // brand
-        if (! empty($brands)) {
-            $query->whereIn('brand_id', $brands);
-        }
+            if (! empty($brands)) {
+                $query->whereIn('brand_id', $brands);
+            }
 
-        // color
-        if (! empty($colors)) {
-            $query->whereHas('color', function ($q) use ($colors) {
-                $q->whereIn('id', $colors);
-            });
-        }
+            if (! empty($colors)) {
+                $query->whereHas('color', function ($q) use ($colors) {
+                    $q->whereIn('id', $colors);
+                });
+            }
 
-        // category
-        if (! empty($categories)) {
+            if (! empty($categories)) {
+                $parents = Category::query()
+                    ->whereIn('parent_id', $categories)
+                    ->pluck('id')
+                    ->toArray();
 
-            $parents = Category::query()
-                ->whereIn('parent_id', $categories)
-                ->pluck('id')
-                ->toArray();
+                $categories = array_unique(array_merge($categories, $parents));
 
-            $categories = array_merge($categories, $parents);
-            $categories = array_unique($categories);
-            // var_dump($categories);
-            // dd($parents);
+                $query->whereHas('categories', function ($q) use ($categories) {
+                    $q->whereIn('categories.id', $categories)
+                        ->orWhereIn('categories.parent_id', $categories);
+                });
+            }
 
-            $query->whereHas('categories', function ($q) use ($categories) {
-                $q->whereIn('categories.id', $categories)
-                    ->orWhereIn('categories.parent_id', $categories);
-            });
-        }
+            $products = $query->orderBy($column, $request->get('sort', 'desc'))
+                ->paginate($request->get('count', 25));
 
-        $products = $query->orderBy($column, $request->get('sort', 'desc'))
-            ->paginate($request->get('count', 25));
+            return [
+                'data' => $products->getCollection()
+                    ->map(fn ($product) => (new ProductBoxResource($product))->resolve())
+                    ->values()
+                    ->all(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'path' => $products->path(),
+            ];
+        });
 
-        return $products->through(fn ($product) => new ProductBoxResource($product));
-        // });
+        return new LengthAwarePaginator(
+            $cached['data'],
+            $cached['total'],
+            $cached['per_page'],
+            $cached['current_page'],
+            ['path' => $cached['path'] ?? $request->url()]
+        );
     }
 
     /**

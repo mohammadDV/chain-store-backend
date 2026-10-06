@@ -285,6 +285,22 @@ class OrderRepository implements IOrderRepository
                 'exchange_rate' => $this->settingService->getExchangeRateWithFallback(),
             ]);
 
+            // Release soft reservations from the previous pending cart lines.
+            $order->loadMissing(['products.brand']);
+            foreach ($order->products as $oldProduct) {
+                if (
+                    empty($oldProduct->brand->has_stock_management)
+                    || empty($oldProduct->pivot->size_id)
+                ) {
+                    continue;
+                }
+
+                $this->stockService->releaseForOrder(
+                    (int) $oldProduct->pivot->size_id,
+                    (int) $oldProduct->pivot->count,
+                );
+            }
+
             // Detach old products
             $order->products()->detach();
 
@@ -322,6 +338,13 @@ class OrderRepository implements IOrderRepository
                             'status' => 0,
                             'message' => __('site.Insufficient stock'),
                         ], Response::HTTP_BAD_REQUEST);
+                    }
+
+                    if ($withPendingReservation) {
+                        $this->stockService->reserveForOrder(
+                            (int) $productData['size_id'],
+                            (int) $productData['count'],
+                        );
                     }
                 } else {
                     DB::rollBack();

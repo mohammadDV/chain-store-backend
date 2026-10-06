@@ -25,8 +25,12 @@ use Illuminate\Support\Facades\Route;
 // SEO
 Route::prefix('seo')->group(function () {
     Route::get('/settings', [SeoController::class, 'settings'])->name('seo.settings');
-    Route::get('/sitemap', [SeoController::class, 'sitemap'])->name('seo.sitemap');
-    Route::get('/redirects', [SeoController::class, 'redirects'])->name('seo.redirects');
+    Route::get('/sitemap', [SeoController::class, 'sitemap'])
+        ->middleware('throttle:catalog.sitemap')
+        ->name('seo.sitemap');
+    Route::get('/redirects', [SeoController::class, 'redirects'])
+        ->middleware('throttle:catalog.sitemap')
+        ->name('seo.redirects');
 });
 
 // Public storefront feature flags (cached)
@@ -57,8 +61,10 @@ Route::prefix('colors')->group(function () {
 
 // Products
 Route::prefix('products')->group(function () {
-    Route::post('search', [ProductController::class, 'search']);
-    Route::post('search-suggestions', [ProductController::class, 'searchSuggestions']);
+    Route::post('search', [ProductController::class, 'search'])
+        ->middleware('throttle:catalog.search');
+    Route::post('search-suggestions', [ProductController::class, 'searchSuggestions'])
+        ->middleware('throttle:catalog.search');
     Route::get('{product}/similar', [ProductController::class, 'similarProducts'])->name('product.similar');
     Route::post('featured', [ProductController::class, 'getFeaturedProducts'])->name('product.featured');
     Route::post('{product}/refresh-on-cart', [ProductController::class, 'refreshOnCart'])

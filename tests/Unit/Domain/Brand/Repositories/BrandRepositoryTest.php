@@ -1,14 +1,18 @@
 <?php
 
-use Application\Api\Brand\Resources\BrandResource;
 use Core\Http\Requests\TableRequest;
 use Domain\Brand\Models\Banner;
 use Domain\Brand\Models\Brand;
 use Domain\Brand\Repositories\BrandRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    Cache::flush();
+});
 
 it('lists only active brands ordered by priority', function () {
     Brand::factory()->create(['status' => 1, 'priority' => 1, 'title' => 'Low']);
@@ -18,8 +22,8 @@ it('lists only active brands ordered by priority', function () {
     $result = app(BrandRepository::class)->index(new TableRequest);
 
     expect($result)->toHaveCount(2);
-    expect($result->first())->toBeInstanceOf(BrandResource::class);
-    expect($result->first()->resource->title)->toBe('High');
+    expect($result->first())->toBeArray();
+    expect($result->first()['title'])->toBe('High');
 });
 
 it('filters banners by brand id', function () {
@@ -41,5 +45,6 @@ it('filters banners by brand id', function () {
     $result = app(BrandRepository::class)->getBanners($request);
 
     expect($result)->toHaveCount(1);
-    expect($result->first()->resource->brand_id)->toBe($brand->id);
+    expect($result->first())->toBeArray();
+    expect($result->first()['title'])->toBe('Brand banner');
 });
