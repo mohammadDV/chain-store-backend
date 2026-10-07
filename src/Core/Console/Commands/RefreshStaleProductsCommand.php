@@ -21,8 +21,9 @@ class RefreshStaleProductsCommand extends Command
         $hours = $this->option('hours') !== null ? (int) $this->option('hours') : null;
 
         if ($this->option('queue')) {
-            RefreshStaleProductsJob::dispatch($limit, $hours);
-            $this->info('RefreshStaleProductsJob queued.');
+            $queue = (string) config('product_scraper.cart_refresh.queue', 'high');
+            RefreshStaleProductsJob::dispatch($limit, $hours)->onQueue($queue);
+            $this->info("RefreshStaleProductsJob queued on [{$queue}].");
 
             return self::SUCCESS;
         }

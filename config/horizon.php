@@ -199,7 +199,8 @@ return [
     */
 
     'defaults' => [
-        // Long-running product scraper jobs (cart refresh / stale refresh on high).
+        // Long-running scraper jobs only: RefreshProductOnCartJob, RefreshStaleProductsJob.
+        // Keep timeout aligned with job $timeout (1200). Do not put short jobs here.
         'supervisor-scraper' => [
             'connection' => 'redis',
             'queue' => ['high'],
@@ -213,7 +214,7 @@ return [
             'timeout' => 1200,
             'nice' => 0,
         ],
-        // Short app jobs (order expire, mail, etc.).
+        // Short app jobs (order expire, mail, etc.). Timeout must stay well below scraper jobs.
         'supervisor-default' => [
             'connection' => 'redis',
             'queue' => ['default'],

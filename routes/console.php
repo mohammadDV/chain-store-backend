@@ -14,7 +14,11 @@ Schedule::command('orders:expire-pending')
     ->withoutOverlapping()
     ->appendOutputTo(storage_path('logs/scheduler.log'));
 
-Schedule::job(new RefreshStaleProductsJob)
+Schedule::job(
+    (new RefreshStaleProductsJob)->onQueue(
+        (string) config('product_scraper.cart_refresh.queue', 'high')
+    )
+)
     ->everyFifteenMinutes()
     ->withoutOverlapping(30)
     ->onOneServer()

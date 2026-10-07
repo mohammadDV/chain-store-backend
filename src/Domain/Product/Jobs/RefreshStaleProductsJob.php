@@ -27,7 +27,10 @@ class RefreshStaleProductsJob implements ShouldQueue
     public function __construct(
         public readonly ?int $limit = null,
         public readonly ?int $staleHours = null,
-    ) {}
+    ) {
+        // Must run on the long-timeout scraper supervisor (not default@90s).
+        $this->onQueue((string) config('product_scraper.cart_refresh.queue', 'high'));
+    }
 
     public function handle(StaleProductRefreshService $service): void
     {
