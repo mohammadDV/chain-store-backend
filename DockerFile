@@ -1,0 +1,57 @@
+FROM php:8.5.12-fpm
+
+# Copy composer.lock and composer.json into the working directory
+COPY composer.lock composer.json /var/www/html/
+
+# Set working directory
+WORKDIR /var/www/html/
+
+# Install dependencies for the operating system software
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libxml2-dev \
+    libicu-dev \
+    libzip-dev \
+    zip \
+    vim \
+    git \
+    curl \
+    cron \
+    procps \
+    htop
+
+# Install extensions for php (dom/lexbor already bundled in php:8.5.12-fpm)
+# pcntl is required by Laravel Horizon
+RUN docker-php-ext-install pdo_mysql intl zip pcntl
+RUN pecl install redis && docker-php-ext-enable redis
+RUN apt-get update && apt-get install -y libjpeg62-turbo-dev libpng-dev libwebp-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install gd
+RUN echo "upload_max_filesize=100M\npost_max_size=100M\nmemory_limit=512M\nmax_execution_time=300\nmax_input_time=300" > /usr/local/etc/php/conf.d/uploads.ini
+
+# Copy PHP-FPM pool configuration
+COPY php-fpm-pool.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Install composer (php package manager)
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Copy existing application directory contents to the working directory
+COPY . /var/www/html
+
+RUN git config --global --add safe.directory /var/www/html
+RUN composer install --no-interaction --optimize-autoloader --no-dev
+
+# Assign permissions of the working directory to the www-data user
+RUN chown -R www-data:www-data \
+    /var/www/html/storage \
+    /var/www/html/bootstrap/cache
+
+# Setup Laravel scheduler cron
+RUN echo "* * * * * cd /var/www/html && php artisan schedule:run >> /dev/null 2>&1" > /etc/cron.d/laravel-scheduler
+RUN chmod 0644 /etc/cron.d/laravel-scheduler
+RUN crontab /etc/cron.d/laravel-scheduler
+
+# Expose port 9000 and start php-fpm server (for FastCGI Process Manager)
+EXPOSE 9000
+CMD ["php-fpm"]

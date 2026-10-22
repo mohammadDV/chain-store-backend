@@ -203,7 +203,7 @@ This project has been successfully upgraded to **Laravel 12.33.0** with minimal 
 
 ### Compatibility:
 
--   ✅ PHP 8.3.20
+-   ✅ PHP 8.5.12
 -   ✅ Laravel Sanctum 4.1
 -   ✅ Filament 3.3.43
 -   ✅ All routes and configurations working

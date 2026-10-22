@@ -20,7 +20,6 @@
 /storage/pail
 /vendor
 /nginx
-DockerFile
 Homestead.json
 Homestead.yaml
 npm-debug.log
