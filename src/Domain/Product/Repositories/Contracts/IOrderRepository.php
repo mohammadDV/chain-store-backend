@@ -6,6 +6,7 @@ use Application\Api\Product\Requests\CheckOrderCodeRequest;
 use Application\Api\Product\Requests\OrderRequest;
 use Application\Api\Product\Requests\PaymentRequest;
 use Application\Api\Product\Resources\OrderResource;
+use Application\Api\Product\Resources\PublicOrderResource;
 use Core\Http\Requests\TableRequest;
 use Domain\Product\Models\Order;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,18 @@ interface IOrderRepository
      * Get the order details.
      */
     public function show(Order $order): OrderResource;
+
+    /**
+     * Public order lookup by tracking code (invoice QR).
+     */
+    public function findByCode(string $code): ?PublicOrderResource;
+
+    /**
+     * Unlock full order details for a public order code.
+     *
+     * @return array{status: int, message: string, code?: string, data?: array<string, mixed>}
+     */
+    public function unlockRecipientByCode(string $code, ?string $password, ?string $unlockToken): array;
 
     /**
      * Store a new order.

@@ -94,6 +94,13 @@ class SettingResource extends Resource
                             ->step(1000)
                             ->suffix(__('site.toman'))
                             ->helperText(__('site.limit_delivery_amount_help')),
+                        TextInput::make('invoice_unlock_password')
+                            ->label(__('site.invoice_unlock_password'))
+                            ->password()
+                            ->revealable()
+                            ->maxLength(255)
+                            ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->helperText(__('site.invoice_unlock_password_help')),
                     ]),
                 Section::make(__('site.seo_settings'))
                     ->schema([

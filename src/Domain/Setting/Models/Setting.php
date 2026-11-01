@@ -26,6 +26,16 @@ class Setting extends Model
         'contact_email',
         'contact_email_hint',
         'telegram_username',
+        'invoice_unlock_password',
+    ];
+
+    /**
+     * Never expose the hashed unlock password in array/JSON casts.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'invoice_unlock_password',
     ];
 
     protected $casts = [

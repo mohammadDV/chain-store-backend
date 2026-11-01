@@ -61,6 +61,23 @@
             color: #1a365d;
         }
 
+        .qr-cell {
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .qr-image {
+            width: 96px;
+            height: 96px;
+        }
+
+        .qr-caption {
+            font-size: 8px;
+            color: #718096;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
         .section-title {
             background: #1a365d;
             color: #ffffff;
@@ -251,11 +268,11 @@
 <div class="page">
     <table class="header-table">
         <tr>
-            <td width="55%" style="vertical-align: top;">
+            <td width="42%" style="vertical-align: top;">
                 <div class="brand">BOOFSTORE</div>
                 <div class="brand-sub">فروشگاه اینترنتی بوف استور</div>
             </td>
-            <td width="45%" style="vertical-align: top;">
+            <td width="38%" style="vertical-align: top;">
                 <div class="doc-title">فاکتور فروش</div>
                 <div class="meta-box">
                     <div>
@@ -271,6 +288,12 @@
                         <span>{{ $printedJalali->format('Y/m/d H:i') }}</span>
                     </div>
                 </div>
+            </td>
+            <td width="20%" class="qr-cell">
+                @if(!empty($qrImagePath))
+                    <img src="{{ $qrImagePath }}" class="qr-image" alt="QR">
+                    <div class="qr-caption">اسکن برای مشاهده سفارش<br>{{ $order->code }}</div>
+                @endif
             </td>
         </tr>
     </table>
@@ -366,10 +389,16 @@
         <tr>
             <td></td>
             <td class="totals-box">
+                @php
+                    $goodsAmount = (float) ($order->amount ?? 0);
+                    $discountAmount = (float) ($order->discount_amount ?? 0);
+                    $deliveryAmount = (float) ($order->delivery_amount ?? 0);
+                    $payableAmount = (float) ($order->total_amount ?? ($goodsAmount - $discountAmount + $deliveryAmount));
+                @endphp
                 <table width="100%" style="border-collapse: collapse;">
                     <tr>
                         <td class="totals-label">جمع مبلغ کالاها</td>
-                        <td class="totals-value">{{ number_format($order->total_amount ?? 0, 0) }} تومان</td>
+                        <td class="totals-value">{{ number_format($goodsAmount, 0) }} تومان</td>
                     </tr>
                     <tr>
                         <td class="totals-label">
@@ -378,11 +407,17 @@
                                 <span class="muted">({{ $order->discount->code }})</span>
                             @endif
                         </td>
-                        <td class="totals-value">{{ number_format($order->discount_amount ?? 0, 0) }} تومان</td>
+                        <td class="totals-value">{{ number_format($discountAmount, 0) }} تومان</td>
                     </tr>
                     <tr>
                         <td class="totals-label">هزینه ارسال</td>
-                        <td class="totals-value">رایگان</td>
+                        <td class="totals-value">
+                            @if($deliveryAmount > 0)
+                                {{ number_format($deliveryAmount, 0) }} تومان
+                            @else
+                                رایگان
+                            @endif
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -390,7 +425,7 @@
     </table>
 
     <div class="final-amount">
-        مبلغ قابل پرداخت: {{ number_format($order->amount ?? 0, 0) }} تومان
+        مبلغ قابل پرداخت: {{ number_format($payableAmount, 0) }} تومان
     </div>
 
     <div class="amount-words">

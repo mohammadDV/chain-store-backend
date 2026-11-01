@@ -14,6 +14,7 @@
     "require": {
         "php": "^8.5.12",
         "aws/aws-sdk-php": "^3.368.0",
+        "chillerlan/php-qrcode": "^5.0",
         "cviebrock/eloquent-sluggable": "^13.0",
         "evryn/laravel-toman": "dev-master#1ce7e22eb8951a86e51ac5fac42e973e48c3fa91",
         "filament/filament": "^5.0",

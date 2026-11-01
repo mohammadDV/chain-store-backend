@@ -9,6 +9,9 @@ use App\Filament\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\Resources\OrderResource\Pages\ManageOrderLedgers;
 use App\Filament\Resources\OrderResource\Pages\ViewOrder;
 use App\Filament\Resources\OrderResource\RelationManagers\OrderProductsRelationManager;
+use chillerlan\QRCode\Output\QROutputInterface;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
 use Core\Helpers\HelperClass;
 use Domain\AdminAccess\AdminPermission;
 use Domain\AdminAccess\Services\AdminAccessService;
@@ -504,8 +507,13 @@ class OrderResource extends Resource
             }
         }
 
-        // Convert amount to Persian words
-        $amountInWords = HelperClass::numberToPersianWords((float) ($order->amount ?? 0));
+        $qrImagePath = static::generateOrderQrImagePath($order, $tempDir);
+        if ($qrImagePath) {
+            $tempImageFiles[] = $qrImagePath;
+        }
+
+        $payableAmount = (float) ($order->total_amount ?? $order->amount ?? 0);
+        $amountInWords = HelperClass::numberToPersianWords($payableAmount);
 
         // Render the view
         $html = View::make('pdf.invoice', [
@@ -514,6 +522,7 @@ class OrderResource extends Resource
             'colors' => $colors,
             'sizes' => $sizes,
             'productImages' => $productImages,
+            'qrImagePath' => $qrImagePath,
         ])->render();
 
         $defaultConfig = (new ConfigVariables)->getDefaults();
@@ -575,6 +584,35 @@ class OrderResource extends Resource
         }, $filename, [
             'Content-Type' => 'application/pdf',
         ]);
+    }
+
+    /**
+     * Generate a PNG QR code that opens the public order verify page.
+     */
+    protected static function generateOrderQrImagePath(Order $order, string $tempDir): ?string
+    {
+        if (! $order->code) {
+            return null;
+        }
+
+        $verifyUrl = rtrim((string) config('app.frontend_url', 'http://localhost:3000'), '/')
+            .'/orders/verify/'.$order->code;
+        $path = $tempDir.'/invoice-qr-'.uniqid('', true).'.png';
+
+        try {
+            $options = new QROptions([
+                'outputType' => QROutputInterface::GDIMAGE_PNG,
+                'outputBase64' => false,
+                'scale' => 5,
+                'quietzoneSize' => 2,
+            ]);
+
+            (new QRCode($options))->render($verifyUrl, $path);
+
+            return is_file($path) ? $path : null;
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     /**

@@ -6,6 +6,8 @@ use Application\Api\Product\Requests\CheckOrderCodeRequest;
 use Application\Api\Product\Requests\OrderRequest;
 use Application\Api\Product\Requests\PaymentRequest;
 use Application\Api\Product\Resources\OrderResource;
+use Application\Api\Product\Resources\PublicOrderResource;
+use Application\Api\Product\Resources\UnlockedOrderResource;
 use Core\Http\Requests\TableRequest;
 use Core\Http\traits\GlobalFunc;
 use Domain\Notification\Services\NotificationService;
@@ -19,6 +21,7 @@ use Domain\Product\Models\Product;
 use Domain\Product\Repositories\Contracts\IOrderRepository;
 use Domain\Product\Services\OrderStatusService;
 use Domain\Product\Services\StockService;
+use Domain\Setting\Services\InvoiceUnlockService;
 use Domain\Setting\Services\SettingService;
 use Domain\User\Services\TelegramNotifier;
 use Domain\Wallet\Models\Wallet;
@@ -45,6 +48,7 @@ class OrderRepository implements IOrderRepository
         protected StockService $stockService,
         protected OrderStatusService $orderStatusService,
         protected PaymentGatewayAvailability $paymentGateway,
+        protected InvoiceUnlockService $invoiceUnlockService,
     ) {
         //
     }
@@ -91,6 +95,96 @@ class OrderRepository implements IOrderRepository
         }
 
         return new OrderResource($order->load('products.color'));
+    }
+
+    /**
+     * Public order lookup by tracking code (invoice QR).
+     */
+    public function findByCode(string $code): ?PublicOrderResource
+    {
+        $query = Order::query()
+            ->where('code', $code)
+            ->where('active', 1);
+
+        // Full product payload is only needed when unlock password is not configured.
+        if (! $this->invoiceUnlockService->hasPassword()) {
+            $query->with(['products:id,title,image']);
+        }
+
+        $order = $query->first();
+
+        if (! $order) {
+            return null;
+        }
+
+        return new PublicOrderResource($order);
+    }
+
+    /**
+     * Unlock full order details for a public order code.
+     *
+     * @return array{status: int, message: string, code?: string, data?: array<string, mixed>}
+     */
+    public function unlockRecipientByCode(string $code, ?string $password, ?string $unlockToken): array
+    {
+        $order = Order::query()
+            ->with([
+                'user:id,mobile',
+                'products:id,title,image,code',
+            ])
+            ->where('code', $code)
+            ->where('active', 1)
+            ->first();
+
+        if (! $order) {
+            return [
+                'status' => 0,
+                'code' => 'order_not_found',
+                'message' => __('site.Order not found'),
+            ];
+        }
+
+        if (! $this->invoiceUnlockService->hasPassword()) {
+            return [
+                'status' => 0,
+                'code' => 'invoice_unlock_password_not_configured',
+                'message' => __('site.invoice_unlock_password_not_configured'),
+            ];
+        }
+
+        $tokenExpiry = filled($unlockToken)
+            ? $this->invoiceUnlockService->readTokenExpiry($unlockToken)
+            : null;
+
+        if ($tokenExpiry !== null) {
+            $issuedToken = [
+                'token' => (string) $unlockToken,
+                'expires_at' => $tokenExpiry,
+            ];
+        } elseif (filled($password) && $this->invoiceUnlockService->verifyPassword((string) $password)) {
+            $issuedToken = $this->invoiceUnlockService->issueToken();
+        } else {
+            $errorCode = filled($unlockToken)
+                ? 'invoice_unlock_token_invalid'
+                : 'invoice_unlock_password_invalid';
+
+            return [
+                'status' => 0,
+                'code' => $errorCode,
+                'message' => __('site.'.$errorCode),
+            ];
+        }
+
+        $orderPayload = (new UnlockedOrderResource($order))->resolve();
+
+        return [
+            'status' => 1,
+            'message' => __('site.The operation has been successfully'),
+            'data' => array_merge($orderPayload, [
+                'unlock_token' => $issuedToken['token'],
+                'unlock_expires_at' => $issuedToken['expires_at'],
+            ]),
+        ];
     }
 
     /**

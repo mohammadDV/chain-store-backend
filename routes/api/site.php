@@ -88,6 +88,16 @@ Route::get('/payment/result/{id}', [PaymentController::class, 'show'])->name('us
 // discounts
 Route::get('/discount/active', [DiscountController::class, 'getActiveDiscount'])->name('discount.active');
 
+// Public order verify (invoice QR)
+Route::get('/orders/by-code/{code}', [OrderController::class, 'showByCode'])
+    ->middleware('throttle:60,1')
+    ->where('code', '[0-9]{8,32}')
+    ->name('orders.by-code');
+Route::post('/orders/by-code/{code}/recipient', [OrderController::class, 'unlockRecipient'])
+    ->middleware('throttle:10,1')
+    ->where('code', '[0-9]{8,32}')
+    ->name('orders.by-code.recipient');
+
 // Brand
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{brand}', [BrandController::class, 'show'])->name('brands.show');
