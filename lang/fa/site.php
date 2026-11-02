@@ -1502,6 +1502,8 @@ return [
     'payment_receipt' => 'فیش پرداخت',
     'refund_receipt' => 'فیش برگشتی',
     'download_invoice' => 'دانلود فاکتور',
+    'download_qr_code' => 'دانلود QR Code',
+    'scan_order_qr_hint' => 'این کد را اسکن کنید تا صفحه سفارش باز شود.',
     'count' => 'تعداد',
     'product_count' => 'تعداد محصول',
     'total_amount' => 'مبلغ کل',

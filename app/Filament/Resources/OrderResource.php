@@ -305,6 +305,14 @@ class OrderResource extends Resource
                     ->action(function ($record) {
                         return static::generateInvoicePdf($record);
                     }),
+                Action::make('download_qr_pdf')
+                    ->label(__('site.download_qr_code'))
+                    ->icon('heroicon-o-qr-code')
+                    ->color('gray')
+                    ->visible(fn (Order $record): bool => filled($record->code))
+                    ->action(function (Order $record) {
+                        return static::generateQrCodePdf($record);
+                    }),
                 Action::make('view_ledger')
                     ->label(__('site.view_order_ledger'))
                     ->icon('heroicon-o-clock')
@@ -587,9 +595,90 @@ class OrderResource extends Resource
     }
 
     /**
+     * Generate and download a PDF that contains only the order QR code.
+     */
+    public static function generateQrCodePdf(Order $order): StreamedResponse
+    {
+        $tempDir = storage_path('app/tmp');
+        if (! file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
+        $tempImageFiles = [];
+        $qrImagePath = static::generateOrderQrImagePath($order, $tempDir, scale: 10);
+        if ($qrImagePath) {
+            $tempImageFiles[] = $qrImagePath;
+        }
+
+        $html = View::make('pdf.order-qr', [
+            'order' => $order,
+            'qrImagePath' => $qrImagePath,
+        ])->render();
+
+        $defaultConfig = (new ConfigVariables)->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables)->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'orientation' => 'P',
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+            'fontDir' => array_merge($fontDirs, [
+                resource_path('fonts/vazirmatn'),
+            ]),
+            'fontdata' => $fontData + [
+                'vazirmatn' => [
+                    'R' => 'Vazirmatn-FD-Regular.ttf',
+                    'B' => 'Vazirmatn-FD-Bold.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 75,
+                ],
+            ],
+            'default_font' => 'vazirmatn',
+            'directionality' => 'rtl',
+            'tempDir' => $tempDir,
+        ]);
+
+        try {
+            if (preg_match('/<style\b[^>]*>(.*?)<\/style>/is', $html, $styleMatch)) {
+                $mpdf->WriteHTML($styleMatch[1], HTMLParserMode::HEADER_CSS);
+            }
+
+            if (preg_match('/<body\b[^>]*>(.*)<\/body>/is', $html, $bodyMatch)) {
+                $mpdf->WriteHTML($bodyMatch[1], HTMLParserMode::HTML_BODY);
+            } else {
+                $mpdf->WriteHTML($html);
+            }
+
+            $pdfContent = $mpdf->Output('', 'S');
+        } finally {
+            foreach ($tempImageFiles as $tempImageFile) {
+                if (is_file($tempImageFile)) {
+                    @unlink($tempImageFile);
+                }
+            }
+        }
+
+        $jalaliDate = Jalalian::fromDateTime($order->created_at)->format('Y-m-d');
+        $filename = 'order-qr-'.$jalaliDate.'-'.$order->code.'.pdf';
+
+        return response()->streamDownload(function () use ($pdfContent) {
+            echo $pdfContent;
+        }, $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
+    }
+
+    /**
      * Generate a PNG QR code that opens the public order verify page.
      */
-    protected static function generateOrderQrImagePath(Order $order, string $tempDir): ?string
+    protected static function generateOrderQrImagePath(Order $order, string $tempDir, int $scale = 5): ?string
     {
         if (! $order->code) {
             return null;
@@ -603,7 +692,7 @@ class OrderResource extends Resource
             $options = new QROptions([
                 'outputType' => QROutputInterface::GDIMAGE_PNG,
                 'outputBase64' => false,
-                'scale' => 5,
+                'scale' => $scale,
                 'quietzoneSize' => 2,
             ]);
 
